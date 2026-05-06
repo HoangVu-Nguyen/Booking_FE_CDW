@@ -1,0 +1,107 @@
+<!-- Wrapper: Thêm bg-stone-50 hoặc màu xám nhạt ở body/wrapper để làm nổi bật thẻ trắng bên trong -->
+<div class="flex flex-col lg:flex-row pt-28 pb-24 max-w-[1700px] mx-auto px-4 md:px-8 lg:px-12 gap-10 lg:gap-14">
+    
+
+    <aside class="hidden lg:flex flex-col w-[280px] xl:w-[320px] flex-shrink-0 h-fit sticky top-32">
+        
+        <!-- User Profile Card -->
+        <div class="flex items-center space-x-5 mb-10 px-4">
+            <div class="relative w-16 h-16 rounded-full p-1 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.08)] flex-shrink-0">
+                <img alt="Julianne Moore" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1Q51tb9B9UbcFYjZzL9UH2hpz8VwIz0HNGwyWmMVGlo1QbI0NW4iwMazPWcCrkalBRjNT8L6KUWQhX2xS6UAYk0KaD8zQBI4hETuNFoiy6STvH1Bx2TF7I879fz3wjRzfKP3zbcfzymySR4yOFPpXRqoo5lt0VcVZXpxhmMx5ZQVQXjmRL-_IHbPmqHYFyAmioGnFp-WB2dN-6FFkAZRyaqkg3GR4J7YK42ycyMC4gfKzpFYbzb2upR7SrrJ8w08cVf3mwcvYJzY" />
+                <!-- Dấu chấm xanh trạng thái online -->
+                <div class="absolute bottom-0 right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
+            </div>
+            <div>
+                <h2 class="font-headline text-xl font-bold text-stone-900 tracking-tight leading-tight">Julianne Moore</h2>
+                <span class="inline-flex items-center mt-1 text-[11px] font-bold text-stone-500 tracking-widest uppercase">
+                    Thành viên từ 2022
+                </span>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex flex-col space-y-1.5">
+            <!-- 
+              Lưu ý: Bạn cần chỉnh lại routerLinkActive để nó apply class cho mục đang được chọn.
+              Ví dụ active class: bg-[#173124] text-white shadow-md
+              Default class: text-stone-500 hover:text-stone-900 hover:bg-stone-100
+            -->
+            <a routerLink="info" 
+               routerLinkActive="bg-[#173124] text-white shadow-md hover:!bg-[#173124] hover:!text-white" 
+               [routerLinkActiveOptions]="{exact: true}"
+               class="group relative flex items-center space-x-4 px-5 py-3.5 rounded-2xl text-stone-500 hover:text-stone-900 hover:bg-stone-100/80 transition-all duration-300">
+                <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-300 font-light">person</span>
+                <span class="text-[15px] font-medium tracking-wide">Thông tin cá nhân</span>
+            </a>
+
+            <a routerLink="security" 
+               routerLinkActive="bg-[#173124] text-white shadow-md hover:!bg-[#173124] hover:!text-white"
+               class="group relative flex items-center space-x-4 px-5 py-3.5 rounded-2xl text-stone-500 hover:text-stone-900 hover:bg-stone-100/80 transition-all duration-300">
+                <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-300 font-light">shield_lock</span>
+                <span class="text-[15px] font-medium tracking-wide">Bảo mật</span>
+            </a>
+
+            <a routerLink="trips" 
+               routerLinkActive="bg-[#173124] text-white shadow-md hover:!bg-[#173124] hover:!text-white"
+               class="group relative flex items-center space-x-4 px-5 py-3.5 rounded-2xl text-stone-500 hover:text-stone-900 hover:bg-stone-100/80 transition-all duration-300">
+                <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-300 font-light">flight_takeoff</span>
+                <span class="text-[15px] font-medium tracking-wide">Chuyến đi của tôi</span>
+            </a>
+
+            <a routerLink="payments" 
+               routerLinkActive="bg-[#173124] text-white shadow-md hover:!bg-[#173124] hover:!text-white"
+               class="group relative flex items-center space-x-4 px-5 py-3.5 rounded-2xl text-stone-500 hover:text-stone-900 hover:bg-stone-100/80 transition-all duration-300">
+                <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-300 font-light">credit_card</span>
+                <span class="text-[15px] font-medium tracking-wide">Thanh toán</span>
+            </a>
+
+            <a routerLink="invoices" 
+               routerLinkActive="bg-[#173124] text-white shadow-md hover:!bg-[#173124] hover:!text-white"
+               class="group relative flex items-center space-x-4 px-5 py-3.5 rounded-2xl text-stone-500 hover:text-stone-900 hover:bg-stone-100/80 transition-all duration-300">
+                <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-300 font-light">receipt_long</span>
+                <span class="text-[15px] font-medium tracking-wide">Lịch sử hóa đơn</span>
+            </a>
+
+            <a routerLink="favorites" 
+               routerLinkActive="bg-[#173124] text-white shadow-md hover:!bg-[#173124] hover:!text-white"
+               class="group relative flex items-center space-x-4 px-5 py-3.5 rounded-2xl text-stone-500 hover:text-stone-900 hover:bg-stone-100/80 transition-all duration-300">
+                <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:translate-x-1 transition-transform duration-300 font-light">favorite</span>
+                <span class="text-[15px] font-medium tracking-wide">Yêu thích</span>
+            </a>
+        </nav>
+
+        <!-- Help & Support Widget: Đẹp như một tấm thẻ kính -->
+        <div class="mt-12 px-2">
+            <div class="bg-gradient-to-br from-stone-50 to-stone-100 border border-stone-200/60 rounded-[2rem] p-6 shadow-[0_8px_20px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+                <!-- Ánh sáng mờ trang trí -->
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-emerald-100 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-[#173124]">
+                            <span class="material-symbols-outlined text-[20px] font-light">support_agent</span>
+                        </div>
+                        <h4 class="text-[14px] font-bold text-stone-900 uppercase tracking-widest">Trợ giúp 24/7</h4>
+                    </div>
+                    <p class="text-[13px] text-stone-500 mb-6 leading-relaxed font-medium">
+                        Cần hỗ trợ với Clyvasync? Đội ngũ của chúng tôi luôn ở đây.
+                    </p>
+                    <button class="w-full py-3.5 rounded-xl bg-white border border-stone-200 text-stone-900 text-[13px] uppercase tracking-widest font-bold shadow-sm hover:border-[#173124] hover:text-[#173124] hover:-translate-y-0.5 transition-all duration-300">
+                        Trò chuyện
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT AREA: BẢNG ĐIỀU KHIỂN CHÍNH -->
+    <!-- ========================================== -->
+    <!-- Bỏ viền cứng, sử dụng đổ bóng sâu và mềm -->
+    <main class="flex-1 w-full min-w-0 pb-10">
+        <div class="bg-white rounded-[2.5rem] md:rounded-[3rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-stone-100 p-6 md:p-10 lg:p-14 min-h-[80vh] md:min-h-[800px] relative overflow-hidden">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+
+</div>

@@ -9,6 +9,12 @@ import { CallbackComponent } from './features/auth/callback/callback.component';
 import { HomestayList } from './features/homestay/homestay-list/homestay-list';
 import { Discover } from './features/discover/discover';
 import { HomestayDetail } from './features/homestay/pages/homestay-detail/homestay-detail';
+import { Profile } from './features/profile/profile';
+import { ProfileInfo } from './features/profile/components/profile-info/profile-info';
+import { Security } from './features/profile/components/security/security';
+import { MyTrips } from './features/profile/components/my-trips/my-trips';
+import { PaymentMethods } from './features/profile/components/payment-methods/payment-methods';
+import { MyTrip } from './features/profile/components/my-trip/my-trip';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -27,15 +33,28 @@ export const routes: Routes = [
       { path: '', redirectTo: 'discover', pathMatch: 'full' },
       { path: 'homestays', component: HomestayList, title: 'World Feed - Clyvasync' },
       { path: 'discover', component: Discover, title: 'World Feed - Clyvasync' },
-      { 
-        path: 'homestay/:id', 
-        component: HomestayDetail, 
+      {
+        path: 'homestay/:id',
+        component: HomestayDetail,
         title: 'Chi tiết Homestay - Clyvasync'
       }
     ]
   },
+  {
+    path: 'profile',
+    component: Profile,
+    children: [
+      { path: 'info', component: ProfileInfo },
+      { path: 'security', component: Security },
+      { path: 'trips', component: MyTrips },
+      { path: 'payments', component: PaymentMethods },
+      { path: '', redirectTo: 'info', pathMatch: 'full' },
+      {
+        path: 'trip/:id',
+        component: MyTrip
+      }
+    ]
+  },
 
-  // 3. ĐƯỜNG DẪN SAI / RÁC -> ĐÁ VỀ LOGIN (HOẶC 404)
-  // !!! LUÔN LUÔN PHẢI ĐỂ CÁI NÀY Ở DÒNG CUỐI CÙNG !!!
   { path: '**', redirectTo: 'login' }
 ];

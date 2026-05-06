@@ -1,8 +1,8 @@
 import { AuthConfig } from 'angular-oauth2-oidc';
 
 export const authCodeFlowConfig: AuthConfig & { useIdTokenHintForLogout?: boolean } = {
-  // issuer: 'https://localhost:8443',
-  issuer: 'https://vcebook.io.vn',
+   issuer: 'https://localhost:8443',
+  //issuer: 'https://vcebook.io.vn',
   clientId: 'clyvasync-client',
   responseType: 'code',
 
@@ -11,10 +11,10 @@ export const authCodeFlowConfig: AuthConfig & { useIdTokenHintForLogout?: boolea
 
   redirectUri: (typeof window !== 'undefined') 
                 ? window.location.origin + '/callback' 
-                : 'https://clyvasync.com/callback',
+                : 'https://localhost:4200/callback',
 
   // 1. Đảm bảo URI này khớp 100% với DB (không thừa dấu /)
-  postLogoutRedirectUri: 'https://clyvasync.com/login',
+  postLogoutRedirectUri: 'https://localhost:4200/login',
 
   // 2. QUAN TRỌNG: Xóa hoặc Comment dòng logoutUrl đi
   // Spring Authorization Server sẽ tự cung cấp endpoint qua Discovery Document (.well-known)

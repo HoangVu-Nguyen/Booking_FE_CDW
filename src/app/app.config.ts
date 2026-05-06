@@ -6,7 +6,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideHttpClient, withFetch, withInterceptors, HttpInterceptorFn } from '@angular/common/http';
 
 export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.includes('vcebook.io.vn')) {
+  if (req.url.includes(':8443')) {
     req = req.clone({
       withCredentials: true
     });
