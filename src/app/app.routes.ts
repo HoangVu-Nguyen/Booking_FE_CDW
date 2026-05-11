@@ -15,6 +15,8 @@ import { Security } from './features/profile/components/security/security';
 import { MyTrips } from './features/profile/components/my-trips/my-trips';
 import { PaymentMethods } from './features/profile/components/payment-methods/payment-methods';
 import { MyTrip } from './features/profile/components/my-trip/my-trip';
+import { TourDetail } from './features/tour/pages/tour-detail/tour-detail';
+import { TourList } from './features/tour/tour-list/tour-list';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -37,6 +39,14 @@ export const routes: Routes = [
         path: 'homestay/:id',
         component: HomestayDetail,
         title: 'Chi tiết Homestay - Clyvasync'
+      },
+      {
+        path:'tours',
+        component:TourList
+      },
+      {
+        path:'tour/:id',
+        component:TourDetail
       }
     ]
   },

@@ -1,0 +1,94 @@
+@let i = index() % 10;
+
+@if (i === 0) {
+  <div class="relative overflow-hidden rounded-2xl mb-6 aspect-[16/9] shadow-sm bg-surface-variant">
+    @if (tour().hoverImageUrl) {
+      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-110 z-0" 
+           [src]="tour().hoverImageUrl" [alt]="tour().name + ' hover'"/>
+    }
+    <img class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out z-10" 
+         [ngClass]="tour().hoverImageUrl ? 'group-hover:opacity-0' : 'group-hover:scale-105'"
+         [src]="tour().primaryImageUrl" [alt]="tour().name"/>
+    <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
+    
+    <div class="absolute top-6 right-6 bg-white/80 backdrop-blur-md text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest z-20 shadow-sm">
+      Mới nhất
+    </div>
+  </div>
+  
+  <div class="flex justify-between items-start gap-4">
+    <div class="flex-1">
+      <span class="text-secondary/90 font-bold text-[11px] uppercase tracking-[0.2em] mb-2 block">Địa điểm • Phân loại</span>
+      <h3 class="text-3xl md:text-4xl font-bold text-primary mb-3 leading-tight transition-colors group-hover:text-secondary-fixed line-clamp-2">
+        {{ tour().name }}
+      </h3>
+    </div>
+    <div class="text-right shrink-0">
+      <span class="text-2xl md:text-3xl font-bold text-primary">{{ tour().pricePerPerson | currency:'VND':'':'1.0-0' }}</span>
+      <span class="block text-sm font-medium text-on-surface-variant mt-1">/ người</span>
+    </div>
+  </div>
+}
+
+@else if (i === 1) {
+  <div class="relative h-full flex flex-col justify-end">
+    <div class="relative overflow-hidden rounded-2xl aspect-[3/4] shadow-sm bg-surface-variant">
+      @if (tour().hoverImageUrl) {
+        <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-110 z-0" [src]="tour().hoverImageUrl" [alt]="tour().name"/>
+      }
+      <img class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out z-10" 
+           [ngClass]="tour().hoverImageUrl ? 'group-hover:opacity-0' : 'group-hover:scale-105'" [src]="tour().primaryImageUrl" [alt]="tour().name"/>
+    </div>
+    
+    <div class="absolute -bottom-8 left-0 md:-left-6 bg-white/95 backdrop-blur-sm p-6 md:p-8 rounded-2xl shadow-[0px_24px_48px_rgba(0,0,0,0.12)] w-[90%] z-20 border border-white transition-transform duration-500 group-hover:-translate-y-2">
+      <span class="text-secondary/90 font-bold text-[10px] uppercase tracking-[0.15em] mb-2 block">Địa điểm • Phân loại</span>
+      <h3 class="text-lg font-bold text-primary leading-snug line-clamp-2">{{ tour().name }}</h3>
+      <p class="text-primary font-bold text-xl mt-3">{{ tour().pricePerPerson | currency:'VND':'':'1.0-0' }}</p>
+    </div>
+  </div>
+}
+
+@else if (i === 5 || i === 6) {
+  <div class="flex flex-col md:flex-row gap-8 items-center py-6" [ngClass]="{'md:flex-row-reverse': i === 6}">
+    <div class="w-full md:w-1/2 relative overflow-hidden rounded-2xl aspect-video md:aspect-square shadow-sm bg-surface-variant">
+      @if (tour().hoverImageUrl) {
+        <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-110 z-0" [src]="tour().hoverImageUrl" [alt]="tour().name"/>
+      }
+      <img class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out z-10" 
+           [ngClass]="tour().hoverImageUrl ? 'group-hover:opacity-0' : 'group-hover:scale-105'" [src]="tour().primaryImageUrl" [alt]="tour().name"/>
+    </div>
+    
+    <div class="w-full md:w-1/2 md:px-6">
+      <span class="text-secondary/90 font-bold text-[11px] uppercase tracking-[0.2em] mb-3 block">Địa điểm • Phân loại</span>
+      <h3 class="text-2xl md:text-3xl font-bold text-primary mb-4 leading-tight transition-colors group-hover:text-secondary-fixed">{{ tour().name }}</h3>
+      <p class="text-on-surface-variant mb-8 font-body leading-relaxed line-clamp-3">{{ tour().description }}</p>
+      <span class="text-2xl font-bold text-primary bg-primary/5 px-4 py-2 rounded-lg">{{ tour().pricePerPerson | currency:'VND':'':'1.0-0' }}</span>
+    </div>
+  </div>
+}
+
+@else if (i === 2 || i === 3 || i === 4) {
+  <div class="relative overflow-hidden rounded-2xl mb-5 aspect-square shadow-sm bg-surface-variant transition-shadow duration-500 group-hover:shadow-xl">
+    @if (tour().hoverImageUrl) {
+      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-110 z-0" [src]="tour().hoverImageUrl" [alt]="tour().name"/>
+    }
+    <img class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out z-10" 
+         [ngClass]="tour().hoverImageUrl ? 'group-hover:opacity-0' : 'group-hover:scale-105'" [src]="tour().primaryImageUrl" [alt]="tour().name"/>
+  </div>
+  <span class="text-secondary/90 font-bold text-[10px] uppercase tracking-[0.15em] mb-2 block">Địa điểm • Phân loại</span>
+  <h3 class="text-xl font-bold text-primary mb-2 line-clamp-1 transition-colors group-hover:text-secondary-fixed">{{ tour().name }}</h3>
+  <span class="text-lg font-bold text-primary">{{ tour().pricePerPerson | currency:'VND':'':'1.0-0' }}</span>
+}
+
+@else {
+  <div class="relative overflow-hidden rounded-2xl mb-5 aspect-[4/5] shadow-sm bg-surface-variant transition-shadow duration-500 group-hover:shadow-xl">
+    @if (tour().hoverImageUrl) {
+      <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-110 z-0" [src]="tour().hoverImageUrl" [alt]="tour().name"/>
+    }
+    <img class="absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out z-10" 
+         [ngClass]="tour().hoverImageUrl ? 'group-hover:opacity-0' : 'group-hover:scale-105'" [src]="tour().primaryImageUrl" [alt]="tour().name"/>
+  </div>
+  <span class="text-secondary/90 font-bold text-[10px] uppercase tracking-[0.15em] mb-2 block">Địa điểm • Phân loại</span>
+  <h3 class="text-xl font-bold text-primary mb-2 line-clamp-1 transition-colors group-hover:text-secondary-fixed">{{ tour().name }}</h3>
+  <span class="text-lg font-bold text-primary">{{ tour().pricePerPerson | currency:'VND':'':'1.0-0' }}</span>
+}

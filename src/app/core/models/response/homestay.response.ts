@@ -1,6 +1,7 @@
 import { HomestayStatus } from "../../enum/homestay-status";
 import { AmenityResponse } from "./amenity.response";
 import { ReviewResponse } from "./review.response";
+import { TourResponse } from "./tour.response";
 
 export interface HomestayResponse {
   id: number;
@@ -21,4 +22,6 @@ export interface HomestayResponse {
   images: string[];
   amenities: AmenityResponse[];
   reviews:ReviewResponse[];
+  tours:TourResponse[];
+  
 }

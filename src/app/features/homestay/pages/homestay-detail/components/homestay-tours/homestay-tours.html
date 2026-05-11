@@ -1,0 +1,15 @@
+@if (homestay()?.tours?.length) {
+      <section class="space-y-8 py-16 border-t">
+        <h3 class="text-2xl font-semibold text-primary">Trải nghiệm đi kèm</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Vòng lặp @for mới của Angular, track theo id để render tối ưu -->
+          @for (tourItem of homestay()!.tours; track tourItem.id) {
+            
+            <!-- Truyền data vào component con qua property binding -->
+            <app-homestay-tour [tour]="tourItem"></app-homestay-tour>
+            
+          }
+        </div>
+      </section>
+    }

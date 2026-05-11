@@ -8,7 +8,7 @@ import { HomestayReviews } from './components/homestay-reviews/homestay-reviews'
 import { HomestayBookingWidget } from './components/homestay-booking-widget/homestay-booking-widget';
 import { HomestayService } from '../../../../core/services/homestay/homestay.service';
 import { CommonModule } from '@angular/common'; // Thêm để dùng async pipe hoặc if/else
-
+import { HomestayTours } from './components/homestay-tours/homestay-tours';
 @Component({
   selector: 'app-homestay-detail',
   standalone: true, // Đảm bảo component là standalone
@@ -19,7 +19,8 @@ import { CommonModule } from '@angular/common'; // Thêm để dùng async pipe 
     HomestayAmenities,
     HomestayLocation,
     HomestayReviews,
-    HomestayBookingWidget
+    HomestayBookingWidget,
+    HomestayTours
   ],
   templateUrl: './homestay-detail.html',
   styleUrl: './homestay-detail.css',
