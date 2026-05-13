@@ -54,4 +54,5 @@ export class BookingService {
             map(response => response.success ? response.data : [])
         );
     }
+
 }

@@ -147,4 +147,31 @@ export class HomestayDetail implements OnInit {
       return;
     }
   }
+  onCheckAvailability() {
+    const id = this.homestay()?.id;
+    const start = this.checkInDate();
+    const end = this.checkOutDate();
+
+    if (!id || !start || !end) return;
+
+    // Chuyển đổi sang định dạng YYYY-MM-DD
+    const startDateStr = this.formatDate(start);
+    const endDateStr = this.formatDate(end);
+
+    this.homestayService.getAvailableRooms(
+        id, 
+        startDateStr, 
+        endDateStr, 
+        this.searchGuests()
+    ).subscribe({
+        next: (res) => {
+            if (res.success) {
+                console.log('Rooms updated successfully!');
+                // Cuộn xuống danh sách phòng để khách chọn
+                document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
+            }
+        },
+        error: (err) => console.error('Failed to fetch rooms', err)
+    });
+}
 }
