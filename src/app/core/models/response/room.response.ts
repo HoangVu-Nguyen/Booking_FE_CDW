@@ -13,6 +13,7 @@ export interface RoomResponse {
     bedCount: number;
     quantity: number;
     imageUrl: string;
+    availableQuantity:number;
 
     // 6 ô Icon nổi bật (Dữ liệu từ bảng room_amenity_highlights)
     highlights: AmenityHighlight[];

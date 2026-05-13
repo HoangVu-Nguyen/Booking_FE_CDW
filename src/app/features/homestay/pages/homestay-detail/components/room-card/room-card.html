@@ -129,15 +129,36 @@
                 </div>
 
                 <div class="col-span-2 flex flex-col items-center gap-3">
-                    <select #roomSelect
-                        class="w-full appearance-none bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 px-4 py-2.5 pr-10 outline-none transition-all cursor-pointer hover:bg-gray-50">
+                    <div class="relative w-full">
+  <select #roomSelect
+          class="w-full appearance-none bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 px-4 py-2.5 pr-10 outline-none transition-all cursor-pointer hover:bg-gray-50"
+        >
+    
+    <!-- Duyệt từ 1 đến số lượng phòng còn trống thực tế -->
+    @for (num of [].constructor(room().availableQuantity); track $index) {
+      <option [value]="$index + 1">
+        {{ $index + 1 }} {{ $index + 1 > 1 ? 'Rooms' : 'Room' }}
+      </option>
+    }
 
-                        <option value="1">1 Room</option>
-                        <option value="2">2 Rooms</option>
-                        <option value="3">3 Rooms</option>
+    <!-- Trường hợp hết phòng (phòng thủ) -->
+    @if (room().availableQuantity <= 0) {
+      <option value="0" disabled>Sold Out</option>
+    }
+  </select>
+  
+  <!-- Icon mũi tên xuống -->
+  <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400">
+    <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+  </div>
+</div>
 
-                    
-                    </select>
+<!-- Hiển thị cảnh báo nếu phòng sắp hết để tạo hiệu ứng FOMO -->
+@if (room().availableQuantity > 0 && room().availableQuantity <= 3) {
+  <p class="mt-2 text-xs font-bold text-orange-600 animate-pulse">
+    🔥 Only {{ room().availableQuantity }} left at this price!
+  </p>
+}
 
                     <!-- Truyền thêm roomSelect.value vào hàm -->
                     <button (click)="onSelectRoom(room(),plan, +roomSelect.value)"

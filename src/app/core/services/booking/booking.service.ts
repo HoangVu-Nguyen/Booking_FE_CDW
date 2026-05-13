@@ -34,6 +34,9 @@ export class BookingService {
         this.currentSelectedPlan.set(plan);
         this.selectedRoomCount.set(count);
     }
+    selectRoomCount( count: number){
+        this.selectedRoomCount.set(count);
+    }
 
     resetDates() {
         this.checkInDate.set(null);
