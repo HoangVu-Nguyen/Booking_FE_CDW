@@ -21,8 +21,8 @@ export class HomestayLocation implements AfterViewInit, OnDestroy {
   coords = computed(() => {
     const h = this.homestay();
     return {
-      lat: h?.latitude ? parseFloat(h.latitude) : 64.1265,
-      lng: h?.longitude ? parseFloat(h.longitude) : -21.8174
+      lat: h?.latitude != null ? Number(h.latitude) : 64.1265,
+      lng: h?.longitude != null ? Number(h.longitude) : -21.8174
     };
   });
 

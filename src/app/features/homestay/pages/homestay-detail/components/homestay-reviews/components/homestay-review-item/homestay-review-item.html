@@ -1,98 +1,240 @@
-<!-- 1. FEATURED CARD (Dàn hàng ngang, ảnh chiếm 1/3) -->
 @if (index % 4 === 0) {
-<article class="bento-card md:col-span-2 overflow-hidden flex flex-col md:row h-full">
-    <div class="card-content md:w-2/3">
-        <div class="flex text-amber-500 gap-0.5 mb-4">
+
+<article
+    class="flex flex-col overflow-hidden bg-white border shadow-sm md:flex-row rounded-3xl border-stone-100">
+
+    <!-- Content -->
+    <div class="flex flex-col flex-1 p-8 md:w-1/2">
+
+        <div class="flex gap-1 mb-5 text-amber-500">
             @for (s of [].constructor(review.rating); track $index) {
-            <span class="material-symbols-outlined text-[18px] fill-current">star</span>
+            <span
+                class="text-[18px] material-symbols-outlined fill-current"
+                style="font-variation-settings: 'FILL' 1">
+                star
+            </span>
             }
         </div>
-        <p class="review-text text-lg md:text-xl">"{{ review.comment }}"</p>
 
-        <div class="mt-auto pt-6 flex items-center gap-3">
-            <img *ngIf="review.avatarUrl" [src]="review.avatarUrl" class="w-10 h-10 rounded-full object-cover" />
-            <div *ngIf="!review.avatarUrl"
-                class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-primary font-bold text-xs">
+        <p class="flex-grow text-lg italic font-medium leading-relaxed text-stone-800">
+            "{{ review.comment }}"
+        </p>
+
+        <div class="flex items-center gap-3 mt-8">
+
+            <img
+                *ngIf="review.avatarUrl"
+                [src]="review.avatarUrl"
+                class="object-cover w-11 h-11 border rounded-full border-stone-100" />
+
+            <div
+                *ngIf="!review.avatarUrl"
+                class="flex items-center justify-center w-11 h-11 text-xs font-bold rounded-full bg-stone-100 text-primary">
+
                 {{ getInitials(review.fullName) }}
             </div>
+
             <div>
-                <p class="font-bold text-primary text-sm">{{ review.fullName }}</p>
-                <p class="text-[10px] text-stone-400 uppercase tracking-widest">Khách đã xác thực</p>
+                <p class="text-sm font-bold text-stone-900">
+                    {{ review.fullName }}
+                </p>
+
+                <p class="mt-1 text-[10px] uppercase tracking-[3px] text-stone-400">
+                    Verified Guest
+                </p>
             </div>
         </div>
     </div>
-    <div class="hidden md:block md:w-1/3 relative bg-stone-100">
-        <img [src]="review.guestPhotos?.[0] || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=500'"
-            class="absolute inset-0 w-full h-full object-cover" />
+
+    <!-- Gallery -->
+    <div class="grid w-full grid-cols-2 gap-2 p-2 md:w-1/2 bg-stone-100">
+
+        @for (image of (review.imageUrls ?? []).slice(0, 4); track $index) {
+
+        <div
+            class="relative overflow-hidden rounded-2xl min-h-[140px] group">
+
+            <img
+                [src]="image"
+                class="object-cover w-full h-full transition duration-700 group-hover:scale-110" />
+
+            @if ($index === 3 && (review.imageUrls?.length ?? 0) > 4) {
+            <div
+                class="absolute inset-0 flex items-center justify-center text-2xl font-bold text-white bg-black/50 backdrop-blur-sm">
+                +{{ (review.imageUrls?.length ?? 0) - 4 }}
+            </div>
+            }
+        </div>
+        }
+
+        @if ((review.imageUrls?.length ?? 0) === 0) {
+        <div class="col-span-2 overflow-hidden rounded-2xl">
+            <img
+                src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600"
+                class="object-cover w-full h-full min-h-[300px]" />
+        </div>
+        }
     </div>
 </article>
 }
 
-<!-- 2. DARK ACCENT (Thẻ tối để tạo điểm nhấn) -->
 @else if (index % 4 === 1) {
-<article class="bento-card bg-[#1a1c1a] border-none text-white h-full">
-    <div class="card-content">
-        <div class="flex text-amber-400 gap-0.5 mb-6">
-            @for (s of [].constructor(review.rating); track $index) {
-            <span class="material-symbols-outlined text-[16px] fill-current">star</span>
-            }
+
+<article
+    class="flex flex-col h-full p-6 text-white overflow-hidden shadow-xl bg-gradient-to-br from-[#171717] to-[#232323] rounded-3xl">
+
+    <div class="flex gap-1 mb-5 text-amber-400">
+        @for (s of [].constructor(review.rating); track $index) {
+        <span
+            class="text-[16px] material-symbols-outlined fill-current"
+            style="font-variation-settings: 'FILL' 1">
+            star
+        </span>
+        }
+    </div>
+
+    <!-- Horizontal Gallery -->
+    @if ((review.imageUrls?.length ?? 0) > 0) {
+
+    <div class="flex gap-3 pb-2 mb-6 overflow-x-auto scrollbar-hide">
+
+        @for (image of (review.imageUrls ?? []); track $index) {
+
+        <div
+            class="flex-shrink-0 overflow-hidden rounded-2xl w-36 h-28 group">
+
+            <img
+                [src]="image"
+                class="object-cover w-full h-full transition duration-500 group-hover:scale-110" />
         </div>
-        <p class="review-text text-white/90">"{{ review.comment }}"</p>
-        <div class="mt-auto pt-6 border-t border-white/10">
-            <p class="font-bold text-primary text-sm">{{ review.fullName }}</p>
-            <p class="text-[10px] text-stone-400 uppercase tracking-widest">Khách đã xác thực</p>
-            <p class="text-[10px] text-white/40 uppercase mt-1">{{ review.createdAt | date:'dd/MM/yyyy' }}</p>
-        </div>
+        }
+    </div>
+    }
+
+    <p class="flex-grow italic leading-relaxed text-white/90">
+        "{{ review.comment }}"
+    </p>
+
+    <div class="pt-5 mt-8 border-t border-white/10">
+
+        <p class="text-sm font-bold">
+            {{ review.fullName }}
+        </p>
+
+        <p class="mt-1 text-[10px] uppercase text-white/40 tracking-[3px]">
+            {{ review.createdAt | date:'dd MMM yyyy' }}
+        </p>
     </div>
 </article>
 }
 
-<!-- 3. VISUAL CARD (Ảnh nền mờ) -->
 @else if (index % 4 === 2) {
-<article class="bento-card relative overflow-hidden group h-full border-none">
-    <img [src]="review.guestPhotos?.[0] || 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=500'"
-        class="absolute inset-0 w-full h-full object-cover brightness-[0.4]" />
-    <div class="card-content relative z-10 text-white">
-        <div class="flex text-amber-400 gap-0.5 mb-6">
+
+<article
+    class="relative overflow-hidden border shadow-xl group rounded-3xl border-white/10">
+
+    <img
+        [src]="
+            review.imageUrls?.[0]
+            || 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600'
+        "
+        class="absolute inset-0 object-cover w-full h-full transition duration-700 brightness-[0.35] group-hover:scale-110" />
+
+    <div class="relative z-10 flex flex-col h-full p-8 text-white">
+
+        <div class="flex gap-1 mb-5 text-amber-400">
             @for (s of [].constructor(review.rating); track $index) {
-            <span class="material-symbols-outlined text-[16px] fill-current">star</span>
+            <span
+                class="text-[16px] material-symbols-outlined fill-current"
+                style="font-variation-settings: 'FILL' 1">
+                star
+            </span>
             }
         </div>
-        <p class="review-text text-white/95">"{{ review.comment }}"</p>
-        <div class="mt-auto">
-            <p class="font-bold text-sm">{{ review.fullName }}</p>
+
+        <p class="flex-grow text-lg italic leading-relaxed text-white/95">
+            "{{ review.comment }}"
+        </p>
+
+        <!-- Mini Gallery -->
+        @if ((review.imageUrls?.length ?? 0) > 1) {
+
+        <div class="flex gap-2 mt-6">
+
+            @for (image of (review.imageUrls ?? []).slice(1,4); track $index) {
+
+            <div
+                class="overflow-hidden border rounded-xl w-14 h-14 border-white/20">
+
+                <img
+                    [src]="image"
+                    class="object-cover w-full h-full" />
+            </div>
+            }
         </div>
+        }
+
+        <p class="mt-6 text-sm font-bold">
+            {{ review.fullName }}
+        </p>
     </div>
 </article>
 }
 
-<!-- 4. COMPACT GALLERY (Layout ảnh nhỏ bên cạnh) -->
-<!-- 4. GALLERY SHOWCASE (Fix tỷ lệ ảnh) -->
 @else if (index % 4 === 3) {
-<article class="bento-card md:col-span-2 overflow-hidden flex flex-col md:flex-row h-full">
-    <div class="card-content md:w-1/2">
-        <div class="flex text-amber-500 gap-0.5 mb-4">
+
+<article
+    class="overflow-hidden border bg-stone-50 rounded-3xl border-stone-100">
+
+    <!-- Masonry Gallery -->
+    @if ((review.imageUrls?.length ?? 0) > 0) {
+
+    <div class="grid grid-cols-2 gap-2 p-2">
+
+        @for (image of (review.imageUrls ?? []).slice(0,6); track $index) {
+
+        <div
+            class="overflow-hidden rounded-2xl group"
+            [class]="
+                $index === 0
+                ? 'col-span-2 h-[240px]'
+                : 'h-[150px]'
+            ">
+
+            <img
+                [src]="image"
+                class="object-cover w-full h-full transition duration-700 group-hover:scale-110" />
+        </div>
+        }
+    </div>
+    }
+
+    <!-- Content -->
+    <div class="p-8">
+
+        <div class="flex gap-1 mb-4 text-amber-500">
             @for (s of [].constructor(review.rating); track $index) {
-            <span class="material-symbols-outlined text-[18px] fill-current">star</span>
+            <span
+                class="text-[18px] material-symbols-outlined fill-current"
+                style="font-variation-settings: 'FILL' 1">
+                star
+            </span>
             }
         </div>
-        <p class="review-text">"{{ review.comment }}"</p>
-        <div class="mt-auto pt-6 flex items-center gap-3">
-            <p class="font-bold text-primary text-sm">{{ review.fullName }}</p>
-            <span class="text-stone-300">|</span>
-            <p class="text-[10px] text-stone-400 uppercase tracking-widest">{{ review.createdAt | date:'MM/yyyy' }}</p>
-        </div>
-    </div>
 
-    <!-- Lưới ảnh cố định tỷ lệ -->
-    <div class="md:w-1/2 p-4 grid grid-cols-2 gap-3 bg-stone-50/50">
-        <div class="rounded-2xl overflow-hidden aspect-[3/4]"> <!-- Ảnh dọc -->
-            <img [src]="review.guestPhotos?.[0] || 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=400'"
-                class="w-full h-full object-cover shadow-inner" />
-        </div>
-        <div class="rounded-2xl overflow-hidden aspect-[3/4] mt-8"> <!-- Ảnh dọc lệch -->
-            <img [src]="review.guestPhotos?.[1] || 'https://images.unsplash.com/photo-1533779284115-cdd2f19a7b02?auto=format&fit=crop&w=400'"
-                class="w-full h-full object-cover shadow-inner" />
+        <p class="italic leading-relaxed text-stone-700">
+            "{{ review.comment }}"
+        </p>
+
+        <div class="pt-6 mt-6 border-t border-stone-200">
+
+            <p class="text-sm font-bold text-stone-900">
+                {{ review.fullName }}
+            </p>
+
+            <p class="mt-1 text-[10px] uppercase tracking-[3px] text-stone-400">
+                {{ review.createdAt | date:'MMMM yyyy' }}
+            </p>
         </div>
     </div>
 </article>

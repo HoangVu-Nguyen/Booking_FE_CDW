@@ -46,7 +46,7 @@ export class HomestayList implements OnInit {
     this.homestayService.getAllHomestays(this.currentPage, this.pageSize).subscribe({
       next: (res) => {
         const newData = res.data.content;
-        console.log(res.data)
+        console.log(newData)
         
         if (newData.length > 0) {
           this.homestaysRespone = [...this.homestaysRespone, ...newData];

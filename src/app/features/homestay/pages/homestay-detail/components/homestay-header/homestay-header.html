@@ -8,7 +8,7 @@
                 <!-- 1. City Badge động -->
                 <span class="inline-flex items-center bg-primary/5 hover:bg-primary/10 text-primary border border-primary/20 hover:border-primary/40 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 cursor-default shadow-sm hover:shadow-md">
                     <span class="material-symbols-outlined text-[14px] mr-1.5" style="font-variation-settings: 'FILL' 1;">explore</span>
-                    {{ homestay()?.city || 'Loading...' }}
+                    {{ homestay()?.cityName || 'Loading...' }}
                 </span>
                 
                 <div class="h-4 w-[1px] bg-outline-variant/30 hidden md:block"></div>
@@ -34,7 +34,7 @@
                 <p class="flex items-center gap-2 text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer group/loc w-fit">
                     <span class="material-symbols-outlined text-primary group-hover/loc:-translate-y-1 transition-transform duration-300">location_on</span>
                     <span class="border-b border-transparent group-hover/loc:border-primary/50 pb-0.5 transition-colors duration-300">
-                        {{ homestay()?.address }}, {{ homestay()?.city }}
+                        {{ homestay()?.addressDetail }}, {{ homestay()?.cityName }}
                     </span>
                 </p>
                 

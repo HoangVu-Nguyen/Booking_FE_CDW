@@ -56,6 +56,7 @@ export class HomestayReviews implements OnInit, OnChanges {
     this.homestayService.getReviewsByHomestay(this.homestayId, this.currentPage, this.pageSize)
       .subscribe({
         next: (res) => {
+          console.log(res)
           this.reviews.update(current => [...current, ...res.data.content]);
           this.totalCount.set(res.data.totalElements);
           this.averageRating.set(res.data.averageRating || 0);

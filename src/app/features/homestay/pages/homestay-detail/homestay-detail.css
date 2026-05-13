@@ -1,2 +1,22 @@
  body { font-family: 'Plus Jakarta Sans', sans-serif; }
         h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        /* Làm thanh sticky mịn hơn */
+.sticky {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hiệu ứng khi lướt chuột qua card phòng */
+app-room-card {
+    display: block;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/* Đè lại style của Material Datepicker ẩn */
+.hidden {
+    display: none !important;
+}
+
+/* Animation cho nút Check Availability */
+button:active {
+    transform: scale(0.95);
+}

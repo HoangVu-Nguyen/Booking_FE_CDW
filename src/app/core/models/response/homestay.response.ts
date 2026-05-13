@@ -1,27 +1,45 @@
 import { HomestayStatus } from "../../enum/homestay-status";
-import { AmenityResponse } from "./amenity.response";
 import { ReviewResponse } from "./review.response";
+import { RoomResponse } from "./room.response";
 import { TourResponse } from "./tour.response";
 
 export interface HomestayResponse {
   id: number;
   name: string;
   description: string;
-  address: string;
-  city: string;
+  addressDetail: string;
   basePrice: number;
+  
   maxGuests: number;
   numBedrooms: number;
   numBathrooms: number;
-  longitude:string;
-  latitude:string;
-  status: HomestayStatus; 
-  ownerId: number;
+  
+  latitude: number;
+  longitude: number;
+  categoryName: string;
+  cityName: string;
+  
+  imageUrls: string[];
+  amenities: AmenityResponse[];
+  owner: OwnerResponse;
+  status:HomestayStatus;
+  
   averageRating: number;
   reviewCount: number;
-  images: string[];
-  amenities: AmenityResponse[];
-  reviews:ReviewResponse[];
   tours:TourResponse[];
-  
+  rooms:RoomResponse[];
+}
+
+export interface AmenityResponse {
+  id: number;
+  name: string;
+  iconName: string; 
+  groupName: string;
+}
+
+export interface OwnerResponse {
+  id: number;
+  fullName: string;
+  avatar: string;
+  isVerified: boolean;
 }

@@ -1,0 +1,58 @@
+/* Animation cho bảng giá khi bung ra */
+@keyframes expandGlass {
+    from {
+        opacity: 0;
+        max-height: 0;
+        backdrop-filter: blur(0px);
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        max-height: 2000px; /* Độ cao tối đa khi bung hết 10 plan */
+        backdrop-filter: blur(16px);
+        transform: translateY(0);
+    }
+}
+
+.animate-expand-glass {
+    animation: expandGlass 0.6s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+    overflow: hidden;
+}
+
+/* Hiệu ứng hover cho từng dòng giá */
+.group\/row:hover {
+    transform: scale(1.005);
+    z-index: 10;
+}
+
+/* Typography chi tiết */
+h3 {
+    text-shadow: 0 10px 20px rgba(0,0,0,0.02);
+}
+.animate-expand-glass {
+    animation: expandGlass 0.6s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+    overflow: hidden;
+}
+
+@keyframes expandGlass {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        max-height: 2000px; /* Độ cao tối đa khi bung hết các gói giá */
+        transform: translateY(0);
+    }
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* Hiệu ứng kính mờ cho các ô Highlights */
+.group\/item:hover div {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}

@@ -1,7 +1,7 @@
 <section class="py-16 border-t border-outline-variant/15">
     <div class="mb-10">
         <h3 class="text-3xl font-headline font-bold text-primary tracking-tight">Location</h3>
-        <p class="text-on-surface-variant mt-2 font-medium">Nestled in the heart of the {{ homestay()?.city }} wilderness.</p>
+        <p class="text-on-surface-variant mt-2 font-medium">Nestled in the heart of the {{ homestay()?.cityName }} wilderness.</p>
     </div>
 
     <div class="relative w-full h-[550px] md:h-[650px] rounded-[2rem] border border-outline-variant/20 overflow-hidden shadow-inner">
@@ -17,7 +17,7 @@
             <div class="mb-5">
                 <p class="text-[10px] uppercase tracking-widest text-primary font-bold mb-1">Exact Location</p>
                 <h4 class="font-headline font-bold text-xl text-primary leading-tight mb-2">{{ homestay()?.name }}</h4>
-                <p class="text-sm text-on-surface-variant font-medium">{{ homestay()?.address }}, {{ homestay()?.city }}</p>
+                <p class="text-sm text-on-surface-variant font-medium">{{ homestay()?.addressDetail }}, {{ homestay()?.cityName }}</p>
             </div>
             
             <div class="flex items-center gap-6 py-4 border-y border-outline-variant/10 mb-6">

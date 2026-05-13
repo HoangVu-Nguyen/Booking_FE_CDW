@@ -11,5 +11,5 @@ export interface ReviewResponse {
   
   // Danh sách ảnh do khách chụp trong Review
   // Lấy từ bảng review_images
-  guestPhotos: string[];
+  imageUrls: string[];
 }

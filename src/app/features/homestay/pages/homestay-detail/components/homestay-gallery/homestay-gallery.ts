@@ -17,7 +17,7 @@ export class HomestayGallery {
   // Trích xuất các ảnh cụ thể cho từng vị trí trong gallery
   // Sử dụng fallback là ảnh mặc định nếu homestay chưa có đủ ảnh
   galleryImages = computed(() => {
-    const images = this.homestay()?.images || [];
+    const images = this.homestay()?.imageUrls || [];
     const placeholder = 'assets/images/placeholder-luxury.jpg';
     
     return {

@@ -4,6 +4,7 @@ import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors, HttpInterceptorFn } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.includes(':8443')) {
@@ -17,6 +18,8 @@ export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    provideAnimationsAsync(),
+    
     
     provideHttpClient(
       withFetch(), 

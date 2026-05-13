@@ -1,14 +1,14 @@
 <div [routerLink]="['/homestay', homestay.id]" class="relative w-full h-[450px] md:h-[550px] lg:h-[600px] rounded-[2rem] overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-[1.2s] ease-[cubic-bezier(0.25,1,0.1,1)] bg-[#1a1a1a]">
     
     <!-- 1A. Ảnh Nguyên Bản (Ảnh 1): Mặc định hiển thị, sáng dần và thu nhỏ khi hover -->
-    <img [src]="homestay.images?.[0] || coverImage" 
+    <img [src]="homestay.imageUrls?.[0] || coverImage" 
          [alt]="homestay.name"
          class="absolute inset-0 w-full h-full object-cover transition-all duration-[1.5s] ease-[cubic-bezier(0.25,1,0.1,1)] scale-110 group-hover:scale-100 brightness-[0.65] group-hover:brightness-100" />
          
     <!-- 1B. Ảnh Hover (Ảnh 2): Ẩn đi mặc định, mờ ảo hiện ra (Crossfade) và thu nhỏ khi hover -->
     <!-- Chỉ render khi homestay có từ 2 ảnh trở lên để tránh lỗi -->
-    @if (homestay.images && homestay.images.length > 1) {
-        <img [src]="homestay.images[1]" 
+    @if (homestay.imageUrls && homestay.imageUrls.length > 1) {
+        <img [src]="homestay.imageUrls[1]" 
              [alt]="homestay.name + ' - View 2'"
              class="absolute inset-0 w-full h-full object-cover transition-all duration-[1.5s] ease-[cubic-bezier(0.25,1,0.1,1)] scale-110 group-hover:scale-100 opacity-0 group-hover:opacity-100 brightness-[0.8]" />
     }
@@ -29,7 +29,7 @@
 
     <!-- 4. Watermark siêu lớn -->
     <div class="absolute -right-8 -bottom-12 text-[12rem] font-black text-white/5 opacity-0 group-hover:opacity-100 translate-x-12 group-hover:translate-x-0 transition-all duration-[1.5s] ease-out pointer-events-none select-none z-10">
-        {{ homestay.city | slice:0:2 | uppercase }}
+        {{ homestay.cityName | slice:0:2 | uppercase }}
     </div>
 
     <!-- 5. Nội dung tương tác chính -->
@@ -38,7 +38,7 @@
         <!-- Nhịp 1: Đường kẻ line và Tên thành phố -->
         <div class="flex items-center gap-4 translate-y-6 group-hover:translate-y-0 transition-transform duration-700 delay-100 mb-4 opacity-70 group-hover:opacity-100">
             <span class="w-8 h-[2px] bg-[#e8c39e] transition-all duration-700 group-hover:w-16"></span>
-            <span class="text-white text-[10px] font-bold uppercase tracking-[0.3em]">{{ homestay.city }}</span>
+            <span class="text-white text-[10px] font-bold uppercase tracking-[0.3em]">{{ homestay.cityName }}</span>
         </div>
         
         <!-- Nhịp 2: Tên Homestay -->
