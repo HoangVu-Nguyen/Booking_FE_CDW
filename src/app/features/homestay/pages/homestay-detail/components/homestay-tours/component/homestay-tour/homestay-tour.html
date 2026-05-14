@@ -1,66 +1,88 @@
-<div class="flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-[0px_8px_32px_rgba(0,0,0,0.08)] border border-outline-variant/20 transition-shadow duration-300 group h-full cursor-pointer">
-    
-    <!-- KHUNG ẢNH (Tăng chiều cao lên h-52 để ảnh bao quát tốt hơn) -->
+<!-- Khung ngoài: Đổi màu viền và đổ bóng màu primary nếu đang được chọn -->
+<div class="relative flex flex-col bg-surface-container-lowest rounded-2xl overflow-hidden transition-all duration-300 group h-full cursor-pointer"
+    [ngClass]="isAdded() 
+        ? 'border-2 border-primary shadow-[0_4px_24px_rgba(0,0,0,0.12)]' 
+        : 'border border-outline-variant/20 shadow-sm hover:shadow-[0px_8px_32px_rgba(0,0,0,0.08)]'">
+
+    <!-- Huy hiệu "Đã chọn" nổi bật ở góc phải -->
+    @if (isAdded()) {
+    <div class="absolute top-4 right-4 z-30 bg-primary text-white p-1.5 rounded-full shadow-lg">
+        <span class="material-symbols-outlined text-sm block">check</span>
+    </div>
+    }
+
+    <!-- KHUNG ẢNH -->
     <div class="relative h-52 overflow-hidden bg-gray-100">
-        
+
+        <!-- Badge Tag danh mục (Thêm vào góc trái cho xịn) -->
+        <!-- @if (tour().categoryName) {
+            <div class="absolute top-4 left-4 z-30 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-primary shadow-sm">
+                {{ tour().categoryName }}
+            </div>
+        } -->
+
         <!-- ẢNH HOVER (Nằm dưới cùng - z-0) -->
-        <!-- Chỉ render khi backend có trả về hoverImageUrl -->
         @if (tour().hoverImageUrl) {
-            <img [alt]="tour().name + ' trải nghiệm'"
-                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 z-0"
-                 [src]="tour().hoverImageUrl" />
+        <img [alt]="tour().name + ' trải nghiệm'"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 z-0"
+            [src]="tour().hoverImageUrl" />
         }
 
         <!-- ẢNH CHÍNH (Nằm trên - z-10) -->
-        <!-- 
-          Logic thông minh: 
-          - Nếu CÓ ảnh hover: Khi đưa chuột vào, ảnh chính sẽ mờ đi (opacity-0) để lộ ảnh dưới.
-          - Nếu KHÔNG CÓ ảnh hover: Khi đưa chuột vào, ảnh chính sẽ tự zoom lên (scale-110) để vẫn có hiệu ứng đẹp.
-        -->
         <img [alt]="tour().name"
-             class="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in-out z-10"
-             [ngClass]="tour().hoverImageUrl ? 'group-hover:opacity-0' : 'group-hover:scale-110'"
-             [src]="tour().primaryImageUrl || 'https://images.pexels.com/photos/1368388/pexels-photo-1368388.jpeg?auto=compress&cs=tinysrgb&w=800'" />
-             
-        <!-- Lớp phủ Gradient mỏng nhẹ khi hover để tạo chiều sâu (Tùy chọn, làm UI xịn hơn) -->
-        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none"></div>
+            class="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in-out z-10"
+            [ngClass]="tour().hoverImageUrl ? 'group-hover:opacity-0' : 'group-hover:scale-110'"
+            [src]="tour().primaryImageUrl || 'https://images.pexels.com/photos/1368388/pexels-photo-1368388.jpeg?auto=compress&cs=tinysrgb&w=800'" />
+
+        <!-- Lớp phủ Gradient -->
+        <div
+            class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
+        </div>
     </div>
 
     <!-- NỘI DUNG THÔNG TIN -->
-    <div class="p-5 flex flex-col flex-grow bg-white">
+    <div class="p-5 flex flex-col flex-grow bg-white z-20 relative">
         <!-- Tên Tour -->
-        <h4 class="font-headline font-bold text-lg text-primary mb-1.5 line-clamp-2 group-hover:text-primary/80 transition-colors">
+        <h4
+            class="font-headline font-bold text-lg text-primary mb-1.5 line-clamp-2 group-hover:text-primary/80 transition-colors">
             {{ tour().name }}
         </h4>
-        
+
         <!-- Mô tả ngắn -->
         <p class="text-sm text-on-surface-variant/90 mb-4 flex-grow line-clamp-2 leading-relaxed">
             {{ tour().description }}
         </p>
-        
-        <!-- Phân cách nhẹ -->
+
+        <!-- Phân cách -->
         <hr class="border-outline-variant/20 mb-4">
-        
+
         <!-- Thời gian & Giá -->
         <div class="flex items-center justify-between text-sm font-medium text-on-surface-variant mb-5">
             <span class="flex items-center gap-1.5 bg-surface-container p-1.5 pr-2.5 rounded-md text-xs">
-                <span class="material-symbols-outlined text-[18px] text-primary">schedule</span> 
+                <span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
                 {{ durationText }}
             </span>
             <div class="text-right">
-                <span class="block text-xs text-on-surface-variant/70 font-normal">Chỉ từ</span>
+                <span class="block text-[10px] text-on-surface-variant/70 uppercase tracking-wide">Giá mỗi khách</span>
                 <span class="text-primary font-bold text-base">
                     {{ tour().pricePerPerson | currency:'VND':'symbol':'1.0-0' }}
                 </span>
             </div>
         </div>
-        
-        <!-- Nút Action -->
-        <button class="relative w-full py-2.5 rounded-full border-2 border-primary text-primary font-bold text-sm overflow-hidden transition-all duration-300 hover:bg-primary hover:text-white hover:shadow-md active:scale-[0.98]">
-            <span class="relative z-10 flex items-center justify-center gap-2">
-                Thêm vào chuyến đi
-                <span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
+
+        <!-- NÚT ACTION THÔNG MINH (Thay đổi dựa trên isAdded) -->
+        <!-- Lưu ý: Dùng $event.stopPropagation() để không kích hoạt sự kiện click của thẻ cha (nếu có) -->
+        <button (click)="toggleSelection(); $event.stopPropagation()"
+            class="relative w-full py-2.5 rounded-full border-2 font-bold text-sm overflow-hidden transition-all duration-300 active:scale-[0.98] flex items-center justify-center gap-2"
+            [ngClass]="isAdded() 
+                    ? 'border-transparent bg-surface-container-highest text-on-surface hover:bg-error/10 hover:text-error' 
+                    : 'border-primary text-primary hover:bg-primary hover:text-white hover:shadow-md'">
+
+            <span class="material-symbols-outlined text-[18px] transition-transform duration-300"
+                [ngClass]="{'group-hover:translate-x-1': !isAdded()}">
+                {{ isAdded() ? 'remove_circle_outline' : 'arrow_forward' }}
             </span>
+            {{ isAdded() ? 'Hủy chọn trải nghiệm' : 'Thêm vào chuyến đi' }}
         </button>
     </div>
 </div>

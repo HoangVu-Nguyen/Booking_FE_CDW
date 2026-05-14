@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-
+import { MatMenuModule } from '@angular/material/menu';
 // Components
 import { HomestayHeader } from './components/homestay-header/homestay-header';
 import { HomestayGallery } from './components/homestay-gallery/homestay-gallery';
@@ -17,6 +17,7 @@ import { RoomCard } from './components/room-card/room-card';
 // Services
 import { HomestayService } from '../../../../core/services/homestay/homestay.service';
 import { BookingService } from '../../../../core/services/booking/booking.service';
+import { RoomService } from '../../../../core/services/room.service';
 
 @Component({
   selector: 'app-homestay-detail',
@@ -32,7 +33,8 @@ import { BookingService } from '../../../../core/services/booking/booking.servic
     HomestayReviews,
     HomestayBookingWidget,
     HomestayTours,
-    RoomCard
+    RoomCard,
+    MatMenuModule
   ],
   templateUrl: './homestay-detail.html',
   styleUrl: './homestay-detail.css',
@@ -51,6 +53,7 @@ export class HomestayDetail implements OnInit {
   total = computed(() => this.subtotal() + this.serviceFee());
   private homestayService = inject(HomestayService);
   private bookingService = inject(BookingService);
+  private roomService = inject(RoomService);
   private route = inject(ActivatedRoute);
   constructor(
 
@@ -82,7 +85,7 @@ export class HomestayDetail implements OnInit {
 
   loadUnavailableDates(homestayId: number) {
     const today = new Date();
-    this.bookingService.getUnavailableDates(homestayId, today.getMonth() + 1, today.getFullYear())
+    this.roomService.getUnavailableDates(homestayId, today.getMonth() + 1, today.getFullYear())
       .subscribe({
         next: (dates: any[]) => {
           const formattedDates = dates.map(d => {
@@ -159,19 +162,30 @@ export class HomestayDetail implements OnInit {
     const endDateStr = this.formatDate(end);
 
     this.homestayService.getAvailableRooms(
-        id, 
-        startDateStr, 
-        endDateStr, 
-        this.searchGuests()
+      id,
+      startDateStr,
+      endDateStr,
+      this.searchGuests()
     ).subscribe({
-        next: (res) => {
-            if (res.success) {
-                console.log('Rooms updated successfully!');
-                // Cuộn xuống danh sách phòng để khách chọn
-                document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
-            }
-        },
-        error: (err) => console.error('Failed to fetch rooms', err)
+      next: (res) => {
+        if (res.success) {
+          console.log('Rooms updated successfully!');
+          // Cuộn xuống danh sách phòng để khách chọn
+          document.getElementById('rooms')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      },
+      error: (err) => console.error('Failed to fetch rooms', err)
     });
-}
+  }
+
+
+  // Hàm xử lý tăng giảm
+  updateGuestCount(delta: number) {
+    const currentVal = this.bookingService.searchGuests();
+    const newVal = currentVal + delta;
+
+    if (newVal >= 1 && newVal <= 10) {
+      this.bookingService.searchGuests.set(newVal);
+    }
+  }
 }

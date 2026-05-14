@@ -43,3 +43,7 @@ export interface OwnerResponse {
   avatar: string;
   isVerified: boolean;
 }
+export interface BookingAvailabilityResponse {
+  rooms: RoomResponse[];
+  suggestedTours: TourResponse[];
+}

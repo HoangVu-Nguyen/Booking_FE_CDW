@@ -17,6 +17,7 @@ import { PaymentMethods } from './features/profile/components/payment-methods/pa
 import { MyTrip } from './features/profile/components/my-trip/my-trip';
 import { TourDetail } from './features/tour/pages/tour-detail/tour-detail';
 import { TourList } from './features/tour/tour-list/tour-list';
+import { Checkout } from './features/checkout/checkout';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -47,6 +48,10 @@ export const routes: Routes = [
       {
         path:'tour/:id',
         component:TourDetail
+      },
+      {
+        path:'checkout/:code',
+        component:Checkout
       }
     ]
   },

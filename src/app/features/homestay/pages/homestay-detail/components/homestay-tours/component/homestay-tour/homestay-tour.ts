@@ -1,15 +1,25 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject, computed } from '@angular/core';
 import { TourResponse } from '../../../../../../../../core/models/response/tour.response';
-import { CurrencyPipe } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe, CommonModule } from '@angular/common';
+import { BookingService } from '../../../../../../../../core/services/booking/booking.service'; // Bác kiểm tra lại đường dẫn nhé
+
 @Component({
   selector: 'app-homestay-tour',
-  imports: [CurrencyPipe,CommonModule],
+  standalone: true,
+  imports: [CurrencyPipe, CommonModule],
   templateUrl: './homestay-tour.html',
   styleUrl: './homestay-tour.css',
 })
 export class HomestayTour {
   tour = input.required<TourResponse>();
+  
+  // Inject service quản lý đặt phòng
+  protected bookingService = inject(BookingService);
+
+  // Kiểm tra xem tour này đã được chọn chưa (Reactive theo Signal)
+  isAdded = computed(() => 
+    this.bookingService.currentTourSelections().some(t => t.id === this.tour().id)
+  );
 
   get durationText(): string {
     const t = this.tour();
@@ -20,5 +30,10 @@ export class HomestayTour {
       case 'DAYS': return `${t.durationValue} ngày`;
       default: return '';
     }
+  }
+
+  // Hàm xử lý khi bấm nút
+  toggleSelection() {
+    this.bookingService.toggleTour(this.tour());
   }
 }

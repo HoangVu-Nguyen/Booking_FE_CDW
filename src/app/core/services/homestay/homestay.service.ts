@@ -4,7 +4,7 @@ import { map, tap } from 'rxjs/operators'; // Import the map operator
 import { ApiService } from "../api/api.service";
 import { UserPhotoResponse } from "../../models/response/user-photo.response";
 import { ApiResponse } from "../../models/response/api.response";
-import { HomestayResponse } from "../../models/response/homestay.response";
+import { BookingAvailabilityResponse, HomestayResponse } from "../../models/response/homestay.response";
 import { PageResponse } from "../../models/response/page.response";
 import { ReviewResponse } from "../../models/response/review.response";
 import { HttpParams } from "@angular/common/http";
@@ -41,8 +41,7 @@ export class HomestayService {
     );
 
     }
-// Trong HomestayService
-getAvailableRooms(id: number, checkIn: string, checkOut: string, guests: number): Observable<ApiResponse<RoomResponse[]>> {
+getAvailableRooms(id: number, checkIn: string, checkOut: string, guests: number): Observable<ApiResponse<BookingAvailabilityResponse>> {
     // Chỉ truyền Plain Object đơn giản
     const params = {
         checkIn: checkIn,
@@ -50,14 +49,18 @@ getAvailableRooms(id: number, checkIn: string, checkOut: string, guests: number)
         guests: guests.toString()
     };
         
-    return this.apiService.get<ApiResponse<RoomResponse[]>>(`/api/v1/homestays/${id}/available-rooms`, params)
+    return this.apiService.get<ApiResponse<BookingAvailabilityResponse>>(`/api/v1/homestays/${id}/available-rooms`, params)
         .pipe(
             tap(response => {
                 const currentData = this.currentHomestay(); // Dùng getter signal
-                if (response.success && currentData) {
+                
+                // Đảm bảo request thành công và data tồn tại
+                if (response.success && currentData && response.data) {
+                    console.log(response.data);
                     this.currentHomestaySignal.set({
                         ...currentData,
-                        rooms: response.data
+                        rooms: response.data.rooms, // Gán danh sách phòng trống
+                        tours: response.data.suggestedTours // Gán danh sách tour gợi ý (cross-sell)
                     });
                 }
             })
