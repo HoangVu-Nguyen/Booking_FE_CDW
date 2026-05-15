@@ -5,6 +5,7 @@
     <aside class="hidden lg:flex flex-col w-[280px] xl:w-[320px] flex-shrink-0 h-fit sticky top-32">
         
         <!-- User Profile Card -->
+         @if(userInfo(); as user){
         <div class="flex items-center space-x-5 mb-10 px-4">
             <div class="relative w-16 h-16 rounded-full p-1 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.08)] flex-shrink-0">
                 <img alt="Julianne Moore" class="w-full h-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1Q51tb9B9UbcFYjZzL9UH2hpz8VwIz0HNGwyWmMVGlo1QbI0NW4iwMazPWcCrkalBRjNT8L6KUWQhX2xS6UAYk0KaD8zQBI4hETuNFoiy6STvH1Bx2TF7I879fz3wjRzfKP3zbcfzymySR4yOFPpXRqoo5lt0VcVZXpxhmMx5ZQVQXjmRL-_IHbPmqHYFyAmioGnFp-WB2dN-6FFkAZRyaqkg3GR4J7YK42ycyMC4gfKzpFYbzb2upR7SrrJ8w08cVf3mwcvYJzY" />
@@ -12,12 +13,13 @@
                 <div class="absolute bottom-0 right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full"></div>
             </div>
             <div>
-                <h2 class="font-headline text-xl font-bold text-stone-900 tracking-tight leading-tight">Julianne Moore</h2>
+                <h2 class="font-headline text-xl font-bold text-stone-900 tracking-tight leading-tight">{{user.username}}</h2>
                 <span class="inline-flex items-center mt-1 text-[11px] font-bold text-stone-500 tracking-widest uppercase">
                     Thành viên từ 2022
                 </span>
             </div>
         </div>
+    }
 
         <!-- Navigation Menu -->
         <nav class="flex flex-col space-y-1.5">

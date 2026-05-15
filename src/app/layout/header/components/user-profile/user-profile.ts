@@ -1,20 +1,21 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnInit } from '@angular/core';
 import { UserService } from '../../../../core/services/user/user.service';
 import { AuthConfig, OAuthService, OAuthStorage } from 'angular-oauth2-oidc';
 import { UserHeaderResponse } from '../../../../core/models/response/user-header.response';
 import { authCodeFlowConfig } from '../../../../core/configs/auth.config';
-
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-user-profile',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
 export class UserProfile implements OnInit {
   userHeaderResponse!: UserHeaderResponse;
   isOpen = false;
-
-  constructor(private eRef: ElementRef,private oauthService: OAuthService, private userService: UserService, private cdr: ChangeDetectorRef, private storage: OAuthStorage) {
+  private userService = inject(UserService);
+  public userInfo = this.userService.userHeader;
+  constructor(private eRef: ElementRef, private oauthService: OAuthService,  private cdr: ChangeDetectorRef, private storage: OAuthStorage) {
 
   }
   ngOnInit(): void {
@@ -22,18 +23,12 @@ export class UserProfile implements OnInit {
     console.log(this.oauthService.getAccessToken())
     console.log(this.oauthService.getRefreshToken())
     if (this.oauthService.hasValidAccessToken()) {
-      this.userService.getHeaderInfo().subscribe({
-        next: (res) => {
-          if (res.success) {
-            this.userHeaderResponse = res.data;
-            this.cdr.detectChanges();
-
-          }
-        }
+      if (!this.userInfo()) {
+        this.userService.fetchHeaderInfo();
       }
 
 
-      )
+
     }
   }
   toggleMenu() {
@@ -45,7 +40,7 @@ export class UserProfile implements OnInit {
       this.isOpen = false;
     }
   }
-    logout() {
+  logout() {
     // 1. Lấy ID Token trực tiếp từ HybridStorage (đang nằm trong RAM)
     const idToken = this.oauthService.getIdToken();
 

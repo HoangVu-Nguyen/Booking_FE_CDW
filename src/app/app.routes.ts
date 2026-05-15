@@ -43,38 +43,39 @@ export const routes: Routes = [
         title: 'Chi tiết Homestay - Clyvasync'
       },
       {
-        path:'tours',
-        component:TourList
+        path: 'tours',
+        component: TourList
       },
       {
-        path:'tour/:id',
-        component:TourDetail
+        path: 'tour/:id',
+        component: TourDetail
       },
       {
-        path:'checkout/:code',
-        component:Checkout
+        path: 'checkout/:code',
+        component: Checkout
       },
       {
-        path:'payment-result',
-        component:PaymentResult
+        path: 'payment-result',
+        component: PaymentResult
+      },
+      {
+        path: 'profile',
+        component: Profile,
+        children: [
+          { path: 'info', component: ProfileInfo },
+          { path: 'security', component: Security },
+          { path: 'trips', component: MyTrips },
+          { path: 'payments', component: PaymentMethods },
+          { path: '', redirectTo: 'info', pathMatch: 'full' },
+          {
+            path: 'trip/:id',
+            component: MyTrip
+          }
+        ]
       }
     ]
   },
-  {
-    path: 'profile',
-    component: Profile,
-    children: [
-      { path: 'info', component: ProfileInfo },
-      { path: 'security', component: Security },
-      { path: 'trips', component: MyTrips },
-      { path: 'payments', component: PaymentMethods },
-      { path: '', redirectTo: 'info', pathMatch: 'full' },
-      {
-        path: 'trip/:id',
-        component: MyTrip
-      }
-    ]
-  },
+
 
   { path: '**', redirectTo: 'login' }
 ];

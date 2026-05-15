@@ -8,30 +8,27 @@
       <span class="material-symbols-outlined text-[22px]">mail</span>
     </button>
   </div>
-
+  @if (userInfo(); as user) {
   <div class="relative ml-4">
-    <button 
-      (click)="toggleMenu()" 
+    <button (click)="toggleMenu()"
       class="profile-btn flex items-center gap-3 py-1.5 px-3 rounded-full border border-stone-200 hover:border-stone-400 hover:bg-stone-50 transition-all duration-300"
       [class.bg-stone-100]="isOpen">
-      <img alt="Hồ sơ người dùng" class="w-8 h-8 rounded-full object-cover shadow-sm" [src]="userHeaderResponse.photoUrl"/>
+      <img alt="Hồ sơ người dùng" class="w-8 h-8 rounded-full object-cover shadow-sm"
+        [src]="user.photoUrl" />
       <span class="font-headline font-bold tracking-tight text-[13px] text-[#2D4739]">Hồ sơ</span>
-      <span class="material-symbols-outlined text-sm transition-transform duration-300" [class.rotate-180]="isOpen">expand_more</span>
+      <span class="material-symbols-outlined text-sm transition-transform duration-300"
+        [class.rotate-180]="isOpen">expand_more</span>
     </button>
 
-    <div 
+    <div
       class="absolute right-0 top-[calc(100%+12px)] w-72 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-stone-100 py-3 px-2 z-[100] origin-top-right transition-all duration-300"
-      [class.opacity-100]="isOpen"
-      [class.scale-100]="isOpen"
-      [class.visible]="isOpen"
-      [class.opacity-0]="!isOpen"
-      [class.scale-95]="!isOpen"
-      [class.invisible]="!isOpen">
-      
+      [class.opacity-100]="isOpen" [class.scale-100]="isOpen" [class.visible]="isOpen" [class.opacity-0]="!isOpen"
+      [class.scale-95]="!isOpen" [class.invisible]="!isOpen">
+
       <div class="flex items-center gap-3 p-3 mb-2 rounded-xl bg-stone-50/50">
-        <img alt="Avatar" class="w-10 h-10 rounded-full object-cover ring-2 ring-white" [src]="userHeaderResponse.photoUrl"/>
+        <img alt="Avatar" class="w-10 h-10 rounded-full object-cover ring-2 ring-white" [src]="user.photoUrl" />
         <div class="overflow-hidden">
-          <h2 class="font-headline text-[14px] font-bold text-[#173124] truncate">{{userHeaderResponse.username}}</h2>
+          <h2 class="font-headline text-[14px] font-bold text-[#173124] truncate">{{user.username}}</h2>
           <p class="font-body text-[11px] text-stone-500">Thành viên tinh hoa</p>
         </div>
       </div>
@@ -40,18 +37,20 @@
 
       <ul class="space-y-1">
         <li>
-          <a routerLink="/profile" class="menu-item group">
+          <a routerLink="/profile/info" class="menu-item group">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">person</span>
+              <span
+                class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">person</span>
               <span class="text-[13px] font-medium">Hồ sơ cá nhân</span>
             </div>
           </a>
         </li>
 
         <li>
-          <a routerLink="/my-bookings" class="menu-item group">
+          <a routerLink="/profile/trips" class="menu-item group">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">calendar_month</span>
+              <span
+                class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">calendar_month</span>
               <span class="text-[13px] font-medium">Chuyến đi của tôi</span>
             </div>
           </a>
@@ -60,7 +59,8 @@
         <li>
           <a routerLink="/wishlist" class="menu-item group">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">favorite</span>
+              <span
+                class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">favorite</span>
               <span class="text-[13px] font-medium">Danh sách yêu thích</span>
             </div>
           </a>
@@ -71,19 +71,24 @@
         <li>
           <a routerLink="/settings" class="menu-item group">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">settings</span>
+              <span
+                class="material-symbols-outlined text-[20px] text-stone-400 group-hover:text-[#173124]">settings</span>
               <span class="text-[13px] font-medium">Cài đặt tài khoản</span>
             </div>
           </a>
         </li>
 
         <li class="mt-2" (click)="logout()">
-          <div class="flex items-center gap-3 p-3 rounded-xl text-red-600 hover:bg-red-50 cursor-pointer transition-all">
+          <div
+            class="flex items-center gap-3 p-3 rounded-xl text-red-600 hover:bg-red-50 cursor-pointer transition-all">
             <span class="material-symbols-outlined text-[20px]">logout</span>
             <span class="text-[13px] font-bold">Đăng xuất</span>
           </div>
         </li>
       </ul>
     </div>
+    
   </div>
+  }
+
 </div>

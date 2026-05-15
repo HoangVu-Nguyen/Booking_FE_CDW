@@ -1,60 +1,75 @@
 <!-- Main Content Area: Chuẩn Editorial & Soft UI -->
 <main class="flex-1 px-4 md:px-8 lg:px-12 pb-24 overflow-x-hidden">
-    
+
     <!-- ========================================== -->
     <!-- 1. CINEMATIC HERO HEADER -->
     <!-- ========================================== -->
     <!-- Bo góc siêu sâu, đổ bóng mờ, tạo cảm giác như một bức tranh nghệ thuật -->
-    <section class="relative w-full h-[350px] md:h-[450px] rounded-[2.5rem] md:rounded-[3rem] overflow-hidden mb-12 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] group">
-        <img alt="Architectural Background" class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[10s] ease-out"
+    @if(userInfo(); as user){
+    <section
+        class="relative w-full h-[350px] md:h-[450px] rounded-[2.5rem] md:rounded-[3rem] overflow-hidden mb-12 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] group">
+        <img alt="Architectural Background"
+            class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[10s] ease-out"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuAycDud0ZzuFngs-eUDNdBxo7IS1HpqR2F41IpS4krRvY4wUNYZtKyiHKRn7UMbHZOJTGSLtScHIKnUEddAh5aOjBEWTbS8u1DWmrWKgbRwNZrGhWCFAwE3wrnzEc4IAfqiak_5v03LqBpsT9GCapZ8Zl5V8vlk-rQR_69xlxq4STaidDfEaoZSTcJo7GINmb4Lv8fgGhSQXIDo6kQnNWlbzolj0fiyTavvXWTJNdTXdvVI6eI8KPaivDkgtVBYIBnllR7jcsgCLFA" />
-        
+
         <!-- Gradient phủ sương mù, mượt mà hơn bản cũ -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-14">
+        <div
+            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8 md:p-14">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
                 <div class="animate-[fade-in-up_1s_ease-out]">
                     <!-- Thay badge thô bằng badge kính mờ tinh tế -->
-                    <span class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
+                    <span
+                        class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
                         <span class="w-1.5 h-1.5 rounded-full bg-[#e8c39e] animate-pulse"></span>
                         Clyvasync Elite
                     </span>
-                    <h1 class="text-white font-headline text-5xl md:text-7xl font-medium tracking-tight leading-none drop-shadow-lg">
-                        Hoàng Vũ
+                    <h1
+                        class="text-white font-headline text-5xl md:text-7xl font-medium tracking-tight leading-none drop-shadow-lg">
+                        {{user.username}}
                     </h1>
                 </div>
                 <div class="hidden md:block">
-                    <button class="bg-white/10 backdrop-blur-md text-white border border-white/30 px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all duration-500">
+                    <button
+                        class="bg-white/10 backdrop-blur-md text-white border border-white/30 px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold hover:bg-white hover:text-black transition-all duration-500">
                         Thay đổi ảnh bìa
                     </button>
                 </div>
             </div>
         </div>
     </section>
+    }
 
     <!-- ========================================== -->
     <!-- BENTO GRID LAYOUT -->
     <!-- ========================================== -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 lg:gap-10">
-        
+
         <!-- CỘT TRÁI (NỘI DUNG CHÍNH) -->
         <div class="xl:col-span-2 space-y-10">
-            
+
             <!-- THẺ THÀNH VIÊN VẬT LÝ (Physical Card UI) -->
-            <div class="relative bg-gradient-to-br from-[#173124] via-[#0f2118] to-[#050a07] rounded-[2.5rem] p-10 overflow-hidden shadow-[0_20px_50px_rgba(23,49,36,0.3)] text-white group">
+            <div
+                class="relative bg-gradient-to-br from-[#173124] via-[#0f2118] to-[#050a07] rounded-[2.5rem] p-10 overflow-hidden shadow-[0_20px_50px_rgba(23,49,36,0.3)] text-white group">
                 <!-- Ánh sáng hắt kim loại -->
-                <div class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-                <div class="absolute -right-20 -top-20 w-80 h-80 bg-[#e8c39e]/10 rounded-full blur-3xl pointer-events-none"></div>
-                
+                <div
+                    class="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                </div>
+                <div
+                    class="absolute -right-20 -top-20 w-80 h-80 bg-[#e8c39e]/10 rounded-full blur-3xl pointer-events-none">
+                </div>
+
                 <div class="relative z-10">
                     <div class="flex justify-between items-start mb-16">
                         <div>
-                            <p class="text-[#e8c39e] text-[10px] uppercase tracking-[0.3em] font-bold mb-2">Hạng thành viên</p>
+                            <p class="text-[#e8c39e] text-[10px] uppercase tracking-[0.3em] font-bold mb-2">Hạng thành
+                                viên</p>
                             <h3 class="font-serif italic text-3xl md:text-4xl text-white">Visionary Curator</h3>
                         </div>
                         <!-- Icon sắc nét, mỏng nhẹ -->
-                        <span class="material-symbols-outlined text-[40px] text-[#e8c39e] font-light" style="font-variation-settings: 'wght' 200;">diamond</span>
+                        <span class="material-symbols-outlined text-[40px] text-[#e8c39e] font-light"
+                            style="font-variation-settings: 'wght' 200;">diamond</span>
                     </div>
-                    
+
                     <div class="space-y-5">
                         <div class="flex justify-between text-[11px] font-bold uppercase tracking-widest text-white/70">
                             <span>Đường đến Master</span>
@@ -65,7 +80,8 @@
                                 <div class="absolute right-0 top-0 bottom-0 w-4 bg-white blur-[2px]"></div>
                             </div>
                         </div>
-                        <p class="text-white/50 text-[13px] font-medium">Trải nghiệm thêm 2 chuyến đi để mở khóa đặc quyền tối thượng.</p>
+                        <p class="text-white/50 text-[13px] font-medium">Trải nghiệm thêm 2 chuyến đi để mở khóa đặc
+                            quyền tối thượng.</p>
                     </div>
                 </div>
             </div>
@@ -74,24 +90,33 @@
             <section>
                 <div class="flex justify-between items-end mb-6">
                     <h3 class="font-headline text-2xl font-bold text-stone-900 tracking-tight">Hồ sơ cá nhân</h3>
-                    <button class="text-stone-500 hover:text-[#173124] transition-colors"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+                    <button class="text-stone-500 hover:text-[#173124] transition-colors"><span
+                            class="material-symbols-outlined text-[20px]">edit</span></button>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Họ và Tên</label>
+                    <div
+                        class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
+                        <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Họ và
+                            Tên</label>
                         <p class="text-lg font-medium text-stone-900">Nguyễn Bùi Hoàng Vũ</p>
                     </div>
-                    <div class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Email</label>
+                    <div
+                        class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
+                        <label
+                            class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Email</label>
                         <p class="text-lg font-medium text-stone-900">vu.nguyen@clyvasync.com</p>
                     </div>
-                    <div class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Điện thoại</label>
+                    <div
+                        class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
+                        <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Điện
+                            thoại</label>
                         <p class="text-lg font-medium text-stone-900">+84 908 123 456</p>
                     </div>
-                    <div class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
-                        <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Nơi sống</label>
+                    <div
+                        class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
+                        <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Nơi
+                            sống</label>
                         <p class="text-lg font-medium text-stone-900">Thảo Điền, TP. Hồ Chí Minh</p>
                     </div>
                 </div>
@@ -101,48 +126,69 @@
             <section class="pt-6">
                 <div class="flex justify-between items-end mb-8 border-b border-stone-200 pb-4">
                     <h3 class="font-headline text-2xl font-bold text-stone-900 tracking-tight">Dấu ấn hành trình</h3>
-                    <a class="text-[#173124] font-bold text-[11px] uppercase tracking-widest hover:underline" href="#">Tất cả</a>
+                    <a class="text-[#173124] font-bold text-[11px] uppercase tracking-widest hover:underline"
+                        href="#">Tất cả</a>
                 </div>
-                
+
                 <div class="space-y-6">
                     <!-- Activity 1 -->
-                    <div class="group flex flex-col md:flex-row items-center gap-6 p-4 rounded-[2rem] hover:bg-stone-50 transition-colors duration-300 cursor-pointer border border-transparent hover:border-stone-100">
+                    <div
+                        class="group flex flex-col md:flex-row items-center gap-6 p-4 rounded-[2rem] hover:bg-stone-50 transition-colors duration-300 cursor-pointer border border-transparent hover:border-stone-100">
                         <div class="w-full md:w-56 h-36 flex-shrink-0 rounded-[1.5rem] overflow-hidden shadow-sm">
-                            <img alt="The Pine Retreat" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUnhD2pAMSHO4nzgGYy9K1vHRy466QJyDxwZ6_y_vg1LNI8lfAcgxqcFobJ9DIWqO0nn5Hifto12Ca3MJgAMXER40kRMGNBNJVktB-z2K7fVdaKe-9H4qLbP5pcwgWectBNFXw18Hkae4jptj0fne-Gu3RaXjGbt5kh53GTHZW7-7iqFLT8ObXtNPGLeuBFCae00g7murfTpAExPqFzHVYeLKDaslP30vfK0ColMCMtMpCBn_f5da9zSbGZEKY5pOOsJ0v-3eAA3Y" />
+                            <img alt="The Pine Retreat"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUnhD2pAMSHO4nzgGYy9K1vHRy466QJyDxwZ6_y_vg1LNI8lfAcgxqcFobJ9DIWqO0nn5Hifto12Ca3MJgAMXER40kRMGNBNJVktB-z2K7fVdaKe-9H4qLbP5pcwgWectBNFXw18Hkae4jptj0fne-Gu3RaXjGbt5kh53GTHZW7-7iqFLT8ObXtNPGLeuBFCae00g7murfTpAExPqFzHVYeLKDaslP30vfK0ColMCMtMpCBn_f5da9zSbGZEKY5pOOsJ0v-3eAA3Y" />
                         </div>
                         <div class="flex-1 w-full">
                             <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-headline text-xl font-bold text-stone-900 group-hover:text-[#173124] transition-colors">The Pine Retreat</h4>
-                                <span class="flex items-center gap-1 text-[13px] font-bold text-stone-900 bg-stone-100 px-2 py-1 rounded-md">
-                                    <span class="material-symbols-outlined text-[14px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
+                                <h4
+                                    class="font-headline text-xl font-bold text-stone-900 group-hover:text-[#173124] transition-colors">
+                                    The Pine Retreat</h4>
+                                <span
+                                    class="flex items-center gap-1 text-[13px] font-bold text-stone-900 bg-stone-100 px-2 py-1 rounded-md">
+                                    <span class="material-symbols-outlined text-[14px] text-amber-500"
+                                        style="font-variation-settings: 'FILL' 1;">star</span> 4.9
                                 </span>
                             </div>
                             <p class="text-[13px] text-stone-500 mb-4 font-medium">Đà Lạt, Lâm Đồng • Tháng 10, 2025</p>
                             <div class="flex space-x-2">
-                                <span class="bg-[#173124]/5 text-[#173124] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#173124]/10">Hoàn tất</span>
-                                <span class="bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Tuyệt hảo</span>
+                                <span
+                                    class="bg-[#173124]/5 text-[#173124] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#173124]/10">Hoàn
+                                    tất</span>
+                                <span
+                                    class="bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Tuyệt
+                                    hảo</span>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Dòng kẻ phân cách mỏng -->
                     <div class="w-full h-[1px] bg-stone-100"></div>
 
                     <!-- Activity 2 -->
-                    <div class="group flex flex-col md:flex-row items-center gap-6 p-4 rounded-[2rem] hover:bg-stone-50 transition-colors duration-300 cursor-pointer border border-transparent hover:border-stone-100">
+                    <div
+                        class="group flex flex-col md:flex-row items-center gap-6 p-4 rounded-[2rem] hover:bg-stone-50 transition-colors duration-300 cursor-pointer border border-transparent hover:border-stone-100">
                         <div class="w-full md:w-56 h-36 flex-shrink-0 rounded-[1.5rem] overflow-hidden shadow-sm">
-                            <img alt="Cliffside Monolith" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXCkGezO9p8nc0YEIDdSDThisKQZIXYvIELq4AxEQgOBQQdrObbkefCo9pCnvXnZ8IuK22eBMnme7poIT6RADqA4UKkQ4pGwQsrwVcJAFzeBICtRdFtlewxDamXP5dIOuPnkQny85pSD1utoexF6wo5Lib5VUcDJJKg70OyzT_xns8ko779cTMUi_wxxUeEHEjadkvq_0jQD8RwSg2Oso1xDfdVRk3-C7R3VR801l_-psafp5vsmQ3XlXTgL6paVtuKOkO6Lur0Vg" />
+                            <img alt="Cliffside Monolith"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXCkGezO9p8nc0YEIDdSDThisKQZIXYvIELq4AxEQgOBQQdrObbkefCo9pCnvXnZ8IuK22eBMnme7poIT6RADqA4UKkQ4pGwQsrwVcJAFzeBICtRdFtlewxDamXP5dIOuPnkQny85pSD1utoexF6wo5Lib5VUcDJJKg70OyzT_xns8ko779cTMUi_wxxUeEHEjadkvq_0jQD8RwSg2Oso1xDfdVRk3-C7R3VR801l_-psafp5vsmQ3XlXTgL6paVtuKOkO6Lur0Vg" />
                         </div>
                         <div class="flex-1 w-full">
                             <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-headline text-xl font-bold text-stone-900 group-hover:text-[#173124] transition-colors">Cliffside Monolith</h4>
-                                <span class="flex items-center gap-1 text-[13px] font-bold text-stone-900 bg-stone-100 px-2 py-1 rounded-md">
-                                    <span class="material-symbols-outlined text-[14px] text-amber-500" style="font-variation-settings: 'FILL' 1;">star</span> 5.0
+                                <h4
+                                    class="font-headline text-xl font-bold text-stone-900 group-hover:text-[#173124] transition-colors">
+                                    Cliffside Monolith</h4>
+                                <span
+                                    class="flex items-center gap-1 text-[13px] font-bold text-stone-900 bg-stone-100 px-2 py-1 rounded-md">
+                                    <span class="material-symbols-outlined text-[14px] text-amber-500"
+                                        style="font-variation-settings: 'FILL' 1;">star</span> 5.0
                                 </span>
                             </div>
                             <p class="text-[13px] text-stone-500 mb-4 font-medium">Ninh Thuận • Tháng 7, 2025</p>
                             <div class="flex space-x-2">
-                                <span class="bg-[#173124]/5 text-[#173124] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#173124]/10">Hoàn tất</span>
+                                <span
+                                    class="bg-[#173124]/5 text-[#173124] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#173124]/10">Hoàn
+                                    tất</span>
                             </div>
                         </div>
                     </div>
@@ -152,31 +198,38 @@
 
         <!-- CỘT PHẢI (SIDEBAR WIDGETS) -->
         <div class="space-y-6">
-            
+
             <!-- SAVED STAYS -->
             <div class="bg-white border border-stone-100 shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-8 rounded-[2rem]">
                 <h3 class="font-headline text-xl font-bold text-stone-900 mb-6">Không gian yêu thích</h3>
                 <div class="space-y-5">
                     <div class="flex items-center gap-4 group cursor-pointer">
                         <div class="w-14 h-14 rounded-xl bg-stone-100 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <img src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                         </div>
                         <div>
-                            <p class="font-bold text-[14px] text-stone-900 group-hover:text-[#173124] transition-colors">Stone Sanctuary</p>
+                            <p
+                                class="font-bold text-[14px] text-stone-900 group-hover:text-[#173124] transition-colors">
+                                Stone Sanctuary</p>
                             <p class="text-[12px] text-stone-500">Sapa, Lào Cai</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4 group cursor-pointer">
                         <div class="w-14 h-14 rounded-xl bg-stone-100 overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=200&auto=format&fit=crop"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                         </div>
                         <div>
-                            <p class="font-bold text-[14px] text-stone-900 group-hover:text-[#173124] transition-colors">Glass House Ocean</p>
+                            <p
+                                class="font-bold text-[14px] text-stone-900 group-hover:text-[#173124] transition-colors">
+                                Glass House Ocean</p>
                             <p class="text-[12px] text-stone-500">Phú Quốc, Kiên Giang</p>
                         </div>
                     </div>
                 </div>
-                <button class="w-full mt-8 py-3.5 text-stone-900 font-bold text-[11px] uppercase tracking-[0.2em] bg-stone-50 hover:bg-stone-100 rounded-xl transition-colors">
+                <button
+                    class="w-full mt-8 py-3.5 text-stone-900 font-bold text-[11px] uppercase tracking-[0.2em] bg-stone-50 hover:bg-stone-100 rounded-xl transition-colors">
                     Xem tất cả (12)
                 </button>
             </div>
@@ -184,13 +237,18 @@
             <!-- PROMOTION WIDGET -->
             <div class="relative bg-[#faf9f8] border border-[#e8c39e]/30 rounded-[2rem] p-8 overflow-hidden group">
                 <!-- Watermark Icon -->
-                <span class="material-symbols-outlined absolute -right-6 -bottom-6 text-[120px] text-[#e8c39e] opacity-20 group-hover:scale-110 group-hover:rotate-12 transition-all duration-700">redeem</span>
-                
+                <span
+                    class="material-symbols-outlined absolute -right-6 -bottom-6 text-[120px] text-[#e8c39e] opacity-20 group-hover:scale-110 group-hover:rotate-12 transition-all duration-700">redeem</span>
+
                 <div class="relative z-10">
-                    <span class="inline-block px-2 py-1 bg-[#e8c39e]/20 text-[#173124] text-[9px] font-bold uppercase tracking-[0.2em] rounded mb-3">Độc quyền</span>
+                    <span
+                        class="inline-block px-2 py-1 bg-[#e8c39e]/20 text-[#173124] text-[9px] font-bold uppercase tracking-[0.2em] rounded mb-3">Độc
+                        quyền</span>
                     <h4 class="font-serif italic text-2xl text-stone-900 mb-2">Đặc quyền tháng 12</h4>
-                    <p class="text-[13px] text-stone-600 mb-8 leading-relaxed font-medium">Nhận ưu đãi 15% cho mọi không gian kiến trúc tại Đà Lạt và Tây Nguyên.</p>
-                    <button class="bg-[#173124] text-white px-6 py-3 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                    <p class="text-[13px] text-stone-600 mb-8 leading-relaxed font-medium">Nhận ưu đãi 15% cho mọi không
+                        gian kiến trúc tại Đà Lạt và Tây Nguyên.</p>
+                    <button
+                        class="bg-[#173124] text-white px-6 py-3 rounded-full font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
                         Áp dụng mã
                     </button>
                 </div>
@@ -199,15 +257,20 @@
             <!-- SUPPORT WIDGET -->
             <div class="bg-[#173124] text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
                 <!-- Abstract lines -->
-                <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjI1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]"></div>
-                
+                <div
+                    class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjI1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')]">
+                </div>
+
                 <div class="relative z-10">
-                    <div class="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-4">
+                    <div
+                        class="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-4">
                         <span class="material-symbols-outlined text-[24px] font-light">headset_mic</span>
                     </div>
                     <h4 class="font-headline text-xl font-bold mb-2">Concierge 24/7</h4>
-                    <p class="text-[13px] text-white/70 mb-8 font-medium">Trợ lý riêng luôn sẵn sàng hỗ trợ mọi yêu cầu từ bạn.</p>
-                    <a href="tel:+12345678" class="flex items-center justify-center gap-2 bg-white text-[#173124] py-3.5 rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-[#e8c39e] transition-colors duration-300">
+                    <p class="text-[13px] text-white/70 mb-8 font-medium">Trợ lý riêng luôn sẵn sàng hỗ trợ mọi yêu cầu
+                        từ bạn.</p>
+                    <a href="tel:+12345678"
+                        class="flex items-center justify-center gap-2 bg-white text-[#173124] py-3.5 rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-[#e8c39e] transition-colors duration-300">
                         Bắt đầu trò chuyện
                     </a>
                 </div>

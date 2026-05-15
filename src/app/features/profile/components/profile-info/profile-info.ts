@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { UserService } from '../../../../core/services/user/user.service';
 
 @Component({
   selector: 'app-profile-info',
@@ -6,4 +7,8 @@ import { Component } from '@angular/core';
   templateUrl: './profile-info.html',
   styleUrl: './profile-info.css',
 })
-export class ProfileInfo {}
+export class ProfileInfo {
+  private userService = inject(UserService);
+  public userInfo = this.userService.userHeader;
+  
+}
