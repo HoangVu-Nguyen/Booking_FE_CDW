@@ -17,8 +17,9 @@ import { Router } from '@angular/router';
 export class HomestayBookingWidget implements OnInit {
   private homestayService = inject(HomestayService);
   public bookingService = inject(BookingService);
+  private router = inject(Router);
 
-  // 1. Dữ liệu Homestay
+  // 1. Dữ liệu Homestay (Signal-based)
   homestay = computed(() => this.homestayService.currentHomestay());
 
   // 2. State Lịch trình & Số lượng
@@ -32,34 +33,36 @@ export class HomestayBookingWidget implements OnInit {
   selectedPlan = this.bookingService.currentSelectedPlan;
   roomCount = this.bookingService.selectedRoomCount;
   selectedTours = this.bookingService.currentTourSelections;
-  private router = inject(Router);
 
   // ----------------------------------------------------
-  // 4. LOGIC TÍNH TOÁN CHÍNH XÁC (BILLING COMPUTATIONS)
+  // 4. LOGIC TÍNH TOÁN (Đồng bộ logic với Backend)
   // ----------------------------------------------------
 
   // Tiền phòng = Giá gói * Số đêm * Số phòng
   roomSubtotal = computed(() => {
     const plan = this.selectedPlan();
-    if (!plan || this.nights() === 0) return 0;
-    return plan.price * this.nights() * this.roomCount();
+    const nightCount = this.nights();
+    if (!plan || nightCount <= 0) return 0;
+    return plan.price * nightCount * this.roomCount();
   });
 
-  // Tiền tour = Tổng các (Giá tour/người * Tổng số khách)
+  // Tiền tour = Tổng các (Giá tour/người * Tổng số khách) của từng tour trong mảng
   tourSubtotal = computed(() => {
     const tours = this.selectedTours();
     const numGuests = this.guests();
     if (!tours || tours.length === 0) return 0;
     
+    // Tính tổng tích lũy của tất cả tour khách đã chọn
     return tours.reduce((sum, tour) => sum + ((tour.pricePerPerson || 0) * numGuests), 0);
   });
 
-  // Phí dịch vụ (Tính 10% dựa trên tiền phòng)
+  // Thuế & Phí dịch vụ (Tính 10% trên tổng giá trị - khớp với Backend)
   serviceFee = computed(() => {
-    return this.roomSubtotal() * 0.1; 
+    const baseTotal = this.roomSubtotal() + this.tourSubtotal();
+    return baseTotal * 0.1; 
   });
 
-  // Tổng thanh toán cuối cùng = Phòng + Tour + Phí dịch vụ
+  // Tổng thanh toán cuối cùng
   total = computed(() => {
     return this.roomSubtotal() + this.tourSubtotal() + this.serviceFee();
   });
@@ -67,87 +70,89 @@ export class HomestayBookingWidget implements OnInit {
   ngOnInit(): void {}
 
   // ----------------------------------------------------
-  // 5. CÁC HÀM XỬ LÝ SỰ KIỆN TƯƠNG TÁC (ACTIONS)
+  // 5. ACTIONS
   // ----------------------------------------------------
 
-  // Hủy chọn gói phòng hiện tại
   clearSelection(): void {
     this.bookingService.clearSelection();
   }
 
-  // Xóa riêng 1 tour cụ thể ra khỏi giỏ hàng
   removeTour(tourId: number): void {
-    const tour = this.selectedTours().find(t => t.id === tourId);
-    if(tour) this.bookingService.toggleTour(tour);
+    const tours = this.selectedTours();
+    const tour = tours.find(t => t.id === tourId);
+    if (tour) this.bookingService.toggleTour(tour);
   }
 
-  // Cuộn trang xuống phần danh sách phòng
   scrollToRooms(): void {
-    const element = document.getElementById('room-selection-section');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    document.getElementById('room-selection-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // Xác nhận đặt phòng (Test log)
   onConfirmBooking(): void {
     const currentHomestay = this.homestay();
     const room = this.selectedRoom();
     const plan = this.selectedPlan();
+    const checkIn = this.checkInDate();
+    const checkOut = this.checkOutDate();
 
-    if (currentHomestay && room && plan && this.checkInDate() && this.checkOutDate()) {
-      
-      // Hàm helper biến Date nội bộ thành chuỗi YYYY-MM-DD gửi cho Java
-      const formatDateISO = (date: Date): string => {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
-
-      // Giỏ hàng tour hiện tại (Backend thô đang nhận 1 tour đơn lẻ nên ta lấy phần tử đầu tiên nếu có)
-      const tours = this.selectedTours();
-      const hasTour = tours.length > 0;
-
-      // Gom toàn bộ data thô từ các Signal để tạo Payload
-      const payload: any = {
-        homestayId: currentHomestay.id,
-        roomId: room.id,
-        ratePlanId: plan.id,
-        checkInDate: formatDateISO(this.checkInDate()!),
-        checkOutDate: formatDateISO(this.checkOutDate()!),
-        roomQuantity: this.roomCount(),
-        guestCount: this.guests(),
-        
-        // Đoạn này map dữ liệu Tour nếu khách chọn đặt kèm
-        tourId: hasTour ? tours[0].id : null,
-        availabilityId: hasTour ? (tours[0] as any).availabilityId || 1 : null, // Thêm trường thực tế của bác vào đây
-        tourDate: hasTour ? formatDateISO(this.checkInDate()!) : null,        // Tạm lấy ngày check-in làm ngày đi tour
-        participantCount: hasTour ? this.guests() : null
-      };
-
-      console.log('Bắt đầu khởi tạo đơn nháp lên DB với payload:', payload);
-
-      // Gọi API sang Backend
-      this.bookingService.initBooking(payload).subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            console.log('Lưu DRAFT thành công, nhận mã:', response.data.bookingCode);
-            
-            // Điều hướng thẳng sang trang checkout cầm theo mã Code duy nhất
-            // Route mong đợi: /checkout/BK-XXXX
-            this.router.navigate(['/checkout', response.data.bookingCode]);
-          } else {
-            alert('Khởi tạo đơn đặt phòng thất bại, vui lòng kiểm tra lại!');
-          }
-        },
-        error: (err) => {
-          console.error('Lỗi kết nối với API /bookings/init:', err);
-          alert('Hệ thống bận, không thể giữ chỗ vào lúc này!');
-        }
-      });
+    // Validate cứng trước khi gọi API
+    if (!currentHomestay || !room || !plan || !checkIn || !checkOut) {
+        alert('Vui lòng hoàn tất chọn phòng và ngày lưu trú!');
+        return;
     }
-  }
 
+    // Helper: Định dạng Date sang string ISO "YYYY-MM-DD" gửi cho Java
+    const formatDateISO = (date: Date): string => {
+      const d = new Date(date);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+
+    // MAP DANH SÁCH TOURS THEO FORMAT LIST<TOURBOOKINGITEM> CỦA BÁC VŨ
+    const toursPayload = this.selectedTours().map(t => ({
+        tourId: t.id,
+        // Bác nhớ đảm bảo object tour trong service có trường availabilityId nhé
+        availabilityId: (t as any).availabilityId || 1, 
+        tourDate: formatDateISO(checkIn), // Mặc định lấy ngày check-in, bác có thể đổi tùy UI
+        participantCount: this.guests()
+    }));
+
+    // PAYLOAD CUỐI CÙNG (KHÍT VỚI BOOKINGINITREQUEST TRONG JAVA)
+    const payload = {
+      homestayId: currentHomestay.id,
+      roomId: room.id,
+      ratePlanId: plan.id,
+      checkInDate: formatDateISO(checkIn),
+      checkOutDate: formatDateISO(checkOut),
+      roomQuantity: this.roomCount(),
+      guestCount: this.guests(),
+      
+      // Gửi danh sách Tour (Dù rỗng hay có thì Backend cũng nhận được List)
+      tours: toursPayload, 
+
+      // Các thông tin liên hệ (Lấy từ User profile hoặc cho khách nhập)
+      guestName: null, 
+      email: null,
+      phone: null,
+      specialRequests: null
+    };
+
+    console.log('🚀 Payload gửi đi cho Clyvasync:', payload);
+
+    this.bookingService.initBooking(payload).subscribe({
+      next: (response) => {
+        // Response format bác trả về: { success: boolean, data: { bookingCode, id } }
+        if (response.data?.bookingCode) {
+          console.log('✅ Đã khóa phòng thành công:', response.data.bookingCode);
+          
+          // Điều hướng sang trang thanh toán kèm theo mã code
+          this.router.navigate(['/checkout', response.data.bookingCode]);
+        }
+      },
+      error: (err) => {
+        // Xử lý các lỗi nghiệp vụ bắn ra từ Backend (400, 409...)
+        const errorMsg = err.error?.message || 'Hệ thống bận, không thể giữ chỗ vào lúc này!';
+        console.error('❌ Lỗi đặt phòng:', err);
+        alert(errorMsg);
+      }
+    });
+  }
 }
