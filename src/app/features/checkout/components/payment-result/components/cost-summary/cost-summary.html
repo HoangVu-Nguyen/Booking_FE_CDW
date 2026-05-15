@@ -1,0 +1,61 @@
+<div class="bg-white p-8 md:p-10 rounded-[32px] border border-outline-variant/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-md transition-shadow duration-500">
+    
+    <h3 class="font-headline text-2xl font-bold text-[#1a4d43] mb-8 flex items-center gap-3">
+        <span class="material-symbols-outlined text-emerald-600 bg-emerald-50 p-2 rounded-xl">receipt_long</span>
+        Investment Summary
+    </h3>
+
+    <div class="space-y-5">
+        <div class="flex justify-between items-center group">
+            <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-outline-variant/40 group-hover:bg-emerald-500 group-hover:scale-150 transition-all duration-300"></div>
+                <span class="text-on-surface-variant font-medium text-base group-hover:text-[#1a4d43] transition-colors">6 Nights Stay</span>
+            </div>
+            <span class="font-bold text-[#1a4d43] text-lg">42,000,000 ₫</span>
+        </div>
+
+        <div class="flex justify-between items-center group">
+            <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-outline-variant/40 group-hover:bg-emerald-500 group-hover:scale-150 transition-all duration-300"></div>
+                <span class="text-on-surface-variant font-medium text-base group-hover:text-[#1a4d43] transition-colors">Experiences & Activities</span>
+            </div>
+            <span class="font-bold text-[#1a4d43] text-lg">8,500,000 ₫</span>
+        </div>
+
+        <div class="flex justify-between items-center group">
+            <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-outline-variant/40 group-hover:bg-emerald-500 group-hover:scale-150 transition-all duration-300"></div>
+                <span class="text-on-surface-variant font-medium text-base group-hover:text-[#1a4d43] transition-colors">Service Charge & Taxes</span>
+            </div>
+            <span class="font-bold text-[#1a4d43] text-lg">5,270,000 ₫</span>
+        </div>
+    </div>
+
+    <div class="my-8 relative">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+            <div class="w-full border-t-2 border-dashed border-outline-variant/30"></div>
+        </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-6">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-6">
+        <div>
+            <p class="text-[11px] text-on-surface-variant font-bold uppercase tracking-[0.25em] mb-2">Total Settled</p>
+            <p class="font-headline text-4xl font-black text-[#1a4d43] tracking-tight">
+                {{ amount() | number:'1.0-0' }} <span class="text-xl font-bold text-on-surface-variant/60 ml-1">VND</span>
+            </p>
+        </div>
+        
+        <div class="sm:text-right">
+            <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-50 border border-emerald-100/50 text-emerald-700 text-xs font-bold rounded-full uppercase tracking-widest shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                Paid via VNPAY
+            </span>
+        </div>
+    </div>
+    
+</div>
+        
+      
+    
+</div>

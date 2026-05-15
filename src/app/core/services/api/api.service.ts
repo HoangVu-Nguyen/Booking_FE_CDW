@@ -1,7 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { environment } from '../../../../environments/environment';
@@ -84,5 +84,18 @@ export class ApiService {
   }
   public patch<T>(endpoint: string, body: any = {}, params?: any): Observable<T> {
     return this._request('PATCH', endpoint, body, params);
+}
+public getText(endpoint: string, params?: any): Observable<string> {
+  const options = {
+    headers: this.buildHeaders(),
+    params: new HttpParams({ fromObject: params || {} }),
+    responseType: 'text' as 'json', // Trick để ép kiểu nhận string từ HttpClient
+    withCredentials: true
+  };
+
+  return this.http.get(`${this.apiUrl}${endpoint}`, options).pipe(
+    map(res => res as unknown as string),
+    catchError((error: HttpErrorResponse) => this.handleError(error))
+  );
 }
 }

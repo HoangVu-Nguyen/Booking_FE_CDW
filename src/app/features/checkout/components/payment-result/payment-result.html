@@ -1,0 +1,46 @@
+<main class="pt-32 pb-24 px-6 max-w-7xl mx-auto">
+
+    @if (status() === 'loading') {
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="w-12 h-12 border-4 border-[#1a4d43] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+    }
+    @else if (status() === 'success' && bookingData()) {
+    <div class="max-w-7xl mx-auto px-6 py-10">
+
+        <app-payment-header 
+            [status]="'success'" 
+            [bookingCode]="bookingData()?.bookingCode" 
+            [amount]="bookingData()?.totalPrice">
+        </app-payment-header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-8 space-y-12">
+                
+                <app-journey-overview 
+                    [roomName]="bookingData()?.roomName"
+                    [guests]="bookingData()?.guests"
+                    [toursList]="bookingData()?.tours">
+                </app-journey-overview>
+                
+                <app-eco-impact></app-eco-impact>
+
+                <app-cost-summary [amount]="bookingData()?.totalPrice"></app-cost-summary>
+            </div>
+
+            <aside class="lg:col-span-4 space-y-8">
+                <app-next-steps></app-next-steps>
+                <app-support-card></app-support-card>
+            </aside>
+        </div>
+    </div>
+    }
+    @else {
+    <div class="min-h-screen flex items-center justify-center w-full">
+        <app-payment-header 
+            [status]="'failed'" 
+            [bookingCode]="bookingData()?.bookingCode || 'N/A'">
+        </app-payment-header>
+    </div>
+    }
+</main>

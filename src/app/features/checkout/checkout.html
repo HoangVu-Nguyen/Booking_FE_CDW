@@ -21,7 +21,7 @@
             </div>
 
             <div class="block">
-                <app-checkout-payment></app-checkout-payment>
+                <app-checkout-payment (methodChange)="onPaymentMethodChange($event)"></app-checkout-payment>
             </div>
 
             <!-- Nút xác nhận cho Desktop/Mobile ở cuối luồng nhập liệu -->
@@ -32,10 +32,14 @@
                         class="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-teal-700 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200">
                     </div>
 
-                    <button
-                        class="relative w-full py-5 px-8 rounded-full bg-gradient-to-r from-[#1a4d43] to-[#2d6a5f] text-white font-headline font-bold text-lg shadow-2xl hover:shadow-emerald-900/20 active:scale-[0.98] transition-all duration-500 flex items-center justify-center gap-4 overflow-hidden">
+                    <button (click)="onConfirmAndPay()" [disabled]="isProcessing()"
+                        class="relative w-full py-5 px-8 rounded-full bg-gradient-to-r from-[#1a4d43] to-[#2d6a5f] text-white font-headline font-bold text-lg shadow-2xl transition-all duration-500 flex items-center justify-center gap-4 overflow-hidden"
+                        [class.opacity-70]="isProcessing()" [class.cursor-not-allowed]="isProcessing()">
 
-                        <!-- Hiệu ứng lướt sáng (Shine Effect) chạy ngang nút -->
+                        @if (isProcessing()) {
+                        <div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span class="relative z-10 tracking-tight">Đang chuyển hướng...</span>
+                        } @else {
                         <div
                             class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shine">
                         </div>
@@ -43,10 +47,11 @@
                         <span class="relative z-10 tracking-tight">Xác nhận & Thanh toán ngay</span>
 
                         <div
-                            class="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm group-hover:bg-white/20 transition-colors">
+                            class="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm group-blur-sm group-hover:bg-white/20 transition-colors">
                             <span
                                 class="material-symbols-outlined text-[20px] font-bold transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
                         </div>
+                        }
                     </button>
                 </div>
 
