@@ -1,11 +1,13 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withViewTransitions, withInMemoryScrolling } from '@angular/router'; // Thêm các tính năng router
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors, HttpInterceptorFn } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-
+import { registerLocaleData } from '@angular/common';
+import localeVi from '@angular/common/locales/vi';
+registerLocaleData(localeVi);
 export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.includes(':8443')) {
     req = req.clone({
@@ -27,6 +29,7 @@ export const appConfig: ApplicationConfig = {
     ), 
 
     provideOAuthClient(), 
+    { provide: LOCALE_ID, useValue: 'vi-VN' },
 
     // CẤU HÌNH ROUTER MƯỢT MÀ
     provideRouter(

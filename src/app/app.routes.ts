@@ -19,6 +19,8 @@ import { TourDetail } from './features/tour/pages/tour-detail/tour-detail';
 import { TourList } from './features/tour/tour-list/tour-list';
 import { Checkout } from './features/checkout/checkout';
 import { PaymentResult } from './features/checkout/components/payment-result/payment-result';
+import { TripCard } from './features/profile/components/my-trips/components/trip-card/trip-card';
+import { TripList } from './features/profile/components/my-trips/components/trip-list/trip-list';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -64,7 +66,11 @@ export const routes: Routes = [
         children: [
           { path: 'info', component: ProfileInfo },
           { path: 'security', component: Security },
-          { path: 'trips', component: MyTrips },
+          { path: 'trips', component: MyTrips ,
+              children: [
+                { path: '', component: TripList },
+              ]
+          },
           { path: 'payments', component: PaymentMethods },
           { path: '', redirectTo: 'info', pathMatch: 'full' },
           {

@@ -1,0 +1,56 @@
+// Bỏ vào file: src/app/features/profile/services/trip.service.ts
+import { Injectable, inject, signal, computed } from "@angular/core";
+import { ApiService } from "../api/api.service";
+import { ApiResponse } from "../../models/response/api.response";
+import { TripResponse } from "../../models/response/trip.response";
+
+@Injectable({ providedIn: 'root' })
+export class TripService {
+    private apiService = inject(ApiService);
+
+    // 1. Core Signals để quản lý State (Trạng thái) tập trung
+    private _myTrips = signal<TripResponse[]>([]); // Lưu mảng danh sách hành trình tổng từ DB trả về
+    public isLoading = signal<boolean>(false);     // Trạng thái Loading khi gọi API
+
+    // 2. Read-only Signal lộ ra ngoài cho các Component bốc ra dùng trực tiếp
+    public myTrips = this._myTrips.asReadonly();
+
+    /**
+     * 3. Hàm gọi API bốc dữ liệu hành trình từ Backend
+     * Vì đã có JWT Token tự đính ở ApiService, bác chỉ cần bắn thẳng GET Request
+     */
+    public fetchUserTrips(): void {
+        this.isLoading.set(true);
+        
+        this.apiService.get<ApiResponse<TripResponse[]>>('/api/v1/trips/my-trips')
+            .subscribe({
+                next: (response) => {
+                    if (response && response.data) {
+                        console.log('[TRIP SERVICE] Danh sách hành trình khách hàng:', response.data);
+                        // Nhét mảng dữ liệu sạch vào Signal Store
+                        this._myTrips.set(response.data);
+                    }
+                    this.isLoading.set(false);
+                },
+                error: (err) => {
+                    console.error('[TRIP SERVICE] Lỗi lấy danh sách hành trình khách hàng:', err);
+                    this.isLoading.set(false);
+                }
+            });
+    }
+
+    /**
+     * 4. Tính năng Luxury bổ sung: Xóa/Hủy đơn cục bộ (Local Update)
+     * Khi user bấm Hủy phòng thành công, bác gọi hàm này để cập nhật trạng thái ngay trên UI
+     * mà không tốn thêm một lượt mạng để gọi lại API reload toàn bộ trang!
+     */
+    public updateTripStatusLocal(bookingCode: string, newStatus: 'PENDING' | 'UPCOMING' | 'COMPLETED' | 'CANCELLED'): void {
+        this._myTrips.update(trips => 
+            trips.map(trip => 
+                trip.bookingCode === bookingCode 
+                    ? { ...trip, status: newStatus } 
+                    : trip
+            )
+        );
+    }
+}

@@ -87,6 +87,7 @@
             </div>
 
             <!-- THÔNG TIN CÁ NHÂN (Bento Grid Style) -->
+             @if(userInfo(); as user){
             <section>
                 <div class="flex justify-between items-end mb-6">
                     <h3 class="font-headline text-2xl font-bold text-stone-900 tracking-tight">Hồ sơ cá nhân</h3>
@@ -99,19 +100,19 @@
                         class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
                         <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Họ và
                             Tên</label>
-                        <p class="text-lg font-medium text-stone-900">Nguyễn Bùi Hoàng Vũ</p>
+                        <p class="text-lg font-medium text-stone-900">{{user.username}}</p>
                     </div>
                     <div
                         class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
                         <label
                             class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Email</label>
-                        <p class="text-lg font-medium text-stone-900">vu.nguyen@clyvasync.com</p>
+                        <p class="text-lg font-medium text-stone-900">{{user.email}}</p>
                     </div>
                     <div
                         class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
                         <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-stone-400 block mb-1">Điện
                             thoại</label>
-                        <p class="text-lg font-medium text-stone-900">+84 908 123 456</p>
+                        <p class="text-lg font-medium text-stone-900">{{user.phoneNumber}}</p>
                     </div>
                     <div
                         class="bg-stone-50 p-6 rounded-[1.5rem] border border-stone-100/50 hover:bg-stone-100/50 transition-colors cursor-default">
@@ -121,6 +122,7 @@
                     </div>
                 </div>
             </section>
+        }
 
             <!-- HOẠT ĐỘNG GẦN ĐÂY (List tạp chí cao cấp) -->
             <section class="pt-6">
