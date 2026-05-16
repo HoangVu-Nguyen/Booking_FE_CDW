@@ -25,6 +25,8 @@ export class UserProfile implements OnInit {
     if (this.oauthService.hasValidAccessToken()) {
       if (!this.userInfo()) {
         this.userService.fetchHeaderInfo();
+            console.log(this.userInfo())
+
       }
 
 
