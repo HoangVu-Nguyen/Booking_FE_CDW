@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TripDetailResponse } from '../../../../../../core/models/response/trip-detail.response';
 
@@ -10,16 +10,25 @@ import { TripDetailResponse } from '../../../../../../core/models/response/trip-
   styleUrl: './booking-main-info.css',
 })
 export class BookingMainInfo {
-  // Nhận dữ liệu chi tiết từ component cha (BookingDetailComponent)
   @Input({ required: true }) data!: TripDetailResponse;
 
+  // Output Signal to emit event to parent component
+  public openRules = output(); 
+
   /**
-   * Getter gom nhóm tên các không gian đã đặt.
-   * Ví dụ: "Master Suite Villa (x1), Deluxe Room (x2)"
+   * Triggers when user clicks on the Handbook/Rules card
+   */
+  public handleHandbookClick(): void {
+    this.openRules.emit(); 
+  }
+
+  /**
+   * Getter to aggregate booked space names
+   * Format: "Master Suite Villa (x1), Deluxe Room (x2)"
    */
   get roomNamesDisplay(): string {
     if (!this.data?.rooms || this.data.rooms.length === 0) {
-      return 'Đang cập nhật không gian';
+      return 'Updating spaces...';
     }
     return this.data.rooms
       .map(room => `${room.roomName} (x${room.quantity})`)
@@ -27,13 +36,13 @@ export class BookingMainInfo {
   }
 
   /**
-   * Getter lấy Icon thanh toán dựa theo phương thức
-   * (Mở rộng thêm nếu sau này có Momo, VNPay...)
+   * Getter to parse payment method to standard badges
    */
   get paymentMethodBadge(): string {
-    if (!this.data?.paymentMethod) return 'CHUYỂN KHOẢN';
-    if (this.data.paymentMethod.toUpperCase().includes('VISA')) return 'VISA';
-    if (this.data.paymentMethod.toUpperCase().includes('MASTER')) return 'MASTER';
-    return 'THẺ/VÍ';
+    if (!this.data?.paymentMethod) return 'TRANSFER';
+    const method = this.data.paymentMethod.toUpperCase();
+    if (method.includes('VISA')) return 'VISA';
+    if (method.includes('MASTER')) return 'MASTER';
+    return 'CARD/WALLET';
   }
 }

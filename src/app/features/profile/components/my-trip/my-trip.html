@@ -8,7 +8,7 @@
     <div class="lg:col-span-2 flex flex-col gap-6">
 
         <!-- Khối Thông tin chính -->
-        <app-booking-main-info [data]="detail"></app-booking-main-info>
+        <app-booking-main-info [data]="detail" (openRules)="setRulesModalState(true)"></app-booking-main-info>
 
         <!-- BỘ SƯU TẬP HÌNH ẢNH (MỚI BỔ SUNG) -->
         <app-booking-gallery [images]="detail.property.images"></app-booking-gallery>
@@ -18,25 +18,19 @@
     <div class="flex flex-col gap-6">
 
         <app-booking-concierge [host]="detail.host"></app-booking-concierge>
-        <app-booking-map 
-        [name]="detail.property.name"
-        [address]="detail.property.address"
-        [lat]="detail.property.latitude"
-        [lng]="detail.property.longitude"
-        [image]="detail.property.images && detail.property.images.length > 0 ? detail.property.images[0] : ''">
-    </app-booking-map>
+        <app-booking-map [name]="detail.property.name" [address]="detail.property.address"
+            [lat]="detail.property.latitude" [lng]="detail.property.longitude"
+            [image]="detail.property.images && detail.property.images.length > 0 ? detail.property.images[0] : ''">
+        </app-booking-map>
     </div>
 </section>
 
 <!-- ========================================== -->
 <!-- 3. FUNCTIONAL TIMELINE (Lịch trình & Dịch vụ) -->
 <!-- ========================================== -->
-<app-booking-timeline 
-            [tours]="detail.tours" 
-            [checkIn]="detail.checkIn" 
-            [checkOut]="detail.checkOut"
-            [propertyName]="detail.property.name">
-        </app-booking-timeline>
+<app-booking-timeline [tours]="detail.tours" [checkIn]="detail.checkIn" [checkOut]="detail.checkOut"
+    [propertyName]="detail.property.name">
+</app-booking-timeline>
 
 <!-- ========================================== -->
 <!-- 4. RATING & REVIEW (MỚI BỔ SUNG) -->
@@ -61,6 +55,8 @@
         <span class="material-symbols-outlined text-[18px]">edit_calendar</span> Sửa đổi
     </button>
 </div>
+<app-booking-rules-modal [isOpen]="isRulesModalOpen()" [policyData]="detail" (close)="setRulesModalState(false)">
+</app-booking-rules-modal>
 } @else {
 <div class="flex items-center justify-center h-64">
     <span class="material-symbols-outlined text-[48px] text-stone-400 animate-pulse">hourglass_empty</span>

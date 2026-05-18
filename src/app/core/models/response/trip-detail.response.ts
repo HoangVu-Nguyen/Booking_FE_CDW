@@ -45,4 +45,12 @@ export interface TripDetailResponse {
     host: HostInfo;
     rooms: RoomBookedInfo[];
     tours: TourTimelineInfo[];
+    policy: BookingPolicyInfo;
+}
+export interface BookingPolicyInfo {
+    checkInTime: string;
+    checkOutTime: string;
+    allowsPets: boolean;
+    allowsSmoking: boolean;
+    allowsParties: boolean;
 }

@@ -1,0 +1,132 @@
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6" id="room-rules-modal" [ngClass]="isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'">
+    <div class="absolute inset-0 bg-stone-900/40 backdrop-blur-md" (click)="onCloseModal()"></div>
+    
+    <div class="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-stone-100 overflow-hidden flex flex-col max-h-[90vh] transition-all duration-500 ease-out transform"
+         [ngClass]="isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-8'">
+        
+        <div class="flex items-center justify-between p-6 md:p-8 border-b border-stone-100">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-serif font-light text-stone-900 tracking-tight">
+                    Quy định & <span class="italic text-stone-400">Hướng dẫn</span>
+                </h2>
+                <p class="text-xs text-stone-400 font-medium tracking-wide uppercase mt-1">Nội quy lưu trú độc bản tại hệ thống</p>
+            </div>
+            <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-stone-50 text-stone-400 hover:text-stone-800 transition-colors" (click)="onCloseModal()">
+                <span class="material-symbols-outlined text-[22px]">close</span>
+            </button>
+        </div>
+
+        <div class="p-6 md:p-8 space-y-8 overflow-y-auto no-scrollbar flex-1">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div class="bg-[#fcfbf9] p-5 rounded-2xl border border-stone-200/60">
+                    <div class="flex items-center gap-2 text-[#173124] mb-4">
+                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                        <h3 class="text-[11px] font-bold uppercase tracking-[0.15em]">Khung giờ nhận / trả</h3>
+                    </div>
+                    <ul class="space-y-3 text-[13px] font-medium text-stone-600">
+                        <li class="flex justify-between items-center pb-2 border-b border-stone-200/40">
+                            <span>Nhận phòng (Check-in)</span>
+                            <span class="font-bold text-[#173124] bg-white px-2 py-0.5 rounded shadow-sm border border-stone-100">
+                                {{ policyData?.policy?.checkInTime || '14:00' }}
+                            </span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span>Trả phòng (Check-out)</span>
+                            <span class="font-bold text-stone-900 bg-white px-2 py-0.5 rounded shadow-sm border border-stone-100">
+                                {{ policyData?.policy?.checkOutTime || '12:00' }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-[#fcfbf9] p-5 rounded-2xl border border-stone-200/60 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 text-[#173124] mb-4">
+                        <span class="material-symbols-outlined text-[18px]">gavel</span>
+                        <h3 class="text-[11px] font-bold uppercase tracking-[0.15em]">Chính sách chung</h3>
+                    </div>
+                    <ul class="space-y-2.5 text-[13px] font-medium text-stone-600">
+                        <li class="flex items-center gap-2">
+                            @if (policyData?.policy?.allowsSmoking) {
+                                <span class="material-symbols-outlined text-emerald-700 text-[16px]">smoking_rooms</span>
+                                <span>Cho phép hút thuốc ở khu vực riêng</span>
+                            } @else {
+                                <span class="material-symbols-outlined text-red-600 text-[16px] font-bold">block</span>
+                                <span>Không hút thuốc trong khuôn viên phòng</span>
+                            }
+                        </li>
+                        <li class="flex items-center gap-2">
+                            @if (policyData?.policy?.allowsPets) {
+                                <span class="material-symbols-outlined text-emerald-700 text-[16px]">pets</span>
+                                <span>Cho phép mang theo thú cưng <span class="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ml-1">Có phụ thu</span></span>
+                            } @else {
+                                <span class="material-symbols-outlined text-stone-400 text-[16px]">pets</span>
+                                <span class="text-stone-400 line-through">Không cho phép mang theo thú cưng</span>
+                            }
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-stone-900 border-b border-stone-100 pb-2">
+                    <span class="material-symbols-outlined text-[18px] text-stone-400">info</span>
+                    <h3 class="text-[11px] font-bold uppercase tracking-[0.15em]">Hướng dẫn lưu trú thiết yếu</h3>
+                </div>
+                
+                <div class="space-y-3.5 text-[13px] font-medium text-stone-600 leading-relaxed">
+                    <div class="flex gap-3 p-3 rounded-xl hover:bg-stone-50/50 transition-colors">
+                        <div class="mt-1 w-1.5 h-1.5 rounded-full bg-[#e8c39e] shrink-0"></div>
+                        <p><span class="text-stone-900 font-bold">Giờ yên tĩnh:</span> Vui lòng giữ trật tự sau 22:00 để bảo đảm trải nghiệm nghỉ dưỡng riêng tư của các vị khách xung quanh.</p>
+                    </div>
+
+                    <!-- @if (policyData?.policy?.lateCheckInInstruction) {
+                        <div class="flex gap-3 p-3 rounded-xl hover:bg-stone-50/50 transition-colors">
+                            <div class="mt-1 w-1.5 h-1.5 rounded-full bg-[#e8c39e] shrink-0"></div>
+                            <p><span class="text-stone-900 font-bold">Check-in muộn:</span> {{ policyData.policy.lateCheckInInstruction }}</p>
+                        </div>
+                    } -->
+
+                    <div class="flex gap-3 p-3 rounded-xl hover:bg-stone-50/50 transition-colors">
+                        <div class="mt-1 w-1.5 h-1.5 rounded-full bg-[#e8c39e] shrink-0"></div>
+                        <p>
+                            <span class="text-stone-900 font-bold">Tổ chức sự kiện:</span> 
+                            {{ policyData?.policy?.allowsParties ? 'Được phép tổ chức tiệc tùng, sự kiện nhỏ trong khuôn viên chỉ định.' : 'Nghiêm cấm tổ chức tiệc tùng hoặc các sự kiện gây ồn ào.' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4 bg-stone-50 p-6 rounded-2xl border border-stone-100">
+                <div class="flex items-center gap-2 text-stone-900 mb-2">
+                    <span class="material-symbols-outlined text-[18px] text-stone-400">assignment_return</span>
+                    <h3 class="text-[11px] font-bold uppercase tracking-[0.15em]">Chính sách hoàn hủy linh hoạt</h3>
+                </div>
+                
+                <div class="relative pl-4 space-y-4 before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[1px] before:bg-stone-200">
+                    <div class="flex justify-between items-start text-[13px]">
+                        <div>
+                            <p class="font-bold text-stone-900">Hoàn tiền trọn vẹn 100%</p>
+                            <p class="text-[11px] text-stone-400 font-medium">Khi thông báo hủy phòng trước mốc 14 ngày so với ngày nhận phòng thực tế.</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start text-[13px]">
+                        <div>
+                            <p class="font-bold text-stone-800">Hoàn tiền linh hoạt 50%</p>
+                            <p class="text-[11px] text-stone-400 font-medium">Khi thông báo hủy phòng trong khoảng từ 7 đến 14 ngày trước ngày đến lịch hẹn.</p>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-red-700 font-bold italic pt-1">* Hệ thống không hỗ trợ hoàn tiền đối với các trường hợp hủy phòng trong vòng 7 ngày trước lịch check-in.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-stone-100 bg-white">
+            <button class="w-full py-4 bg-[#173124] hover:bg-[#0f2118] text-white rounded-full text-[12px] font-bold uppercase tracking-widest shadow-md hover:shadow-lg transition-all active:scale-[0.98]" 
+                (click)="onCloseModal()">
+                Đã hiểu quy định
+            </button>
+        </div>
+    </div>
+</div>
