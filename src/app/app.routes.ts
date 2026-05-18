@@ -21,6 +21,7 @@ import { Checkout } from './features/checkout/checkout';
 import { PaymentResult } from './features/checkout/components/payment-result/payment-result';
 import { TripCard } from './features/profile/components/my-trips/components/trip-card/trip-card';
 import { TripList } from './features/profile/components/my-trips/components/trip-list/trip-list';
+import { HomestayWishlist } from './features/homestay-wishlist/homestay-wishlist';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -59,6 +60,11 @@ export const routes: Routes = [
       {
         path: 'payment-result',
         component: PaymentResult
+      },
+      {
+      path:'wishlist',
+      component: HomestayWishlist,
+      title: 'Yêu thích - Clyvasync'
       },
       {
         path: 'profile',

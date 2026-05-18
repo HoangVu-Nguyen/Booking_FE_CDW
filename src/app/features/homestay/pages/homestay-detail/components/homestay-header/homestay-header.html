@@ -1,52 +1,80 @@
-<header class="pt-32 pb-8 border-b border-outline-variant/20 mb-12 relative group/header animate-[fadeInUp_0.8s_ease-out]">
-    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover/header:opacity-100 transition-opacity duration-1000 pointer-events-none -z-10"></div>
+<header
+    class="pt-32 pb-8 border-b border-outline-variant/20 mb-12 relative group/header animate-[fadeInUp_0.8s_ease-out]">
+    <div
+        class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover/header:opacity-100 transition-opacity duration-1000 pointer-events-none -z-10">
+    </div>
 
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div class="flex-1">
-            
+
             <div class="flex flex-wrap items-center gap-4 mb-6">
                 <!-- 1. City Badge động -->
-                <span class="inline-flex items-center bg-primary/5 hover:bg-primary/10 text-primary border border-primary/20 hover:border-primary/40 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 cursor-default shadow-sm hover:shadow-md">
-                    <span class="material-symbols-outlined text-[14px] mr-1.5" style="font-variation-settings: 'FILL' 1;">explore</span>
+                <span
+                    class="inline-flex items-center bg-primary/5 hover:bg-primary/10 text-primary border border-primary/20 hover:border-primary/40 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 cursor-default shadow-sm hover:shadow-md">
+                    <span class="material-symbols-outlined text-[14px] mr-1.5"
+                        style="font-variation-settings: 'FILL' 1;">explore</span>
                     {{ homestay()?.cityName || 'Loading...' }}
                 </span>
-                
+
                 <div class="h-4 w-[1px] bg-outline-variant/30 hidden md:block"></div>
-                
+
                 <!-- 2. Rating & Reviews động -->
-                <div class="flex items-center gap-1.5 bg-surface hover:bg-surface-container-low px-3 py-1.5 rounded-lg shadow-sm hover:shadow-md border border-outline-variant/10 transition-all duration-300 cursor-pointer group/rating hover:-translate-y-0.5">
-                    <span class="material-symbols-outlined text-[18px] text-amber-400 group-hover/rating:text-amber-500 transition-colors" style="font-variation-settings: 'FILL' 1;">star</span>
-                    <span class="text-sm font-extrabold text-on-surface">{{ homestay()?.averageRating | number:'1.1-2' }}</span>
-                    <span class="text-on-surface-variant text-[13px] font-medium ml-1 group-hover/rating:text-on-surface transition-colors">
-                        · <span class="underline decoration-outline-variant/40 underline-offset-4 group-hover/rating:decoration-primary/50 transition-colors">128 reviews</span>
+                <div
+                    class="flex items-center gap-1.5 bg-surface hover:bg-surface-container-low px-3 py-1.5 rounded-lg shadow-sm hover:shadow-md border border-outline-variant/10 transition-all duration-300 cursor-pointer group/rating hover:-translate-y-0.5">
+                    <span
+                        class="material-symbols-outlined text-[18px] text-amber-400 group-hover/rating:text-amber-500 transition-colors"
+                        style="font-variation-settings: 'FILL' 1;">star</span>
+                    <span class="text-sm font-extrabold text-on-surface">{{ homestay()?.averageRating | number:'1.1-2'
+                        }}</span>
+                    <span
+                        class="text-on-surface-variant text-[13px] font-medium ml-1 group-hover/rating:text-on-surface transition-colors">
+                        · <span
+                            class="underline decoration-outline-variant/40 underline-offset-4 group-hover/rating:decoration-primary/50 transition-colors">128
+                            reviews</span>
                     </span>
                 </div>
             </div>
 
             <!-- 3. Tên Homestay động -->
-            <h1 class="text-5xl md:text-7xl font-headline font-black tracking-tight leading-[1.05] drop-shadow-sm mb-6 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-800 to-gray-500 hover:from-blue-600 hover:to-blue-400 transition-all duration-500 cursor-default">
+            <h1
+                class="text-5xl md:text-7xl font-headline font-black tracking-tight leading-[1.05] drop-shadow-sm mb-6 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-800 to-gray-500 hover:from-blue-600 hover:to-blue-400 transition-all duration-500 cursor-default">
                 {{ homestay()?.name }}
             </h1>
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 w-full">
-                
+
                 <!-- 4. Địa chỉ đầy đủ động -->
-                <p class="flex items-center gap-2 text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer group/loc w-fit">
-                    <span class="material-symbols-outlined text-primary group-hover/loc:-translate-y-1 transition-transform duration-300">location_on</span>
-                    <span class="border-b border-transparent group-hover/loc:border-primary/50 pb-0.5 transition-colors duration-300">
+                <p
+                    class="flex items-center gap-2 text-on-surface-variant font-medium hover:text-primary transition-colors cursor-pointer group/loc w-fit">
+                    <span
+                        class="material-symbols-outlined text-primary group-hover/loc:-translate-y-1 transition-transform duration-300">location_on</span>
+                    <span
+                        class="border-b border-transparent group-hover/loc:border-primary/50 pb-0.5 transition-colors duration-300">
                         {{ homestay()?.addressDetail }}, {{ homestay()?.cityName }}
                     </span>
                 </p>
-                
-                <div class="flex items-center gap-3 self-start sm:self-end border-t sm:border-t-0 border-outline-variant/20 pt-4 sm:pt-0 w-full sm:w-auto">
-                    <button (click)="onShare()" class="flex items-center gap-2 text-sm font-bold text-on-surface hover:text-primary bg-transparent hover:bg-primary/5 px-4 py-2.5 rounded-xl border border-transparent hover:border-primary/10 transition-all duration-300 active:scale-95">
+
+                <div
+                    class="flex items-center gap-3 self-start sm:self-end border-t sm:border-t-0 border-outline-variant/20 pt-4 sm:pt-0 w-full sm:w-auto">
+                    <button (click)="onShare()"
+                        class="flex items-center gap-2 text-sm font-bold text-on-surface hover:text-primary bg-transparent hover:bg-primary/5 px-4 py-2.5 rounded-xl border border-transparent hover:border-primary/10 transition-all duration-300 active:scale-95">
                         <span class="material-symbols-outlined text-[20px]">ios_share</span>
                         Share
                     </button>
-                    
-                    <button class="flex items-center gap-2 text-sm font-bold text-on-surface hover:text-rose-600 bg-transparent hover:bg-rose-50 px-4 py-2.5 rounded-xl border border-transparent hover:border-rose-100 transition-all duration-300 active:scale-95 group/save">
-                        <span class="material-symbols-outlined text-[20px] group-hover/save:scale-110 transition-transform duration-300">favorite</span>
-                        Save
+
+                    <button (click)="handleFavoriteClick()"
+                        class="flex items-center gap-2 text-sm font-bold px-4 py-2.5 rounded-xl border transition-all duration-300 active:scale-95 group/save"
+                        [ngClass]="homestay()?.isFavorite 
+            ? 'text-rose-600 bg-rose-50 border-rose-100 shadow-sm' 
+            : 'text-on-surface hover:text-rose-600 bg-transparent hover:bg-rose-50 border-transparent hover:border-rose-100'">
+
+                        <span
+                            class="material-symbols-outlined text-[20px] group-hover/save:scale-110 transition-transform duration-300"
+                            [style.font-variation-settings]="homestay()?.isFavorite ? '\'FILL\' 1' : '\'FILL\' 0'">
+                            favorite
+                        </span>
+
+                        {{ homestay()?.isFavorite ? 'Saved' : 'Save' }}
                     </button>
                 </div>
             </div>

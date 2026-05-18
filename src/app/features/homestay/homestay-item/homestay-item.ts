@@ -49,4 +49,5 @@ export class HomestayItem implements OnInit {
     this.currentImgIndex.set(0); 
     this.cdr.markForCheck();
   }
+  
 }

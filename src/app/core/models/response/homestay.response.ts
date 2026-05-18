@@ -28,6 +28,7 @@ export interface HomestayResponse {
   reviewCount: number;
   tours:TourResponse[];
   rooms:RoomResponse[];
+  isFavorite: boolean;
 }
 
 export interface AmenityResponse {
