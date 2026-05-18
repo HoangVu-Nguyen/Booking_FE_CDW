@@ -64,17 +64,17 @@
 
                     <button (click)="handleFavoriteClick()"
                         class="flex items-center gap-2 text-sm font-bold px-4 py-2.5 rounded-xl border transition-all duration-300 active:scale-95 group/save"
-                        [ngClass]="homestay()?.isFavorite 
+                        [ngClass]="homestay()?.favorite 
             ? 'text-rose-600 bg-rose-50 border-rose-100 shadow-sm' 
             : 'text-on-surface hover:text-rose-600 bg-transparent hover:bg-rose-50 border-transparent hover:border-rose-100'">
 
                         <span
                             class="material-symbols-outlined text-[20px] group-hover/save:scale-110 transition-transform duration-300"
-                            [style.font-variation-settings]="homestay()?.isFavorite ? '\'FILL\' 1' : '\'FILL\' 0'">
+                            [style.font-variation-settings]="homestay()?.favorite ? '\'FILL\' 1' : '\'FILL\' 0'">
                             favorite
                         </span>
 
-                        {{ homestay()?.isFavorite ? 'Saved' : 'Save' }}
+                        {{ homestay()?.favorite ? 'Saved' : 'Save' }}
                     </button>
                 </div>
             </div>

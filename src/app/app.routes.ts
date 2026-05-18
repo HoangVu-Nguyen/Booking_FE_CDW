@@ -72,6 +72,9 @@ export const routes: Routes = [
         children: [
           { path: 'info', component: ProfileInfo },
           { path: 'security', component: Security },
+          {
+            path:'favorites',component: HomestayWishlist, title: 'Yêu thích - Clyvasync'
+          },
           { path: 'trips', component: MyTrips ,
               children: [
                 { path: '', component: TripList },

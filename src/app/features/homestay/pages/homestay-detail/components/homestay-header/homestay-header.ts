@@ -32,8 +32,8 @@ export class HomestayHeader {
     const currentData = this.homestay();
     if (!currentData) return;
 
-    const originalStatus = currentData.isFavorite;
-    currentData.isFavorite = !originalStatus;
+    const originalStatus = currentData.favorite;
+    currentData.favorite = !originalStatus;
 
     this.cdr.markForCheck();
 
@@ -42,14 +42,14 @@ export class HomestayHeader {
       next: (response) => {
         if (response.success) {
           // Đồng bộ lại dữ liệu chuẩn từ Backend
-          currentData.isFavorite = response.data;
+          currentData.favorite = response.data;
           this.cdr.markForCheck();
         }
       },
       error: (err) => {
         console.error('[FAVORITE] Failed to toggle favorite status in Header:', err);
         // Rollback: Trả lại trạng thái cũ nếu rớt mạng hoặc lỗi
-        currentData.isFavorite = originalStatus;
+        currentData.favorite = originalStatus;
         this.cdr.markForCheck();
       }
     });
