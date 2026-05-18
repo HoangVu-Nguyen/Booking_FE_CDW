@@ -1,0 +1,27 @@
+/* Ép tất cả biến màu sắc trong phạm vi Itinerary Canvas về định dạng RGB mà html2canvas đọc hiểu */
+:host ::ng-deep #itineraryCanvas,
+:host ::ng-deep #itineraryCanvas * {
+  /* Khống chế không cho Tailwind ép hàm oklch vào các thuộc tính màu nền và viền */
+  color-scheme: light;
+  
+  /* Lọc thủ công các màu stone kinh điển của Tailwind sang HEX/RGB phẳng */
+  --tw-text-opacity: 1 !important;
+  --tw-border-opacity: 1 !important;
+  --tw-bg-opacity: 1 !important;
+}
+
+/* Fix cứng các thẻ sử dụng màu stone bọc trong canvas để chặn đứng oklch */
+.text-stone-900 { color: rgb(28, 25, 23) !important; }
+.text-stone-600 { color: rgb(87, 83, 78) !important; }
+.text-stone-500 { color: rgb(120, 113, 108) !important; }
+.text-stone-400 { color: rgb(168, 162, 158) !important; }
+
+.bg-stone-200 { background-color: rgb(231, 229, 228) !important; }
+.bg-stone-100 { background-color: rgb(245, 245, 244) !important; }
+.bg-stone-50  { background-color: rgb(250, 250, 249) !important; }
+
+.border-stone-200 { border-color: rgb(231, 229, 228) !important; }
+.border-stone-100 { border-color: rgb(245, 245, 244) !important; }
+
+/* Đảm bảo dòng line trục thời gian không xài oklch */
+.bg-stone-200 { background-color: #e7e5e4 !important; }

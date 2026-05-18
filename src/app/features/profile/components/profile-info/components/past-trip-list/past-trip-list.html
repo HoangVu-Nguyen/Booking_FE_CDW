@@ -1,0 +1,73 @@
+<section class="pt-6">
+    <div class="flex justify-between items-end mb-8 border-b border-stone-200 pb-4">
+        <h3 class="font-headline text-2xl font-bold text-stone-900 tracking-tight">Dấu ấn hành trình</h3>
+        <a class="text-[#173124] font-bold text-[11px] uppercase tracking-widest hover:underline"
+            [routerLink]="['/profile/trips']">Tất cả</a>
+    </div>
+
+    @if (tripService.isPastTripsLoading()) {
+        <div class="space-y-6">
+            <div class="h-44 bg-stone-100 rounded-[2rem] animate-pulse w-full"></div>
+            <div class="h-44 bg-stone-100 rounded-[2rem] animate-pulse w-full"></div>
+        </div>
+    } @else {
+        <div class="space-y-6">
+            
+            @for (trip of tripService.pastTrips(); track trip.bookingId) {
+                
+                <div [routerLink]="['/profile/trip', trip.bookingCode]"
+                    class="group flex flex-col md:flex-row items-center gap-6 p-4 rounded-[2rem] hover:bg-stone-50 transition-colors duration-300 cursor-pointer border border-transparent hover:border-stone-100">
+                    
+                    <div class="w-full md:w-56 h-36 flex-shrink-0 rounded-[1.5rem] overflow-hidden shadow-sm">
+                        <img [src]="trip.primaryImageUrl" [alt]="trip.homestayName"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                    </div>
+                    
+                    <div class="flex-1 w-full">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-headline text-xl font-bold text-stone-900 group-hover:text-[#173124] transition-colors">
+                                {{ trip.homestayName }}
+                            </h4>
+                            
+                            <span class="flex items-center gap-1 text-[13px] font-bold text-stone-900 bg-stone-100 px-2 py-1 rounded-md">
+                                <span class="material-symbols-outlined text-[14px] text-amber-500"
+                                    style="font-variation-settings: 'FILL' 1;">star</span> 
+                                {{ trip.averageRating | number:'1.1-1' }}
+                            </span>
+                        </div>
+                        
+                        <p class="text-[13px] text-stone-500 mb-4 font-medium">
+                            {{ trip.locationName }} • {{ trip.completedMonthYear }}
+                        </p>
+                        
+                        <div class="flex space-x-2">
+                            <span class="bg-[#173124]/5 text-[#173124] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#173124]/10">
+                                Hoàn tất
+                            </span>
+                            
+                            @if (trip.tripReviewStatus === 'EXCELLENT') {
+                                <span class="bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                                    Tuyệt hảo
+                                </span>
+                            } @else {
+                                <span class="bg-stone-50 text-stone-500 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                                    Hài lòng
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                @if (!$last) {
+                    <div class="w-full h-[1px] bg-stone-100"></div>
+                }
+
+            } @empty {
+                <div class="text-center py-16 text-stone-400 bg-stone-50/40 rounded-[2rem] border border-dashed border-stone-200">
+                    <span class="material-symbols-outlined text-4xl mb-2">auto_stories</span>
+                    <p class="text-[11px] font-bold uppercase tracking-widest">Chưa có dấu ấn hành trình nào được lưu giữ</p>
+                </div>
+            }
+        </div>
+    }
+</section>

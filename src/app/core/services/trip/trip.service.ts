@@ -4,6 +4,7 @@ import { ApiService } from "../api/api.service";
 import { ApiResponse } from "../../models/response/api.response";
 import { TripResponse } from "../../models/response/trip.response";
 import { TripDetailResponse } from "../../models/response/trip-detail.response";
+import { PastTripResponse } from "../../models/response/past-trip.response";
 
 @Injectable({ providedIn: 'root' })
 export class TripService {
@@ -18,6 +19,10 @@ export class TripService {
     private _currentTripDetail = signal<TripDetailResponse | null>(null);
     public currentTripDetail = this._currentTripDetail.asReadonly();
     public isDetailLoading = signal<boolean>(false);
+
+    private _pastTrips = signal<PastTripResponse[]>([]);
+    public pastTrips = this._pastTrips.asReadonly();
+    public isPastTripsLoading = signal<boolean>(false);
 
     /**
      * 3. Hàm gọi API bốc dữ liệu hành trình từ Backend
@@ -83,4 +88,21 @@ export class TripService {
     public clearTripDetail(): void {
         this._currentTripDetail.set(null);
     }
+     public fetchPastTrips(): void {
+    this.isPastTripsLoading.set(true);
+
+    this.apiService.get<ApiResponse<PastTripResponse[]>>('/api/v1/trips/past-trips')
+      .subscribe({
+        next: (response) => {
+          if (response && response.data) {
+            this._pastTrips.set(response.data); // Bơm mớ data thật vào Signal
+          }
+          this.isPastTripsLoading.set(false);
+        },
+        error: (err) => {
+          console.error('[TRIP SERVICE] Error fetching past trips:', err);
+          this.isPastTripsLoading.set(false);
+        }
+      });
+  }
 }

@@ -9,6 +9,7 @@ import { RoomResponse } from "../../models/response/room.response";
 import { TourResponse } from "../../models/response/tour.response";
 import { BookingInitRequest } from "../../models/request/booking.request";
 import { BookingInitResponse } from "../../models/response/booking.response";
+import { PastTripResponse } from "../../models/response/past-trip.response";
 
 // booking.service.ts
 
@@ -26,6 +27,8 @@ export class BookingService {
     currentSelectedPlan = signal<any | null>(null);
     selectedRoomCount = signal<number>(1);
     currentTourSelections = signal<TourResponse[]>([]);
+
+    
 
     nights = computed(() => {
         const start = this.checkInDate();
@@ -96,4 +99,5 @@ export class BookingService {
         // API giờ có thêm biến method
         return this.apiService.getText(`/api/v1/payments/create-url?bookingCode=${bookingCode}&method=${method}`);
     }
+   
 }

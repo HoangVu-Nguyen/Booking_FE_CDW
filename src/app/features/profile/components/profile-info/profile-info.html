@@ -124,78 +124,7 @@
             </section>
         }
 
-            <!-- HOẠT ĐỘNG GẦN ĐÂY (List tạp chí cao cấp) -->
-            <section class="pt-6">
-                <div class="flex justify-between items-end mb-8 border-b border-stone-200 pb-4">
-                    <h3 class="font-headline text-2xl font-bold text-stone-900 tracking-tight">Dấu ấn hành trình</h3>
-                    <a class="text-[#173124] font-bold text-[11px] uppercase tracking-widest hover:underline"
-                        href="#">Tất cả</a>
-                </div>
-
-                <div class="space-y-6">
-                    <!-- Activity 1 -->
-                    <div
-                        class="group flex flex-col md:flex-row items-center gap-6 p-4 rounded-[2rem] hover:bg-stone-50 transition-colors duration-300 cursor-pointer border border-transparent hover:border-stone-100">
-                        <div class="w-full md:w-56 h-36 flex-shrink-0 rounded-[1.5rem] overflow-hidden shadow-sm">
-                            <img alt="The Pine Retreat"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUnhD2pAMSHO4nzgGYy9K1vHRy466QJyDxwZ6_y_vg1LNI8lfAcgxqcFobJ9DIWqO0nn5Hifto12Ca3MJgAMXER40kRMGNBNJVktB-z2K7fVdaKe-9H4qLbP5pcwgWectBNFXw18Hkae4jptj0fne-Gu3RaXjGbt5kh53GTHZW7-7iqFLT8ObXtNPGLeuBFCae00g7murfTpAExPqFzHVYeLKDaslP30vfK0ColMCMtMpCBn_f5da9zSbGZEKY5pOOsJ0v-3eAA3Y" />
-                        </div>
-                        <div class="flex-1 w-full">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4
-                                    class="font-headline text-xl font-bold text-stone-900 group-hover:text-[#173124] transition-colors">
-                                    The Pine Retreat</h4>
-                                <span
-                                    class="flex items-center gap-1 text-[13px] font-bold text-stone-900 bg-stone-100 px-2 py-1 rounded-md">
-                                    <span class="material-symbols-outlined text-[14px] text-amber-500"
-                                        style="font-variation-settings: 'FILL' 1;">star</span> 4.9
-                                </span>
-                            </div>
-                            <p class="text-[13px] text-stone-500 mb-4 font-medium">Đà Lạt, Lâm Đồng • Tháng 10, 2025</p>
-                            <div class="flex space-x-2">
-                                <span
-                                    class="bg-[#173124]/5 text-[#173124] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#173124]/10">Hoàn
-                                    tất</span>
-                                <span
-                                    class="bg-stone-100 text-stone-600 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Tuyệt
-                                    hảo</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dòng kẻ phân cách mỏng -->
-                    <div class="w-full h-[1px] bg-stone-100"></div>
-
-                    <!-- Activity 2 -->
-                    <div
-                        class="group flex flex-col md:flex-row items-center gap-6 p-4 rounded-[2rem] hover:bg-stone-50 transition-colors duration-300 cursor-pointer border border-transparent hover:border-stone-100">
-                        <div class="w-full md:w-56 h-36 flex-shrink-0 rounded-[1.5rem] overflow-hidden shadow-sm">
-                            <img alt="Cliffside Monolith"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXCkGezO9p8nc0YEIDdSDThisKQZIXYvIELq4AxEQgOBQQdrObbkefCo9pCnvXnZ8IuK22eBMnme7poIT6RADqA4UKkQ4pGwQsrwVcJAFzeBICtRdFtlewxDamXP5dIOuPnkQny85pSD1utoexF6wo5Lib5VUcDJJKg70OyzT_xns8ko779cTMUi_wxxUeEHEjadkvq_0jQD8RwSg2Oso1xDfdVRk3-C7R3VR801l_-psafp5vsmQ3XlXTgL6paVtuKOkO6Lur0Vg" />
-                        </div>
-                        <div class="flex-1 w-full">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4
-                                    class="font-headline text-xl font-bold text-stone-900 group-hover:text-[#173124] transition-colors">
-                                    Cliffside Monolith</h4>
-                                <span
-                                    class="flex items-center gap-1 text-[13px] font-bold text-stone-900 bg-stone-100 px-2 py-1 rounded-md">
-                                    <span class="material-symbols-outlined text-[14px] text-amber-500"
-                                        style="font-variation-settings: 'FILL' 1;">star</span> 5.0
-                                </span>
-                            </div>
-                            <p class="text-[13px] text-stone-500 mb-4 font-medium">Ninh Thuận • Tháng 7, 2025</p>
-                            <div class="flex space-x-2">
-                                <span
-                                    class="bg-[#173124]/5 text-[#173124] px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-[#173124]/10">Hoàn
-                                    tất</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <app-past-trip-list></app-past-trip-list>
         </div>
 
         <!-- CỘT PHẢI (SIDEBAR WIDGETS) -->
