@@ -1,0 +1,19 @@
+<div class="bg-white rounded-[2rem] p-2 border border-stone-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] relative h-[250px] overflow-hidden group flex-1">
+    
+    <img [src]="image" [alt]="name"
+        class="w-full h-full object-cover rounded-[1.5rem] opacity-80 group-hover:opacity-100 transition-all duration-700">
+    
+    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-[1.5rem] pointer-events-none"></div>
+    
+    <div class="absolute bottom-4 left-4 right-4 text-white">
+        <p class="text-[13px] font-bold truncate" [title]="name">{{ name }}</p>
+        <p class="text-[11px] text-white/80 truncate" [title]="address">{{ address }}</p>
+    </div>
+    
+    <div (click)="openDirections()"
+        class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-[#173124] cursor-pointer hover:scale-105 transition-transform tooltip"
+        title="Chỉ đường tới Homestay">
+        <span class="material-symbols-outlined text-[20px]">directions</span>
+    </div>
+
+</div>

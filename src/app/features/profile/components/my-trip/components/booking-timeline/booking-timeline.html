@@ -1,0 +1,107 @@
+<section class="max-w-[1000px] mx-auto px-6 mt-24 mb-10">
+    <div class="mb-12 border-b border-stone-200 pb-6 flex justify-between items-end">
+        <div>
+            <h2 class="text-3xl md:text-4xl font-headline font-semibold text-stone-900 mb-2">Lịch trình & Trải nghiệm</h2>
+            <p class="text-stone-500 font-medium">Toàn bộ hành trình lưu trú và khám phá độc bản được sắp xếp theo chuỗi thời gian.</p>
+        </div>
+        <button class="hidden md:flex items-center gap-2 text-[#173124] text-[11px] font-bold uppercase tracking-widest hover:bg-[#173124]/5 px-4 py-2 rounded-lg transition-colors">
+            <span class="material-symbols-outlined text-[18px]">download</span> Tải PDF Lịch Trình
+        </button>
+    </div>
+
+    <div class="relative pl-6 md:pl-8">
+        <div class="absolute left-[11px] top-4 bottom-4 w-[2px] bg-stone-200"></div>
+
+        <div class="mb-14">
+            <div class="flex items-center gap-4 mb-6 relative -left-[18px]">
+                <div class="w-4 h-4 rounded-full bg-[#173124] border-[3px] border-white shadow-md z-10"></div>
+                <h3 class="text-lg font-bold text-[#173124] uppercase tracking-[0.1em] capitalize">
+                    {{ checkIn | date:'EEEE, dd \'Thg\' MM' }} - Nhận phòng
+                </h3>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-white rounded-[1.5rem] p-6 border border-stone-200 shadow-sm flex flex-col md:flex-row gap-6 group hover:border-[#173124]/30 transition-colors">
+                    <div class="w-20 text-stone-400 font-headline text-2xl group-hover:text-stone-900 transition-colors">14:00</div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="material-symbols-outlined text-stone-400">key</span>
+                            <h4 class="text-xl font-bold text-stone-900">Check-in & Bàn giao không gian</h4>
+                        </div>
+                        <p class="text-stone-600 text-[15px] mb-4">Quản gia khu vực sẽ đón tiếp và bàn giao không gian tại {{ propertyName }}.</p>
+                        <div class="bg-stone-50 border border-stone-200 rounded-xl p-3 flex justify-between items-center max-w-sm">
+                            <span class="text-stone-500 text-[13px] font-bold uppercase">Mã cửa SmartLock</span>
+                            <span class="font-mono font-bold text-lg text-stone-900 tracking-widest">1984#</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (tours && tours.length > 0) {
+            @for (tour of tours; track tour.tourId) {
+                <div class="mb-14">
+                    <div class="flex items-center gap-4 mb-6 relative -left-[18px]">
+                        <div class="w-4 h-4 rounded-full bg-emerald-700 border-[3px] border-white shadow-md z-10"></div>
+                        <h3 class="text-lg font-bold text-emerald-800 uppercase tracking-[0.1em] capitalize">
+                            {{ tour.tourDate | date:'EEEE, dd \'Thg\' MM' }} - Khám phá
+                        </h3>
+                    </div>
+                    
+                    <div class="bg-white rounded-[2rem] p-6 border border-stone-200 shadow-sm flex flex-col md:flex-row gap-6 group hover:border-emerald-500/30 transition-colors relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-700"></div>
+                        
+                        <div class="w-20 text-stone-400 font-headline text-2xl group-hover:text-emerald-800 transition-colors">
+                            {{ tour.startTime }}
+                        </div>
+                        
+                        <div class="w-full md:w-[180px] h-[120px] rounded-xl overflow-hidden flex-shrink-0 relative">
+                            <img [src]="tour.tourImage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" [alt]="tour.tourName">
+                        </div>
+                        
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="material-symbols-outlined text-[16px] text-emerald-700">explore</span>
+                                    <p class="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Trải nghiệm đính kèm</p>
+                                </div>
+                                <h4 class="text-xl font-bold text-stone-900 mb-2 group-hover:text-emerald-900 transition-colors">{{ tour.tourName }}</h4>
+                            </div>
+                            
+                            <div class="flex flex-wrap items-center gap-6 pt-3 border-t border-stone-100 text-stone-500 text-[13px] font-medium">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[16px] text-stone-400">groups</span>
+                                    <span>Khách: <span class="text-stone-900 font-bold">{{ tour.participants }} Người</span></span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[16px] text-stone-400">schedule</span>
+                                    <span>Thời gian: <span class="text-stone-900 font-bold">
+                                        {{ tour.startTime }} - {{ tour.endTime ? tour.endTime : 'Hết ngày' }}
+                                    </span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+        <div>
+            <div class="flex items-center gap-4 mb-6 relative -left-[18px]">
+                <div class="w-4 h-4 rounded-full bg-stone-300 border-[3px] border-white shadow-md z-10"></div>
+                <h3 class="text-lg font-bold text-stone-500 uppercase tracking-[0.1em] capitalize">
+                    {{ checkOut | date:'EEEE, dd \'Thg\' MM' }} - Tạm biệt
+                </h3>
+            </div>
+            <div class="bg-white rounded-[1.5rem] p-6 border border-stone-200 shadow-sm flex flex-col md:flex-row gap-6 group hover:border-[#173124]/30 transition-colors">
+                <div class="w-20 text-stone-400 font-headline text-2xl group-hover:text-stone-900 transition-colors">12:00</div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="material-symbols-outlined text-stone-400">exit_to_app</span>
+                        <h4 class="text-xl font-bold text-stone-900">Trả phòng & Khởi hành rời khu lưu trú</h4>
+                    </div>
+                    <p class="text-stone-600 text-[15px]">Hệ thống xe đưa đón riêng đã sẵn sàng tại sảnh chính. Quản gia hỗ trợ kiểm tra hành lý và tiễn đoàn.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

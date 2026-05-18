@@ -1,0 +1,107 @@
+<div class="bg-white rounded-[2rem] p-8 md:p-10 border border-stone-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex flex-col group hover:border-[#173124]/30 transition-colors">
+            
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+            <h2 class="text-3xl font-headline font-semibold text-stone-900 mb-1">Chi tiết đặt phòng</h2>
+            <p class="text-stone-500 font-medium text-[15px]">Mã xác nhận: <span class="text-stone-900 font-bold uppercase tracking-wider bg-stone-100 px-2 py-0.5 rounded">{{ data.bookingCode }}</span></p>
+        </div>
+
+        @if (data.paymentStatus === 'PAID') {
+            <div class="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full border border-emerald-100">
+                <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                <span class="text-[11px] font-bold uppercase tracking-widest">Đã thanh toán 100%</span>
+            </div>
+        } @else {
+            <div class="flex items-center gap-2 bg-amber-50 text-amber-700 px-4 py-2 rounded-full border border-amber-100">
+                <span class="material-symbols-outlined text-[16px]">pending_actions</span>
+                <span class="text-[11px] font-bold uppercase tracking-widest">Chờ thanh toán</span>
+            </div>
+        }
+    </div>
+
+    <div class="grid grid-cols-2 gap-0 bg-[#fcfbf9] rounded-[1.5rem] border border-stone-100 mb-8 p-1 relative">
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white border border-stone-100 rounded-full flex items-center justify-center z-10 shadow-sm text-stone-300">
+            <span class="material-symbols-outlined text-[18px]">east</span>
+        </div>
+
+        <div class="p-6 md:p-8 bg-white rounded-[1.25rem] shadow-sm">
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Nhận phòng</p>
+            <p class="text-3xl md:text-4xl font-headline text-[#173124] mb-2">14:00</p>
+            <p class="text-stone-800 font-medium text-[13px] md:text-[15px] capitalize">{{ data.checkIn | date:'EEEE, dd \'Thg\' MM, yyyy' }}</p>
+        </div>
+        <div class="p-6 md:p-8 text-right md:text-left">
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Trả phòng</p>
+            <p class="text-3xl md:text-4xl font-headline text-stone-900 mb-2">12:00</p>
+            <p class="text-stone-800 font-medium text-[13px] md:text-[15px] capitalize">{{ data.checkOut | date:'EEEE, dd \'Thg\' MM, yyyy' }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-2 pb-8 border-b border-stone-100">
+        <div>
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5">Khách</p>
+            <div class="flex items-center gap-2 text-stone-900 font-medium">
+                <span class="material-symbols-outlined text-[18px] text-stone-400">group</span> {{ data.totalGuests }} Người
+            </div>
+        </div>
+        <div>
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5">Không gian</p>
+            <div class="flex items-center gap-2 text-stone-900 font-medium truncate" [title]="roomNamesDisplay">
+                <span class="material-symbols-outlined text-[18px] text-stone-400">king_bed</span> {{ roomNamesDisplay }}
+            </div>
+        </div>
+        <div>
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5">Thanh toán</p>
+            <div class="flex items-center gap-2 text-stone-900 font-medium truncate">
+                <span class="font-bold italic text-[#1434CB] bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded text-[12px]">{{ paymentMethodBadge }}</span>
+                {{ data.paymentMethod || 'Tại quầy' }}
+            </div>
+        </div>
+        <div>
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-1.5">Tổng tiền</p>
+            <p class="text-stone-900 font-bold text-lg">{{ data.totalPrice | currency:'VND':'symbol':'1.0-0' }}</p>
+        </div>
+    </div>
+
+    @if (data.tours && data.tours.length > 0) {
+        <div class="pt-6 border-t border-stone-100 mb-6">
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-3">Trải nghiệm bạn đã chọn</p>
+            <div class="flex flex-wrap gap-2">
+                
+                @for (tour of data.tours; track tour.tourId) {
+                    <div class="flex items-center gap-2 bg-stone-50 border border-stone-200/60 rounded-full pl-2 pr-4 py-1.5 hover:border-emerald-500/40 transition-colors cursor-pointer group/tag" title="Xem lịch trình bên dưới">
+                        <div class="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                            <img [src]="tour.tourImage" class="w-full h-full object-cover" [alt]="tour.tourName">
+                        </div>
+                        <span class="text-[12px] font-medium text-stone-800 group-hover/tag:text-stone-900 max-w-[150px] md:max-w-[200px] truncate">{{ tour.tourName }}</span>
+                        <span class="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-full font-bold font-mono">{{ tour.participants }} Pax</span>
+                    </div>
+                }
+
+            </div>
+        </div>
+    }
+
+    <div class="pt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-stone-50 p-4 rounded-xl flex justify-between items-center border border-stone-100/50">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-stone-400">wifi</span>
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-stone-400">Wi-Fi</p>
+                    <p class="text-[14px] font-bold text-stone-800">Clyvasync_Guest</p>
+                </div>
+            </div>
+            <p class="font-mono text-stone-500 text-[13px] bg-white px-2 py-1 rounded shadow-sm border border-stone-100">luxury123</p>
+        </div>
+        <div class="bg-stone-50 p-4 rounded-xl flex justify-between items-center border border-stone-100/50 cursor-pointer hover:bg-stone-100 transition-colors">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-stone-400">menu_book</span>
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-stone-400">Cẩm nang</p>
+                    <p class="text-[14px] font-bold text-stone-800">Nội quy & Hướng dẫn</p>
+                </div>
+            </div>
+            <span class="material-symbols-outlined text-stone-400">chevron_right</span>
+        </div>
+    </div>
+
+</div>

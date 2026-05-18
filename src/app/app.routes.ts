@@ -74,7 +74,7 @@ export const routes: Routes = [
           { path: 'payments', component: PaymentMethods },
           { path: '', redirectTo: 'info', pathMatch: 'full' },
           {
-            path: 'trip/:id',
+            path: 'trip/:code',
             component: MyTrip
           }
         ]

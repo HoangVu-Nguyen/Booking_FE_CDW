@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TripResponse } from '../../../../../../core/models/response/trip.response';
-
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-trip-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './trip-card.html',
   styleUrl: './trip-card.css',
 })

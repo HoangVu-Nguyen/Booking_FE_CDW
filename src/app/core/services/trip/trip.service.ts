@@ -3,6 +3,7 @@ import { Injectable, inject, signal, computed } from "@angular/core";
 import { ApiService } from "../api/api.service";
 import { ApiResponse } from "../../models/response/api.response";
 import { TripResponse } from "../../models/response/trip.response";
+import { TripDetailResponse } from "../../models/response/trip-detail.response";
 
 @Injectable({ providedIn: 'root' })
 export class TripService {
@@ -14,14 +15,18 @@ export class TripService {
 
     // 2. Read-only Signal lộ ra ngoài cho các Component bốc ra dùng trực tiếp
     public myTrips = this._myTrips.asReadonly();
+    private _currentTripDetail = signal<TripDetailResponse | null>(null);
+    public currentTripDetail = this._currentTripDetail.asReadonly();
+    public isDetailLoading = signal<boolean>(false);
 
     /**
      * 3. Hàm gọi API bốc dữ liệu hành trình từ Backend
+     * 
      * Vì đã có JWT Token tự đính ở ApiService, bác chỉ cần bắn thẳng GET Request
      */
     public fetchUserTrips(): void {
         this.isLoading.set(true);
-        
+
         this.apiService.get<ApiResponse<TripResponse[]>>('/api/v1/trips/my-trips')
             .subscribe({
                 next: (response) => {
@@ -45,12 +50,37 @@ export class TripService {
      * mà không tốn thêm một lượt mạng để gọi lại API reload toàn bộ trang!
      */
     public updateTripStatusLocal(bookingCode: string, newStatus: 'PENDING' | 'UPCOMING' | 'COMPLETED' | 'CANCELLED'): void {
-        this._myTrips.update(trips => 
-            trips.map(trip => 
-                trip.bookingCode === bookingCode 
-                    ? { ...trip, status: newStatus } 
+        this._myTrips.update(trips =>
+            trips.map(trip =>
+                trip.bookingCode === bookingCode
+                    ? { ...trip, status: newStatus }
                     : trip
             )
         );
+    }
+    public fetchTripDetail(bookingCode: string): void {
+        this.isDetailLoading.set(true);
+
+        // Gọi API GET /api/v1/trips/{bookingCode}
+        this.apiService.get<ApiResponse<TripDetailResponse>>(`/api/v1/trips/${bookingCode}`)
+            .subscribe({
+                next: (response) => {
+                    console.log(response.data);
+                    if (response && response.data) {
+
+                        this._currentTripDetail.set(response.data); // Bơm data vào Signal
+                    }
+                    this.isDetailLoading.set(false);
+                },
+                error: (err) => {
+                    console.error('[TRIP SERVICE] Lỗi lấy chi tiết hành trình:', err);
+                    this.isDetailLoading.set(false);
+                }
+            });
+    }
+
+    // 3. Hàm dọn dẹp khi user thoát màn hình chi tiết
+    public clearTripDetail(): void {
+        this._currentTripDetail.set(null);
     }
 }

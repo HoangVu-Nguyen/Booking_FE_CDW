@@ -1,0 +1,24 @@
+<div class="bg-white rounded-[2rem] p-8 border border-stone-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex-1">
+    <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-5">Quản gia khu vực</p>
+    
+    <div class="flex items-center gap-4 mb-6">
+        <img [src]="host?.avatar || 'https://ui-avatars.com/api/?name=' + host?.fullName + '&background=173124&color=fff'"
+            class="w-14 h-14 rounded-full object-cover shadow-sm border border-stone-100" [alt]="host?.fullName">
+        <div>
+            <p class="text-[16px] font-bold text-stone-900">{{ host?.fullName || 'Đang cập nhật' }}</p>
+            <p class="text-[13px] text-stone-500 font-medium">{{  'Quản gia' }}</p>
+        </div>
+    </div>
+    
+    <div class="flex gap-2">
+        <button (click)="sendMessage()"
+            class="flex-1 bg-stone-50 hover:bg-stone-100 border border-stone-200 text-stone-900 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-colors">
+            Nhắn tin
+        </button>
+        
+        <button (click)="callHost()" [title]="'Gọi ' + host?.phoneNumber"
+            class="w-12 bg-[#173124] hover:bg-[#0f2118] text-white rounded-xl flex items-center justify-center transition-colors shadow-md tooltip">
+            <span class="material-symbols-outlined text-[18px]">call</span>
+        </button>
+    </div>
+</div>

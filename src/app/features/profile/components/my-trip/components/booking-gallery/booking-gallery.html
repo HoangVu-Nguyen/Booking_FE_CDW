@@ -1,0 +1,29 @@
+<div class="bg-white rounded-[2rem] p-6 border border-stone-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+    <div class="flex justify-between items-end mb-4">
+        <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.2em]">Không gian của bạn</p>
+        
+        @if (images && images.length > 0) {
+            <button class="text-[11px] font-bold text-[#173124] uppercase tracking-widest hover:underline">
+                Xem tất cả ({{ images.length }})
+            </button>
+        }
+    </div>
+    
+    <div class="flex gap-4 overflow-x-auto pb-2 snap-x no-scrollbar">
+        
+        @for (imgUrl of images; track $index) {
+            <div
+                class="w-[240px] h-[160px] md:w-[280px] md:h-[180px] flex-shrink-0 snap-start rounded-[1.25rem] overflow-hidden relative group cursor-pointer">
+                <img [src]="imgUrl" alt="Property Image"
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+            </div>
+        } @empty {
+            <div class="w-full py-10 flex flex-col items-center justify-center text-stone-300 bg-stone-50 rounded-[1.25rem] border border-dashed border-stone-200">
+                <span class="material-symbols-outlined text-4xl mb-2">hide_image</span>
+                <p class="text-[11px] font-bold uppercase tracking-widest text-stone-400">Chưa có hình ảnh</p>
+            </div>
+        }
+
+    </div>
+</div>

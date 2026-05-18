@@ -5,14 +5,15 @@
         <img [alt]="data.propertyName"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             [src]="data.propertyImage" />
-        
+
         @if (data.status === 'UPCOMING' && daysRemaining >= 0) {
-            <div class="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px] text-amber-600 font-bold">timer</span>
-                <span class="text-[11px] font-bold uppercase tracking-widest text-stone-900">
-                    {{ daysRemaining === 0 ? 'Hôm nay khởi hành' : 'Còn ' + daysRemaining + ' ngày' }}
-                </span>
-            </div>
+        <div
+            class="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-amber-600 font-bold">timer</span>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-stone-900">
+                {{ daysRemaining === 0 ? 'Hôm nay khởi hành' : 'Còn ' + daysRemaining + ' ngày' }}
+            </span>
+        </div>
         }
     </div>
 
@@ -20,7 +21,8 @@
         <div>
             <div class="flex justify-between items-start mb-8">
                 <div>
-                    <p class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] mb-2">{{ data.location }}</p>
+                    <p class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] mb-2">{{ data.location }}
+                    </p>
                     <h3 class="text-3xl font-serif text-stone-900 leading-tight mb-2">{{ data.propertyName }}</h3>
                     <p class="text-sm font-medium text-stone-500">Mã đặt phòng: <span
                             class="font-bold text-stone-900">{{ data.bookingCode }}</span></p>
@@ -28,30 +30,34 @@
 
                 <div class="hidden md:block">
                     @switch (data.status) {
-                        @case ('UPCOMING') {
-                            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 border border-emerald-100">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Đã xác nhận</span>
-                            </div>
-                        }
-                        @case ('PENDING') {
-                            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-50 border border-amber-100">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                                <span class="text-[10px] font-bold text-amber-700 uppercase tracking-widest">Chờ thanh toán</span>
-                            </div>
-                        }
-                        @case ('COMPLETED') {
-                            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-stone-100 border border-stone-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-stone-500"></span>
-                                <span class="text-[10px] font-bold text-stone-700 uppercase tracking-widest">Đã hoàn thành</span>
-                            </div>
-                        }
-                        @case ('CANCELLED') {
-                            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-red-50 border border-red-100">
-                                <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                                <span class="text-[10px] font-bold text-red-700 uppercase tracking-widest">Đã hủy đơn</span>
-                            </div>
-                        }
+                    @case ('UPCOMING') {
+                    <div
+                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 border border-emerald-100">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-widest">Đã xác
+                            nhận</span>
+                    </div>
+                    }
+                    @case ('PENDING') {
+                    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-amber-50 border border-amber-100">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-amber-700 uppercase tracking-widest">Chờ thanh
+                            toán</span>
+                    </div>
+                    }
+                    @case ('COMPLETED') {
+                    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-stone-100 border border-stone-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-stone-500"></span>
+                        <span class="text-[10px] font-bold text-stone-700 uppercase tracking-widest">Đã hoàn
+                            thành</span>
+                    </div>
+                    }
+                    @case ('CANCELLED') {
+                    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-red-50 border border-red-100">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                        <span class="text-[10px] font-bold text-red-700 uppercase tracking-widest">Đã hủy đơn</span>
+                    </div>
+                    }
                     }
                 </div>
             </div>
@@ -61,7 +67,8 @@
                     <div>
                         <p class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] mb-1">Nhận phòng</p>
                         <p class="text-xl font-bold text-stone-900 mb-1">14:00</p>
-                        <p class="text-sm font-medium text-stone-500">{{ data.checkIn | date:'EEE, dd \'Thg\' MM':'':'vi' }}</p>
+                        <p class="text-sm font-medium text-stone-500">{{ data.checkIn | date:'EEE, dd \'Thg\'
+                            MM':'':'vi' }}</p>
                     </div>
 
                     <div class="flex-1 mx-8 flex items-center gap-3 opacity-40">
@@ -73,48 +80,55 @@
                     <div class="text-right">
                         <p class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] mb-1">Trả phòng</p>
                         <p class="text-xl font-bold text-stone-900 mb-1">12:00</p>
-                        <p class="text-sm font-medium text-stone-500">{{ data.checkOut | date:'EEE, dd \'Thg\' MM':'':'vi' }}</p>
+                        <p class="text-sm font-medium text-stone-500">{{ data.checkOut | date:'EEE, dd \'Thg\'
+                            MM':'':'vi' }}</p>
                     </div>
                 </div>
             </div>
 
             @if (data.tours && data.tours.length > 0) {
-                <div class="mb-8 space-y-3">
-                    <div class="flex items-center justify-between mb-4">
-                        <p class="text-[11px] font-bold text-stone-900 uppercase tracking-[0.15em] flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[16px] text-emerald-700">explore</span>
-                            Trải nghiệm đính kèm
-                        </p>
-                        <span class="text-[10px] font-bold text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full">
-                            {{ data.tours.length }} Tour
-                        </span>
-                    </div>
-
-                    @for (tour of data.tours; track tour.tourId) {
-                        <div class="flex items-center gap-4 p-3 rounded-2xl bg-white border border-stone-100 hover:border-emerald-200 hover:shadow-sm transition-all group/tour">
-                            <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative">
-                                <img [src]="tour.tourImage" class="w-full h-full object-cover group-hover/tour:scale-110 transition-transform duration-500" [alt]="tour.tourName" />
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-[14px] font-bold text-stone-900 leading-tight mb-1">{{ tour.tourName }}</p>
-                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-stone-500">
-                                    <span class="flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[13px]">groups</span> {{ tour.participants }} Người
-                                    </span>
-                                    <span class="flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[13px]">calendar_today</span> {{ tour.tourDate | date:'EEE, dd \'Thg\' MM':'':'vi' }}
-                                    </span>
-                                    @if (tour.startTime) {
-    <span class="flex items-center gap-1 text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
-        <span class="material-symbols-outlined text-[13px]">schedule</span> 
-        {{ formatTime(tour.startTime) }} - {{ tour.endTime ? formatTime(tour.endTime) : 'Hết ngày' }}
-    </span>
-}
-                                </div>
-                            </div>
-                        </div>
-                    }
+            <div class="mb-8 space-y-3">
+                <div class="flex items-center justify-between mb-4">
+                    <p class="text-[11px] font-bold text-stone-900 uppercase tracking-[0.15em] flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px] text-emerald-700">explore</span>
+                        Trải nghiệm đính kèm
+                    </p>
+                    <span class="text-[10px] font-bold text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full">
+                        {{ data.tours.length }} Tour
+                    </span>
                 </div>
+
+                @for (tour of data.tours; track tour.tourId) {
+                <div
+                    class="flex items-center gap-4 p-3 rounded-2xl bg-white border border-stone-100 hover:border-emerald-200 hover:shadow-sm transition-all group/tour">
+                    <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative">
+                        <img [src]="tour.tourImage"
+                            class="w-full h-full object-cover group-hover/tour:scale-110 transition-transform duration-500"
+                            [alt]="tour.tourName" />
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[14px] font-bold text-stone-900 leading-tight mb-1">{{ tour.tourName }}</p>
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-stone-500">
+                            <span class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[13px]">groups</span> {{ tour.participants
+                                }} Người
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[13px]">calendar_today</span> {{
+                                tour.tourDate | date:'EEE, dd \'Thg\' MM':'':'vi' }}
+                            </span>
+                            @if (tour.startTime) {
+                            <span class="flex items-center gap-1 text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                                <span class="material-symbols-outlined text-[13px]">schedule</span>
+                                {{ formatTime(tour.startTime) }} - {{ tour.endTime ? formatTime(tour.endTime) : 'Hết
+                                ngày' }}
+                            </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
             }
 
             <div class="flex gap-12 mb-4 pt-4 border-t border-stone-100">
@@ -124,13 +138,14 @@
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-stone-400 uppercase tracking-[0.2em] mb-1">Tổng thanh toán</p>
-                    <p class="text-[18px] font-bold text-[#173124]">{{ data.totalPrice | currency:'VND':'symbol':'1.0-0':'vi' }}</p>
+                    <p class="text-[18px] font-bold text-[#173124]">{{ data.totalPrice |
+                        currency:'VND':'symbol':'1.0-0':'vi' }}</p>
                 </div>
             </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-3 mt-4">
-            <button
+            <button  [routerLink]="['/profile/trip', data.bookingCode]"
                 class="bg-[#173124] text-white px-6 py-3.5 rounded-full text-[11px] font-bold uppercase tracking-widest shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
                 Quản lý đặt phòng
             </button>
