@@ -1,0 +1,652 @@
+@if (searchUi.isOpen()) {
+
+<div class="fixed inset-0 z-[9999] overflow-hidden bg-[#f6f3ee]/80 backdrop-blur-[40px]">
+
+    <!-- ambient lights -->
+    <div class="absolute top-[-20%] left-[10%] w-[700px] h-[700px] rounded-full bg-emerald-200/20 blur-[140px]"></div>
+    <div class="absolute bottom-[-30%] right-[-10%] w-[800px] h-[800px] rounded-full bg-orange-100/30 blur-[160px]">
+    </div>
+
+    <div class="relative h-full flex flex-col">
+
+        <!-- HEADER -->
+        <header class="px-6 md:px-12 pt-8 pb-6">
+
+            <div class="max-w-[1800px] mx-auto flex items-center gap-5">
+
+                <!-- search container -->
+                <div class="flex-1 h-24 rounded-[36px]
+                    bg-white/60 backdrop-blur-2xl
+                    border border-white/40
+                    shadow-[0_20px_80px_rgba(0,0,0,0.08)]
+                    flex items-center px-8 relative overflow-hidden">
+
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/40 to-white/10"></div>
+
+                    <span class="relative material-symbols-outlined text-[42px] text-[#173124] mr-5">
+                        search
+                    </span>
+
+                    <input id="main-search-input" type="text" [formControl]="searchControl" autocomplete="off"
+                        placeholder="Khám phá không gian, trải nghiệm, cảm xúc..." class="relative flex-1 bg-transparent border-none outline-none
+                        text-3xl md:text-5xl font-light tracking-[-0.05em]
+                        text-[#173124] placeholder:text-stone-300
+                        focus:ring-0" />
+
+                    @if (searchControl.value) {
+                    <button (click)="clearSearch()" class="relative w-12 h-12 rounded-full
+                            bg-black/5 hover:bg-black/10
+                            flex items-center justify-center
+                            transition-all duration-300 hover:rotate-90">
+
+                        <span class="material-symbols-outlined text-stone-500">
+                            close
+                        </span>
+
+                    </button>
+                    }
+
+                </div>
+
+                <!-- close -->
+                <button (click)="close()" class="w-20 h-20 rounded-full
+                    bg-white/60 backdrop-blur-2xl
+                    border border-white/40
+                    shadow-[0_10px_40px_rgba(0,0,0,0.08)]
+                    flex items-center justify-center
+                    hover:rotate-90 hover:scale-105
+                    transition-all duration-500 shrink-0">
+
+                    <span class="material-symbols-outlined text-3xl text-stone-700">
+                        close
+                    </span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- CONTENT -->
+        <main class="flex-1 overflow-hidden">
+
+            <div class="max-w-[1800px] mx-auto h-full flex gap-8 px-6 md:px-12 pb-10">
+
+                <!-- FILTER -->
+                <aside class="hidden xl:block w-[360px]
+                    rounded-[40px]
+                    bg-white/40 backdrop-blur-2xl
+                    border border-white/30
+                    shadow-[0_20px_80px_rgba(0,0,0,0.05)]
+                    p-8 overflow-y-auto" [formGroup]="filterForm">
+
+                    <!-- heading -->
+                    <div class="flex items-center justify-between mb-10">
+
+                        <div>
+                            <p class="uppercase tracking-[0.3em] text-[10px] text-stone-400 font-bold mb-2">
+                                Search intelligence
+                            </p>
+
+                            <h3 class="text-2xl font-serif text-[#173124] tracking-[-0.03em]">
+                                Bộ lọc nâng cao
+                            </h3>
+                        </div>
+
+                        <button (click)="resetFilters()" class="text-[11px] uppercase tracking-[0.2em]
+                            font-bold text-[#173124] hover:opacity-60 transition-all">
+
+                            Reset
+
+                        </button>
+
+                    </div>
+
+                    <!-- category -->
+                    <div class="mb-10">
+
+                        <p class="uppercase tracking-[0.25em] text-[10px] text-stone-400 font-bold mb-5">
+                            Category
+                        </p>
+
+                        <div class="flex flex-wrap gap-3">
+
+                            <label class="cursor-pointer">
+                                <input type="radio" formControlName="category" value="ALL" class="peer hidden" />
+
+                                <div class="
+                                    px-6 h-12 rounded-full
+                                    bg-white/50 border border-white/30
+                                    flex items-center justify-center
+                                    text-sm font-medium text-stone-600
+                                    peer-checked:bg-[#173124]
+                                    peer-checked:text-white
+                                    transition-all duration-300
+                                ">
+                                    All
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" formControlName="category" value="HOMESTAY" class="peer hidden" />
+
+                                <div class="
+                                    px-6 h-12 rounded-full
+                                    bg-white/50 border border-white/30
+                                    flex items-center justify-center
+                                    text-sm font-medium text-stone-600
+                                    peer-checked:bg-[#173124]
+                                    peer-checked:text-white
+                                    transition-all duration-300
+                                ">
+                                    Stay
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" formControlName="category" value="TOUR" class="peer hidden" />
+
+                                <div class="
+                                    px-6 h-12 rounded-full
+                                    bg-white/50 border border-white/30
+                                    flex items-center justify-center
+                                    text-sm font-medium text-stone-600
+                                    peer-checked:bg-[#173124]
+                                    peer-checked:text-white
+                                    transition-all duration-300
+                                ">
+                                    Experience
+                                </div>
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <!-- counters -->
+                    <div class="mb-10">
+
+                        <p class="uppercase tracking-[0.25em] text-[10px] text-stone-400 font-bold mb-6">
+                            Space
+                        </p>
+
+                        <div class="space-y-5">
+
+                            <!-- guests -->
+                            <div class="flex items-center justify-between">
+
+                                <div>
+                                    <p class="text-stone-800 font-medium">
+                                        Guests
+                                    </p>
+
+                                    <p class="text-xs text-stone-400">
+                                        Suitable capacity
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center gap-4">
+
+                                    <button (click)="updateCounter('guests', -1)" class="w-10 h-10 rounded-full
+                                        bg-white/60 border border-white/40
+                                        flex items-center justify-center
+                                        hover:scale-110 transition-all">
+
+                                        <span class="material-symbols-outlined text-[18px]">
+                                            remove
+                                        </span>
+
+                                    </button>
+
+                                    <span class="w-5 text-center font-semibold text-lg">
+                                        {{ filterForm.get('guests')?.value }}
+                                    </span>
+
+                                    <button (click)="updateCounter('guests', 1)" class="w-10 h-10 rounded-full
+                                        bg-white/60 border border-white/40
+                                        flex items-center justify-center
+                                        hover:scale-110 transition-all">
+
+                                        <span class="material-symbols-outlined text-[18px]">
+                                            add
+                                        </span>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <!-- bedrooms -->
+                            <div class="flex items-center justify-between">
+
+                                <div>
+                                    <p class="text-stone-800 font-medium">
+                                        Bedrooms
+                                    </p>
+
+                                    <p class="text-xs text-stone-400">
+                                        Private comfort
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center gap-4">
+
+                                    <button (click)="updateCounter('bedrooms', -1)" class="w-10 h-10 rounded-full
+                                        bg-white/60 border border-white/40
+                                        flex items-center justify-center
+                                        hover:scale-110 transition-all">
+
+                                        <span class="material-symbols-outlined text-[18px]">
+                                            remove
+                                        </span>
+
+                                    </button>
+
+                                    <span class="w-5 text-center font-semibold text-lg">
+                                        {{ filterForm.get('bedrooms')?.value }}
+                                    </span>
+
+                                    <button (click)="updateCounter('bedrooms', 1)" class="w-10 h-10 rounded-full
+                                        bg-white/60 border border-white/40
+                                        flex items-center justify-center
+                                        hover:scale-110 transition-all">
+
+                                        <span class="material-symbols-outlined text-[18px]">
+                                            add
+                                        </span>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- price -->
+                    <div class="mb-10">
+
+                        <div class="flex items-center justify-between mb-5">
+
+                            <div>
+                                <p class="uppercase tracking-[0.25em] text-[10px] text-stone-400 font-bold">
+                                    Budget
+                                </p>
+
+                                <h4 class="text-stone-800 font-medium mt-2">
+                                    Maximum price
+                                </h4>
+                            </div>
+
+                            <div class="text-2xl font-light text-[#173124]">
+                                ${{ filterForm.get('maxPrice')?.value }}
+                            </div>
+
+                        </div>
+
+                        <input type="range" formControlName="maxPrice" min="50" max="9000000" step="1000"
+                            class="w-full accent-[#173124]" />
+
+                    </div>
+
+                    <!-- amenities -->
+                    <div formGroupName="amenities">
+
+                        <p class="uppercase tracking-[0.25em] text-[10px] text-stone-400 font-bold mb-6">
+                            Amenities
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-4">
+
+                            <label class="group cursor-pointer">
+                                <input type="checkbox" formControlName="pool" class="peer hidden" />
+
+                                <div class="
+                                    h-14 rounded-2xl
+                                    bg-white/40 border border-white/30
+                                    flex items-center justify-center
+                                    text-sm font-medium text-stone-600
+                                    peer-checked:bg-[#173124]
+                                    peer-checked:text-white
+                                    transition-all duration-300
+                                ">
+                                    Pool
+                                </div>
+
+                            </label>
+
+                            <label class="group cursor-pointer">
+                                <input type="checkbox" formControlName="beachfront" class="peer hidden" />
+
+                                <div class="
+                                    h-14 rounded-2xl
+                                    bg-white/40 border border-white/30
+                                    flex items-center justify-center
+                                    text-sm font-medium text-stone-600
+                                    peer-checked:bg-[#173124]
+                                    peer-checked:text-white
+                                    transition-all duration-300
+                                ">
+                                    Beach
+                                </div>
+
+                            </label>
+
+                            <label class="group cursor-pointer">
+                                <input type="checkbox" formControlName="kitchen" class="peer hidden" />
+
+                                <div class="
+                                    h-14 rounded-2xl
+                                    bg-white/40 border border-white/30
+                                    flex items-center justify-center
+                                    text-sm font-medium text-stone-600
+                                    peer-checked:bg-[#173124]
+                                    peer-checked:text-white
+                                    transition-all duration-300
+                                ">
+                                    Kitchen
+                                </div>
+
+                            </label>
+
+                            <label class="group cursor-pointer">
+                                <input type="checkbox" formControlName="gym" class="peer hidden" />
+
+                                <div class="
+                                    h-14 rounded-2xl
+                                    bg-white/40 border border-white/30
+                                    flex items-center justify-center
+                                    text-sm font-medium text-stone-600
+                                    peer-checked:bg-[#173124]
+                                    peer-checked:text-white
+                                    transition-all duration-300
+                                ">
+                                    Gym
+                                </div>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </aside>
+
+                <!-- RESULTS -->
+                <section class="flex-1 overflow-y-auto pr-2">
+
+                    <!-- loading -->
+                    @if (isSearching()) {
+
+                    <div class="h-full flex items-center justify-center">
+
+                        <div class="w-16 h-16 rounded-full
+                                border-[5px]
+                                border-[#173124]/10
+                                border-t-[#173124]
+                                animate-spin">
+                        </div>
+
+                    </div>
+
+                    }
+
+                    <!-- default -->
+                    @else if (isDefaultState()) {
+
+                    <div>
+
+                        <div class="mb-12">
+
+                            <p class="uppercase tracking-[0.35em] text-[10px] text-stone-400 font-bold mb-4">
+                                Curated destinations
+                            </p>
+
+                            <h2
+                                class="text-5xl md:text-7xl font-serif text-[#173124] tracking-[-0.06em] leading-none max-w-4xl">
+                                Discover spaces that feel unforgettable.
+                            </h2>
+
+                        </div>
+
+                        <div class="columns-1 md:columns-2 xl:columns-3 gap-8 space-y-8">
+
+                            <!-- demo cards -->
+                            <button (click)="setQuickSearch('Vũng Tàu')"
+                                class="group relative overflow-hidden rounded-[40px] aspect-[0.78] w-full text-left block">
+
+                                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop"
+                                    class="absolute inset-0 w-full h-full object-cover
+                                        group-hover:scale-110 duration-[2500ms] ease-out" />
+
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent">
+                                </div>
+
+                                <div class="absolute bottom-0 left-0 right-0 p-6">
+
+                                    <div class="
+                                            rounded-[28px]
+                                            bg-white/10
+                                            backdrop-blur-2xl
+                                            border border-white/20
+                                            p-5">
+
+                                        <p class="uppercase tracking-[0.25em] text-[10px] text-white/60 mb-3">
+                                            Vietnam
+                                        </p>
+
+                                        <h3 class="text-3xl text-white font-serif tracking-[-0.03em]">
+                                            Vũng Tàu Villa
+                                        </h3>
+
+                                    </div>
+
+                                </div>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    }
+
+                    <!-- results -->
+                    @else if (searchResults().length > 0) {
+
+                    <div>
+
+                        <div class="flex items-end justify-between mb-10">
+
+                            <div>
+
+                                <p class="uppercase tracking-[0.35em] text-[10px] text-stone-400 font-bold mb-4">
+                                    Search results
+                                </p>
+
+                                <h2 class="text-5xl font-serif text-[#173124] tracking-[-0.05em]">
+                                    {{ searchResults().length }} curated spaces
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+                        <div class="columns-1 md:columns-2 2xl:columns-3 gap-8 space-y-8">
+
+                            @for (item of searchResults(); track item.id) {
+
+                            <div [routerLink]="['/homestay', item.id]" (click)="close()" class="group relative overflow-hidden rounded-[40px]
+                                        aspect-[0.78] break-inside-avoid
+                                        cursor-pointer">
+
+                                <!-- image -->
+                                <img [src]="item.imageUrls[0]" class="absolute inset-0 w-full h-full object-cover
+                                            group-hover:scale-110
+                                            duration-[2500ms]
+                                            ease-out" />
+
+                                <!-- overlay -->
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent">
+                                </div>
+
+                                <!-- favorite -->
+                                <button class="absolute top-5 right-5
+                                            w-12 h-12 rounded-full
+                                            bg-white/10 backdrop-blur-xl
+                                            border border-white/20
+                                            flex items-center justify-center
+                                            text-white hover:scale-110
+                                            transition-all duration-300">
+
+                                    <span class="material-symbols-outlined">
+                                        favorite
+                                    </span>
+
+                                </button>
+
+                                <!-- content -->
+                                <div class="absolute bottom-0 left-0 right-0 p-6">
+
+                                    <div class="rounded-[30px]
+                                                bg-white/10
+                                                backdrop-blur-2xl
+                                                border border-white/20
+                                                p-6">
+
+                                        <div class="flex justify-between items-start mb-4">
+
+                                            <div>
+
+                                                <p class="uppercase tracking-[0.25em] text-[10px] text-white/60 mb-2">
+                                                    {{ item.cityName }}
+                                                </p>
+
+                                                <h3
+                                                    class="text-[30px] leading-none text-white font-serif tracking-[-0.04em]">
+                                                    {{ item.name }}
+                                                </h3>
+
+                                            </div>
+
+                                            <div class="h-10 px-4 rounded-full
+                                                        bg-white/10 backdrop-blur-md
+                                                        border border-white/10
+                                                        flex items-center gap-2
+                                                        text-white text-sm">
+
+                                                <span class="material-symbols-outlined text-[16px]"
+                                                    style="font-variation-settings: 'FILL' 1">
+                                                    star
+                                                </span>
+
+                                                {{ item.rating | number:'1.1-1' }}
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="flex items-end justify-between">
+
+                                            <div>
+
+                                                <p class="text-white/60 text-sm">
+                                                    {{ item.guests }} guests · {{ item.bedrooms }} bedrooms
+                                                </p>
+
+                                                <div
+                                                    class="mt-2 text-white text-4xl font-extralight tracking-[-0.04em]">
+                                                    ${{ item.basePrice }}
+                                                </div>
+
+                                            </div>
+
+                                            <button class="h-12 px-6 rounded-full
+                                                        bg-white text-black
+                                                        text-[11px]
+                                                        uppercase tracking-[0.25em]
+                                                        font-bold
+                                                        hover:scale-105
+                                                        transition-all duration-300">
+
+                                                Explore
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+                    }
+
+                    <!-- empty -->
+                    @else {
+
+                    <div class="h-full flex items-center justify-center">
+
+                        <div class="text-center max-w-xl">
+
+                            <div class="w-28 h-28 rounded-full
+                                    bg-white/40 backdrop-blur-2xl
+                                    border border-white/30
+                                    flex items-center justify-center
+                                    mx-auto mb-8">
+
+                                <span class="material-symbols-outlined text-5xl text-stone-400">
+                                    search_off
+                                </span>
+
+                            </div>
+
+                            <h2 class="text-5xl font-serif text-[#173124] tracking-[-0.05em] mb-5">
+                                No spaces found
+                            </h2>
+
+                            <p class="text-stone-500 text-lg leading-relaxed">
+                                Try adjusting your filters or searching another destination.
+                            </p>
+
+                            <button (click)="resetFilters()" class="mt-10 h-14 px-8 rounded-full
+                                    bg-[#173124]
+                                    text-white
+                                    uppercase tracking-[0.25em]
+                                    text-xs font-bold
+                                    hover:scale-105
+                                    transition-all duration-300">
+
+                                Reset filters
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    }
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+}

@@ -1,6 +1,4 @@
-<div class="hidden lg:block relative group">
-    <div class="search-bar">
-        <span class="material-symbols-outlined text-stone-400 text-[20px]">search</span>
-        <input class="search-input" placeholder="Bạn muốn đi đâu?..." type="text" />
-    </div>
+<div class="search-bar cursor-pointer" (click)="triggerSearch()">
+    <span class="material-symbols-outlined">search</span>
+    <input readonly class="cursor-pointer pointer-events-none" placeholder="Bạn muốn đi đâu?..." type="text" />
 </div>
