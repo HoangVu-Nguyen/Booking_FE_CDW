@@ -1,0 +1,239 @@
+<section class="min-h-screen bg-[#f1f1ee] p-6 lg:p-12 font-sans text-neutral-900 selection:bg-neutral-900 selection:text-white">
+    <div class="max-w-[1600px] mx-auto">
+
+        <div class="mb-10 flex justify-between items-end pb-8 relative z-10">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tighter text-neutral-950 font-headline">Properties Portfolio</h1>
+                <p class="text-neutral-600 font-medium mt-2 max-w-md">Curating and managing 12 exclusive locations. Timeline view enabled.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-white border border-neutral-200 rounded-full p-1 flex gap-1 shadow-sm">
+                    <button class="px-4 py-2 text-xs font-bold text-neutral-500 rounded-full hover:bg-neutral-50 transition">Grid</button>
+                    <button class="px-4 py-2 text-xs font-bold bg-neutral-100 text-neutral-900 rounded-full shadow-sm">Timeline</button>
+                </div>
+                <button class="h-11 px-6 rounded-full bg-primary text-white text-xs font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    + Add New Listing
+                </button>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-8">
+
+            <div class="group/card flex flex-col xl:flex-row bg-white rounded-[24px] shadow-sm hover:shadow-xl border border-neutral-200/60 transition-all duration-500 overflow-hidden relative">
+
+                <div class="relative h-[300px] xl:h-auto xl:w-[400px] shrink-0 overflow-hidden bg-neutral-900">
+                    
+                    <div class="absolute inset-0 bg-neutral-900/40 z-20 flex flex-col items-center justify-center gap-3 opacity-0 group-hover/card:opacity-100 transition duration-300 backdrop-blur-[2px]">
+                        <button class="w-40 py-2.5 bg-white rounded-full text-neutral-900 text-xs font-bold shadow-xl hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[16px]">edit</span> Edit Property
+                        </button>
+                        <button class="w-40 py-2.5 bg-neutral-800/80 text-white border border-white/20 rounded-full text-xs font-bold shadow-xl hover:bg-neutral-800 hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[16px]">analytics</span> View Analytics
+                        </button>
+                    </div>
+
+                    <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1400&auto=format&fit=crop"
+                        class="w-full h-full object-cover transform group-hover/card:scale-110 transition-transform duration-[2000ms] ease-out" />
+
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+
+                    <div class="absolute top-5 left-5 right-5 flex justify-between items-center z-10">
+                        <span class="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest text-primary shadow-sm">ACTIVE</span>
+                        <div class="flex items-center gap-1.5 px-3 py-1 bg-neutral-950/40 backdrop-blur-md border border-white/10 rounded-full text-white text-[11px] font-bold">
+                            <span class="text-yellow-400 text-sm leading-none">★</span> 4.95
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-6 left-6 right-6 z-10">
+                        <p class="text-white/80 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Reykjavik · Iceland</p>
+                        <h2 class="text-white text-3xl font-extrabold tracking-tighter leading-none mb-4 font-headline">The Obsidian House</h2>
+                        
+                        <div class="flex gap-4 border-t border-white/20 pt-4">
+                            <div>
+                                <p class="text-white/50 text-[9px] font-bold uppercase tracking-wider">Rooms</p>
+                                <p class="text-white font-bold text-sm">08</p>
+                            </div>
+                            <div>
+                                <p class="text-white/50 text-[9px] font-bold uppercase tracking-wider">Rev (Mo)</p>
+                                <p class="text-white font-bold text-sm">$18k</p>
+                            </div>
+                            <div>
+                                <p class="text-emerald-400/80 text-[9px] font-bold uppercase tracking-wider">Occ %</p>
+                                <p class="text-emerald-400 font-bold text-sm">92%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex flex-col min-w-0 bg-white max-h-[450px]">
+                    
+                    <div class="grid grid-cols-12 bg-neutral-50/95 backdrop-blur-sm border-b border-neutral-200/80 sticky top-0 z-20 shadow-sm">
+                        <div class="col-span-3 p-4 flex items-center justify-between border-r border-neutral-200/50">
+                            <span class="text-[10px] font-extrabold text-neutral-400 uppercase tracking-widest">Inventory (May)</span>
+                            <div class="flex gap-1">
+                                <button class="w-6 h-6 rounded bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-100"><span class="material-symbols-outlined text-[14px]">chevron_left</span></button>
+                                <button class="w-6 h-6 rounded bg-white border border-neutral-200 flex items-center justify-center hover:bg-neutral-100"><span class="material-symbols-outlined text-[14px]">chevron_right</span></button>
+                            </div>
+                        </div>
+
+                        <div class="col-span-9 grid grid-cols-7 relative">
+                            <div class="py-2.5 text-center flex flex-col justify-center border-r border-neutral-200/50 opacity-50"><span class="text-[9px] uppercase font-bold text-neutral-400">Mon</span><span class="text-sm font-bold text-neutral-900">18</span></div>
+                            
+                            <div class="py-2.5 text-center flex flex-col justify-center border-r border-neutral-200/50 bg-emerald-50/50 relative">
+                                <div class="absolute top-0 left-0 right-0 h-[3px] bg-emerald-500 rounded-b-sm"></div>
+                                <span class="text-[9px] uppercase font-extrabold text-emerald-600">Tue</span><span class="text-sm font-black text-emerald-700">19</span>
+                            </div>
+                            
+                            <div class="py-2.5 text-center flex flex-col justify-center border-r border-neutral-200/50"><span class="text-[9px] uppercase font-bold text-neutral-400">Wed</span><span class="text-sm font-bold text-neutral-900">20</span></div>
+                            <div class="py-2.5 text-center flex flex-col justify-center border-r border-neutral-200/50"><span class="text-[9px] uppercase font-bold text-neutral-400">Thu</span><span class="text-sm font-bold text-neutral-900">21</span></div>
+                            <div class="py-2.5 text-center flex flex-col justify-center border-r border-neutral-200/50"><span class="text-[9px] uppercase font-bold text-neutral-400">Fri</span><span class="text-sm font-bold text-neutral-900">22</span></div>
+                            <div class="py-2.5 text-center flex flex-col justify-center border-r border-neutral-200/50 bg-neutral-50/50"><span class="text-[9px] uppercase font-bold text-neutral-400">Sat</span><span class="text-sm font-bold text-neutral-900">23</span></div>
+                            <div class="py-2.5 text-center flex flex-col justify-center bg-neutral-50/50"><span class="text-[9px] uppercase font-bold text-neutral-400">Sun</span><span class="text-sm font-bold text-neutral-900">24</span></div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex flex-col divide-y divide-neutral-100 overflow-y-auto custom-scrollbar bg-neutral-50/20">
+                        
+                        <div class="grid grid-cols-12 group/row hover:bg-white transition-colors h-[72px] shrink-0">
+                            <div class="col-span-3 px-4 py-2 flex items-center gap-3 border-r border-neutral-200/50 bg-white">
+                                <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0"><img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=100&auto=format&fit=crop" class="w-full h-full object-cover"></div>
+                                <div class="min-w-0">
+                                    <h5 class="text-xs font-bold text-neutral-900 truncate">Aurora Suite</h5>
+                                    <p class="text-[10px] font-bold text-emerald-600 mt-0.5">$420<span class="text-neutral-400 font-medium">/n</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-span-9 grid grid-cols-7 relative h-full">
+                                <div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div></div>
+                                
+                                <div class="absolute top-2.5 bottom-2.5 left-[28.57%] w-[57.14%] px-1.5 z-10">
+                                    <div class="w-full h-full bg-neutral-900 rounded-lg shadow-sm flex items-center px-3 overflow-hidden hover:bg-neutral-800 cursor-pointer transition-transform hover:-translate-y-0.5 relative">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
+                                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpEV7Pn2JTd_tN7ovoe0mS-lU3VKrrZCsXmOIQ9rpUXX_87jykUheAPpEw22vXtIw9sTqEL4vkhwVvHoWNp13b04PjN8GaxTL7L9e_-oLQwuOQ2Ob2msYLc3ObWYYuZKdi5c6ZKb3S6ittOD3qhMu43XFn2lmAFLy5kxca7XuTfhNg3AgwZQkMAq4Yjw34aaEh02uXQm4t32Nai8-_R_l2w-FbsO5vAWRYdVbmyGtxjybTiCymZcS_qjtOkCjmcesMWVP76tTR3fA" class="w-6 h-6 rounded-full border border-neutral-700 mr-2.5 shrink-0">
+                                        <div class="flex-grow min-w-0 flex justify-between items-center">
+                                            <p class="text-[11px] font-bold text-white truncate">Marcus T. • Confirmed</p>
+                                            <p class="text-[10px] font-medium text-neutral-400 hidden sm:block">$1,680</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 group/row hover:bg-white transition-colors h-[72px] shrink-0">
+                            <div class="col-span-3 px-4 py-2 flex items-center gap-3 border-r border-neutral-200/50 bg-white">
+                                <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0"><img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=100&auto=format&fit=crop" class="w-full h-full object-cover grayscale-[20%]"></div>
+                                <div class="min-w-0">
+                                    <h5 class="text-xs font-bold text-neutral-900 truncate">Nordic Loft</h5>
+                                    <p class="text-[10px] font-bold text-neutral-400 mt-0.5">$250<span class="text-neutral-300 font-medium">/n</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="col-span-9 grid grid-cols-7 relative h-full">
+                                <div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div></div>
+                                
+                                <div class="absolute top-2.5 bottom-2.5 left-0 w-[28.57%] px-1.5 z-10">
+                                    <div class="w-full h-full bg-white border border-neutral-200 rounded-lg shadow-sm flex items-center px-3 overflow-hidden hover:border-neutral-300 cursor-pointer transition-transform hover:-translate-y-0.5 relative group/booking">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-orange-400"></div>
+                                        <div class="flex-grow min-w-0">
+                                            <p class="text-[11px] font-bold text-neutral-800 truncate">Sarah K.</p>
+                                            <p class="text-[9px] font-black text-orange-500 uppercase tracking-wider mt-0.5">Check-out Today</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="absolute top-2.5 bottom-2.5 left-[28.57%] w-[14.28%] px-1.5 z-10">
+                                    <div class="w-full h-full bg-blue-50/50 border border-blue-200 border-dashed rounded-lg flex flex-col items-center justify-center cursor-help group/clean">
+                                        <span class="material-symbols-outlined text-[16px] text-blue-500 group-hover/clean:scale-110 transition-transform">cleaning_services</span>
+                                        <span class="text-[8px] font-bold text-blue-500 uppercase mt-0.5">Cleaning</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 group/row hover:bg-white transition-colors h-[72px] shrink-0">
+                            <div class="col-span-3 px-4 py-2 flex items-center gap-3 border-r border-neutral-200/50 bg-white">
+                                <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-neutral-200 flex items-center justify-center text-neutral-400"><span class="material-symbols-outlined text-[20px]">bed</span></div>
+                                <div class="min-w-0">
+                                    <h5 class="text-xs font-bold text-neutral-900 truncate">Glacier Room 01</h5>
+                                    <p class="text-[10px] font-bold text-neutral-400 mt-0.5">$310<span class="text-neutral-300 font-medium">/n</span></p>
+                                </div>
+                            </div>
+                            <div class="col-span-9 grid grid-cols-7 relative h-full">
+                                <div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 group/row hover:bg-white transition-colors h-[72px] shrink-0">
+                            <div class="col-span-3 px-4 py-2 flex items-center gap-3 border-r border-neutral-200/50 bg-white">
+                                <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-neutral-200 flex items-center justify-center text-neutral-400"><span class="material-symbols-outlined text-[20px]">bed</span></div>
+                                <div class="min-w-0">
+                                    <h5 class="text-xs font-bold text-neutral-900 truncate">Glacier Room 02</h5>
+                                    <p class="text-[10px] font-bold text-neutral-400 mt-0.5">$310<span class="text-neutral-300 font-medium">/n</span></p>
+                                </div>
+                            </div>
+                            <div class="col-span-9 grid grid-cols-7 relative h-full">
+                                <div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div></div>
+                                
+                                <div class="absolute top-2.5 bottom-2.5 left-[71.42%] w-[28.57%] px-1.5 z-10">
+                                    <div class="w-full h-full bg-neutral-900 rounded-lg shadow-sm flex items-center px-3 overflow-hidden hover:bg-neutral-800 cursor-pointer transition-transform hover:-translate-y-0.5 relative">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
+                                        <div class="flex-grow min-w-0 flex justify-between items-center">
+                                            <p class="text-[11px] font-bold text-white truncate pl-1">New Booking</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 group/row hover:bg-white transition-colors h-[72px] shrink-0">
+                            <div class="col-span-3 px-4 py-2 flex items-center gap-3 border-r border-neutral-200/50 bg-white">
+                                <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-neutral-200 flex items-center justify-center text-neutral-400"><span class="material-symbols-outlined text-[20px]">bed</span></div>
+                                <div class="min-w-0">
+                                    <h5 class="text-xs font-bold text-neutral-900 truncate">Alpine Suite</h5>
+                                    <p class="text-[10px] font-bold text-neutral-400 mt-0.5">$550<span class="text-neutral-300 font-medium">/n</span></p>
+                                </div>
+                            </div>
+                            <div class="col-span-9 grid grid-cols-7 relative h-full">
+                                <div class="border-r border-neutral-100 bg-error-container/20"></div><div class="border-r border-neutral-100 bg-error-container/20"></div><div class="border-r border-neutral-100 bg-error-container/20"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div></div>
+                                
+                                <div class="absolute top-2.5 bottom-2.5 left-0 w-[42.85%] px-1.5 z-10 pointer-events-none">
+                                    <div class="w-full h-full bg-error-container/50 border border-error/20 border-dashed rounded-lg flex items-center justify-center">
+                                        <span class="text-[10px] font-bold text-error uppercase tracking-widest">Blocked - Maintenance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-12 group/row hover:bg-white transition-colors h-[72px] shrink-0">
+                            <div class="col-span-3 px-4 py-2 flex items-center gap-3 border-r border-neutral-200/50 bg-white">
+                                <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-neutral-200 flex items-center justify-center text-neutral-400"><span class="material-symbols-outlined text-[20px]">bed</span></div>
+                                <div class="min-w-0">
+                                    <h5 class="text-xs font-bold text-neutral-900 truncate">Alpine Suite</h5>
+                                    <p class="text-[10px] font-bold text-neutral-400 mt-0.5">$550<span class="text-neutral-300 font-medium">/n</span></p>
+                                </div>
+                            </div>
+                            <div class="col-span-9 grid grid-cols-7 relative h-full">
+                                <div class="border-r border-neutral-100 bg-error-container/20"></div><div class="border-r border-neutral-100 bg-error-container/20"></div><div class="border-r border-neutral-100 bg-error-container/20"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div class="border-r border-neutral-100"></div><div></div>
+                                
+                                <div class="absolute top-2.5 bottom-2.5 left-0 w-[42.85%] px-1.5 z-10 pointer-events-none">
+                                    <div class="w-full h-full bg-error-container/50 border border-error/20 border-dashed rounded-lg flex items-center justify-center">
+                                        <span class="text-[10px] font-bold text-error uppercase tracking-widest">Blocked - Maintenance</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bg-white border-t border-neutral-200/80 p-2.5 text-center z-20 shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                        <button class="text-[10px] font-bold text-neutral-500 hover:text-primary transition-colors uppercase tracking-widest">
+                            Scroll to view all rooms ↓
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>

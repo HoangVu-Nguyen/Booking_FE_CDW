@@ -21,7 +21,10 @@ import { Checkout } from './features/checkout/checkout';
 import { PaymentResult } from './features/checkout/components/payment-result/payment-result';
 import { TripCard } from './features/profile/components/my-trips/components/trip-card/trip-card';
 import { TripList } from './features/profile/components/my-trips/components/trip-list/trip-list';
+import { Host } from '@angular/core';
+import { HostDashboard } from './features/host-dashboard/host-dashboard';
 import { HomestayWishlist } from './features/homestay-wishlist/homestay-wishlist';
+import { HomestayListManager } from './features/host-dashboard/components/homestay-list-manager/homestay-list-manager';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -49,6 +52,7 @@ export const routes: Routes = [
         path: 'tours',
         component: TourList
       },
+
       {
         path: 'tour/:id',
         component: TourDetail
@@ -62,9 +66,9 @@ export const routes: Routes = [
         component: PaymentResult
       },
       {
-      path:'wishlist',
-      component: HomestayWishlist,
-      title: 'Yêu thích - Clyvasync'
+        path: 'wishlist',
+        component: HomestayWishlist,
+        title: 'Yêu thích - Clyvasync'
       },
       {
         path: 'profile',
@@ -73,18 +77,26 @@ export const routes: Routes = [
           { path: 'info', component: ProfileInfo },
           { path: 'security', component: Security },
           {
-            path:'favorites',component: HomestayWishlist, title: 'Yêu thích - Clyvasync'
+            path: 'favorites', component: HomestayWishlist, title: 'Yêu thích - Clyvasync'
           },
-          { path: 'trips', component: MyTrips ,
-              children: [
-                { path: '', component: TripList },
-              ]
+          {
+            path: 'trips', component: MyTrips,
+            children: [
+              { path: '', component: TripList },
+            ]
           },
           { path: 'payments', component: PaymentMethods },
           { path: '', redirectTo: 'info', pathMatch: 'full' },
           {
             path: 'trip/:code',
             component: MyTrip
+          }
+        ]
+      }, {
+        path: 'host-dashboard', component: HostDashboard, title: 'Host Dashboard - Clyvasync',
+        children:[
+          {
+            path:'',component: HomestayListManager, title: 'Danh sách homestay - Host Dashboard - Clyvasync'
           }
         ]
       }

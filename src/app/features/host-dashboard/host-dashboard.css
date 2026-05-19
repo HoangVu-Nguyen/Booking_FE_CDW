@@ -1,0 +1,20 @@
+ .glass-premium {
+            background: rgba(252, 249, 244, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fcf9f4;
+            letter-spacing: -0.01em;
+        }
+        .header-letter-spacing {
+            letter-spacing: 0.05em;
+        }
+        .atelier-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e2dd; border-radius: 10px; }
