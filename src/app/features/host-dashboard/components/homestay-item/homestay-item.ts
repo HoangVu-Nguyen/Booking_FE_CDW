@@ -55,14 +55,26 @@ export class HomestayItem {
       'class': colorClass // Trả về class màu
     };
   }
-  getBookingColor(status: string): string {
-    switch (status) {
-      case 'CONFIRMED': return 'bg-neutral-900';
-      case 'PENDING': return 'bg-amber-500';
-      case 'CANCELLED': return 'bg-rose-500';
-      default: return 'bg-emerald-600';
-    }
-  }
+ getBookingColor(status: string, roomId: number): string {
+  // 1. Phân loại màu theo trạng thái đặc biệt
+  if (status === 'PENDING') return 'bg-amber-50 text-amber-700 border border-amber-300';
+  if (status === 'CANCELLED') return 'bg-rose-50 text-rose-700 border border-rose-300';
+  if (status === 'MAINTENANCE') return 'bg-neutral-100 text-neutral-500 border border-neutral-300 border-dashed';
+
+  // 2. Trạng thái CONFIRMED -> Đổ màu Gradient theo từng phòng
+  const confirmedColors = [
+    'bg-gradient-to-r from-blue-500 to-indigo-500 text-white border border-indigo-600',
+    'bg-gradient-to-r from-emerald-400 to-teal-500 text-white border border-teal-600',
+    'bg-gradient-to-r from-violet-500 to-purple-500 text-white border border-purple-600',
+    'bg-gradient-to-r from-orange-400 to-amber-500 text-white border border-amber-600',
+    'bg-gradient-to-r from-pink-500 to-rose-500 text-white border border-rose-600',
+    'bg-gradient-to-r from-cyan-500 to-blue-500 text-white border border-cyan-600'
+  ];
+  
+  // Dùng thuật toán Modulo để chia đều màu cho các phòng.
+  // Ví dụ: roomId 1 sẽ lấy màu 1, roomId 7 quay lại lấy màu 1.
+  return confirmedColors[(roomId || 0) % confirmedColors.length];
+}
   @Input() startDate: Date = new Date(2026, 4, 18); // Nhận ngày từ cha
   weekDays: string[] = [];
 

@@ -50,9 +50,28 @@
 
             <div *ngFor="let room of timeline"
                 class="grid grid-cols-12 hover:bg-neutral-50/50 transition-colors h-[72px] shrink-0">
-                <div class="col-span-3 px-4 py-2 flex items-center border-r border-neutral-200/50 bg-white">
-                    <div class="min-w-0">
-                        <h5 class="text-xs font-bold text-neutral-900 truncate">{{room.roomName}}</h5>
+                <div
+                    class="col-span-3 px-4 py-2 flex items-center gap-3 border-r border-neutral-200/50 bg-white group/room">
+
+                    <div
+                        class="w-10 h-10 shrink-0 rounded-lg overflow-hidden bg-neutral-50 border border-neutral-100 shadow-sm transition-transform group-hover/room:scale-105">
+                        <img *ngIf="room.imageUrl" [src]="room.imageUrl" [alt]="room.roomName"
+                            class="w-full h-full object-cover" />
+
+                        <div *ngIf="!room.imageUrl"
+                            class="w-full h-full flex items-center justify-center text-neutral-300 bg-neutral-100">
+                            <span class="material-symbols-outlined text-[20px]">bed</span>
+                        </div>
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+                        <h5
+                            class="text-xs font-bold text-neutral-900 truncate transition-colors group-hover/room:text-primary">
+                            {{room.roomName}}
+                        </h5>
+                        <p class="text-[9px] font-medium text-neutral-400 mt-0.5 truncate">
+                            Phòng ID: {{room.roomId}}
+                        </p>
                     </div>
                 </div>
 
@@ -62,10 +81,31 @@
                     <div *ngFor="let booking of room.bookings" class="absolute top-2.5 bottom-2.5 z-10 px-1.5"
                         [ngStyle]="{'left.%': calculateBookingPosition(booking)['left.%'], 'width.%': calculateBookingPosition(booking)['width.%'], 'display': calculateBookingPosition(booking)['display']}">
 
-                        <div [class]="getBookingColor(booking.status)"
-                            class="w-full h-full rounded-md shadow-md flex items-center px-3 text-white text-[10px] font-bold truncate transition-all hover:scale-[1.02] cursor-pointer">
-                            <span class="mr-1.5 w-1.5 h-1.5 rounded-full bg-white/30"></span>
-                            {{booking.guestName || 'Guest'}}
+                        <div [class]="getBookingColor(booking.status, room.roomId)"
+                            class="w-full h-full rounded-lg shadow-sm flex items-center px-2 py-1.5 transition-all duration-300 hover:shadow-lg hover:-translate-y-[2px] hover:scale-[1.01] cursor-pointer group/booking overflow-hidden">
+
+                            <div class="relative shrink-0 mr-2.5">
+                                <img *ngIf="booking.avatar" [src]="booking.avatar"
+                                    class="w-7 h-7 rounded-full object-cover border-[1.5px] border-white/40 shadow-sm" />
+
+                                <div *ngIf="!booking.avatar"
+                                    class="w-7 h-7 rounded-full bg-white/20 border-[1.5px] border-white/40 shadow-sm flex items-center justify-center backdrop-blur-sm">
+                                    <span class="material-symbols-outlined text-[14px] text-white">person</span>
+                                </div>
+
+                                <span *ngIf="booking.status === 'CONFIRMED'"
+                                    class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white bg-emerald-400 shadow-sm"></span>
+                            </div>
+
+                            <div class="flex flex-col min-w-0 justify-center">
+                                <span class="truncate text-[11px] font-extrabold text-white leading-none mb-1">
+                                    {{booking.guestName || 'Guest User'}}
+                                </span>
+                                <span
+                                    class="truncate text-[8px] font-black uppercase tracking-widest text-white/70 leading-none">
+                                    {{booking.status}}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -17,6 +17,7 @@ export interface RoomTimelineResponse {
   roomName: string;
   dailyStatuses: DailyStatusResponse[];
   bookings: BookingBlockResponse[];
+  imageUrl:string;
 }
 
 export interface DailyStatusResponse {
@@ -28,6 +29,7 @@ export interface DailyStatusResponse {
 export interface BookingBlockResponse {
   bookingId: number;
   guestName: string;
+  avatarUrl: string;
   checkInDate: string;
   checkOutDate: string;
   status: string;
