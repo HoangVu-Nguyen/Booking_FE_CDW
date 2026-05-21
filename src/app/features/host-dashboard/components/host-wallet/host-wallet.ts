@@ -1,6 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit, NgZone, OnDestroy } from '@angular/core'; // <-- Nhớ import thêm NgZone ở đâyimport { DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HostWalletInfo, WalletTransaction } from '../../../../core/models/response/wallet.response';
 import { WalletService } from '../../../../core/services/wallet/wallet.service';
@@ -33,7 +32,7 @@ export class HostWallet implements OnInit {
   currentPage: number = 0;
   private walletSocketSub!: Subscription;
 
-  constructor(private walletService: WalletService,private cdr: ChangeDetectorRef,private websocketService: WebsocketService) {}
+  constructor(private walletService: WalletService,private cdr: ChangeDetectorRef,private websocketService: WebsocketService,private zone: NgZone) {}
 
   ngOnInit(): void {
     this.loadWalletData();
@@ -118,15 +117,33 @@ export class HostWallet implements OnInit {
       next: (notification) => {
         console.log('🔔 Nhận tín hiệu đổi trạng thái ví từ Admin:', notification);
         
-        // 1. Backend báo thành công/thất bại -> FE lập tức gọi lại API load lại ví và bảng lịch sử
-        this.loadWalletData();
-        this.loadTransactions();
-        
-        // 2. Bác có thể hiển thị một cái Toast hoặc alert thông báo lời nhắn từ Backend gửi lên
-        alert(notification.message);
-        
-        // 3. Ép cập nhật lại giao diện
-        this.cdr.detectChanges();
+        // Ép Angular đưa luồng WebSocket ngầm vào lại trong Change Detection Zone
+        this.zone.run(() => {
+          
+          // Bước 1: Gọi API lấy dữ liệu mới nhất dưới DB lên
+          this.walletService.getWalletInfo().subscribe({
+            next: (res) => {
+              this.walletInfo = res.data;
+              
+              // Bước 2: Tải lại lịch sử bảng giao dịch
+              this.walletService.getTransactionHistory(this.currentPage, 10).subscribe({
+                next: (txRes) => {
+                  this.transactions = txRes.data.content;
+                  console.log('Cập nhật lịch sử giao dịch sau khi nhận WebSocket:', this.transactions);
+                  
+                  // Bước 3: Ép render giao diện khi TẤT CẢ dữ liệu mới đã nằm trong bộ nhớ JavaScipt
+                  this.cdr.detectChanges();
+                  
+                  // Bước 4: Hiển thị thông báo sau cùng để không chặn luồng tải dữ liệu
+                  setTimeout(() => {
+                    alert(notification.message);
+                  }, 100);
+                }
+              });
+            }
+          });
+
+        });
       },
       error: (err) => console.error('Lỗi luồng Socket tại Component:', err)
     });
