@@ -25,6 +25,10 @@ import { Host } from '@angular/core';
 import { HostDashboard } from './features/host-dashboard/host-dashboard';
 import { HomestayWishlist } from './features/homestay-wishlist/homestay-wishlist';
 import { HomestayListManager } from './features/host-dashboard/components/homestay-list-manager/homestay-list-manager';
+import { BookingList } from './features/host-dashboard/components/booking-list/booking-list';
+import { HostWallet } from './features/host-dashboard/components/host-wallet/host-wallet';
+import { AdminDashboard } from './features/admin-dashboard/admin-dashboard';
+import { AdminWalletApproval } from './features/admin-dashboard/components/admin-wallet-approval/admin-wallet-approval';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -71,6 +75,18 @@ export const routes: Routes = [
         title: 'Yêu thích - Clyvasync'
       },
       {
+        path: 'admin',
+        component: AdminDashboard,
+        title: 'Dashboard - Clyvasync',
+        children:[
+          {
+            path:'wallet-approvals',
+            component: AdminWalletApproval,
+            title: 'Duyệt rút tiền - Admin Dashboard - Clyvasync'
+          }
+        ]
+      },
+      {
         path: 'profile',
         component: Profile,
         children: [
@@ -94,9 +110,14 @@ export const routes: Routes = [
         ]
       }, {
         path: 'host-dashboard', component: HostDashboard, title: 'Host Dashboard - Clyvasync',
-        children:[
+        children: [
           {
-            path:'',component: HomestayListManager, title: 'Danh sách homestay - Host Dashboard - Clyvasync'
+            path: 'overview', component: HomestayListManager, title: 'Danh sách homestay - Host Dashboard - Clyvasync'
+          }, {
+            path: 'bookings', component: BookingList, title: 'Danh sách đặt phòng - Host Dashboard - Clyvasync'
+          },
+          {
+            path: 'wallet', component: HostWallet, title: 'Ví / Doanh thu - Host Dashboard - Clyvasync'
           }
         ]
       }

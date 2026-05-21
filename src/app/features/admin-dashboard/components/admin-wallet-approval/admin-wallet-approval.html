@@ -1,0 +1,181 @@
+<div class="p-8 animate-fade-in pb-20">
+
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+            <h2 class="text-[24px] font-bold text-stone-900 tracking-tight mb-1">Phê duyệt Rút tiền</h2>
+            <p class="text-[13px] text-stone-500 font-medium">Kiểm tra thông tin ngân hàng và đối soát chuyển khoản cho
+                Chủ nhà.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <button (click)="loadPendingRequests()"
+                class="px-4 py-2 bg-white border border-stone-300 text-stone-700 text-[13px] font-semibold rounded-lg hover:bg-stone-50 transition-colors flex items-center gap-2 shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">sync</span> Làm mới
+            </button>
+            <button
+                class="px-4 py-2 bg-[#173124] text-white text-[13px] font-semibold rounded-lg hover:bg-[#0a1610] transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="material-symbols-outlined text-[18px]">download</span> Xuất file Excel
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white border border-stone-200 p-5 rounded-xl flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-1">Số lệnh chờ duyệt</p>
+                <div class="flex items-end gap-2">
+                    <h3 class="text-2xl font-black text-stone-900 leading-none">{{ pendingRequests.length }}</h3>
+                    <span
+                        class="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mb-0.5">PENDING</span>
+                </div>
+            </div>
+            <div
+                class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100">
+                <span class="material-symbols-outlined text-[20px]">pending_actions</span>
+            </div>
+        </div>
+
+        <div class="bg-white border border-stone-200 p-5 rounded-xl flex items-center justify-between shadow-sm">
+            <div>
+                <p class="text-[11px] font-bold text-stone-400 uppercase tracking-widest mb-1">Tổng tiền cần chuyển</p>
+                <div class="flex items-end gap-1.5">
+                    <h3 class="text-2xl font-black text-[#173124] leading-none tabular-nums">
+                        Tính toán tự động...
+                    </h3>
+                    <span class="text-sm font-bold text-stone-500 mb-0.5">₫</span>
+                </div>
+            </div>
+            <div
+                class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100">
+                <span class="material-symbols-outlined text-[20px]">payments</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-stone-200 shadow-sm rounded-xl overflow-hidden relative">
+
+        <div *ngIf="isLoading"
+            class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center">
+            <div class="flex items-center gap-3 px-4 py-2 bg-white border border-stone-200 rounded-full shadow-lg">
+                <span class="w-4 h-4 border-2 border-[#173124] border-t-transparent rounded-full animate-spin"></span>
+                <span class="text-xs font-bold text-stone-700">Đang tải dữ liệu...</span>
+            </div>
+        </div>
+
+        <div class="px-5 py-3 border-b border-stone-200 bg-stone-50/50 flex items-center justify-between">
+            <div class="relative">
+                <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-stone-400">search</span>
+                <input type="text" placeholder="Tìm mã GD hoặc Host ID..."
+                    class="pl-9 pr-4 py-1.5 text-[13px] font-medium border border-stone-300 rounded-md focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] w-[250px] transition-all bg-white">
+            </div>
+
+            <div class="text-[12px] font-medium text-stone-500">
+                Sắp xếp: <span class="text-stone-900 font-bold cursor-pointer">Cũ nhất trước <span
+                        class="material-symbols-outlined text-[14px] align-middle">arrow_drop_down</span></span>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-[13px] whitespace-nowrap">
+                <thead>
+                    <tr
+                        class="bg-stone-50 border-b border-stone-200 text-stone-500 uppercase tracking-wider text-[10px] font-bold">
+                        <th class="px-5 py-3 w-[15%]">Mã Lệnh / Ngày</th>
+                        <th class="px-5 py-3 w-[15%]">Chủ nhà (Host)</th>
+                        <th class="px-5 py-3 w-[35%]">Thông tin Thụ hưởng</th>
+                        <th class="px-5 py-3 w-[15%] text-right">Số tiền (VNĐ)</th>
+                        <th class="px-5 py-3 w-[20%] text-center">Xử lý</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-100">
+
+                    <tr *ngFor="let tx of pendingRequests" class="hover:bg-stone-50/80 transition-colors group">
+
+                        <td class="px-5 py-4">
+                            <div class="font-mono text-stone-900 font-bold">#TRX-{{ tx.id }}</div>
+                            <div class="text-stone-500 text-[11px] font-medium mt-0.5">{{ tx.createdAt |
+                                date:'dd/MM/yyyy HH:mm' }}</div>
+                        </td>
+
+                        <td class="px-5 py-4">
+                            <div class="font-bold text-[#173124] hover:underline cursor-pointer">Host ID: {{ tx.walletId
+                                }}</div>
+                            <span
+                                class="inline-block mt-1 px-1.5 py-0.5 bg-stone-100 text-stone-500 text-[9px] font-bold rounded border border-stone-200">
+                                Xem ví
+                            </span>
+                        </td>
+
+                        <td class="px-5 py-4">
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="w-8 h-8 rounded border border-stone-200 bg-white flex items-center justify-center flex-shrink-0 text-stone-400">
+                                    <span class="material-symbols-outlined text-[18px]">account_balance</span>
+                                </div>
+                                <div class="whitespace-normal min-w-[200px]">
+                                    <p class="font-semibold text-stone-900 leading-tight">{{ tx.bankAccountInfo }}</p>
+                                    <p class="text-[11px] text-amber-600 font-bold mt-1 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[13px]">warning</span> Yêu cầu đối
+                                        soát kỹ
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="px-5 py-4 text-right">
+                            <div class="text-[15px] font-black text-stone-900 tabular-nums tracking-tight">{{ tx.amount
+                                | number:'1.0-0' }}</div>
+                            <div class="text-[10px] text-stone-400 font-bold mt-0.5 uppercase">VNĐ</div>
+                        </td>
+
+                        <td class="px-5 py-4">
+                            <div
+                                class="flex items-center justify-center gap-2 opacity-100 sm:opacity-40 sm:group-hover:opacity-100 transition-opacity">
+                                <button (click)="approve(tx)"
+                                    class="px-3 py-1.5 bg-white text-emerald-700 hover:bg-emerald-50 border border-emerald-200 hover:border-emerald-300 rounded text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-[14px]">check</span> Duyệt
+                                </button>
+                                <button (click)="reject(tx)"
+                                    class="px-3 py-1.5 bg-white text-red-600 hover:bg-red-50 border border-stone-200 hover:border-red-200 rounded text-xs font-bold transition-all shadow-sm">
+                                    Từ chối
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="pendingRequests.length === 0 && !isLoading">
+                        <td colspan="5" class="px-5 py-16 text-center bg-stone-50/30">
+                            <div class="flex flex-col items-center justify-center">
+                                <div
+                                    class="w-16 h-16 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-300 mb-4 shadow-sm">
+                                    <span class="material-symbols-outlined text-[32px]">task_alt</span>
+                                </div>
+                                <h4 class="text-sm font-bold text-stone-900 mb-1">Đã xử lý hết yêu cầu</h4>
+                                <p class="text-[13px] text-stone-500">Hiện tại không có lệnh rút tiền nào đang chờ
+                                    duyệt.</p>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="px-5 py-3 border-t border-stone-200 bg-stone-50/50 flex items-center justify-between">
+            <span class="text-[12px] text-stone-500 font-medium">
+                Đang hiển thị <span class="font-bold text-stone-900">{{ pendingRequests.length }}</span> lệnh chờ
+            </span>
+            <div class="flex gap-1">
+                <button
+                    class="w-7 h-7 rounded border border-stone-200 text-stone-400 bg-white cursor-not-allowed flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+                </button>
+                <button
+                    class="w-7 h-7 rounded border border-stone-200 text-stone-700 bg-white hover:bg-stone-50 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
