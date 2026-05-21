@@ -6,8 +6,13 @@ import { CheckoutSummary } from './components/checkout-summary/checkout-summary'
 import { BookingService } from '../../core/services/booking/booking.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
+// NHỚ IMPORT THÊM switchMap Ở ĐÂY NHÉ BÁC
+import { switchMap } from 'rxjs/operators'; 
+
 @Component({
   selector: 'app-checkout',
+  standalone: true, // Nếu bác đang dùng standalone component
   imports: [CheckoutContact, CheckoutPolicies, CheckoutPayment, CheckoutSummary, CommonModule],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
@@ -15,6 +20,7 @@ import { CommonModule } from '@angular/common';
 export class Checkout implements OnInit {
   private route = inject(ActivatedRoute);
   private bookingService = inject(BookingService);
+  
   public checkoutData = this.bookingService.checkoutData;
   public isProcessing = signal(false);
   public selectedPaymentMethod = signal<string>('VNPAY');
@@ -46,13 +52,23 @@ export class Checkout implements OnInit {
       }
     });
   }
+
+  // --- HÀM CHỐT HẠ (ĐÃ BỌC SWITCHMAP CHẠY NỐI TIẾP API) ---
   onConfirmAndPay(): void {
+    const contact = this.bookingService.contactInfo(); 
+
+    // 1. Validate Form
+    if (!contact.guestName || !contact.guestPhone || !contact.guestEmail) {
+      alert("Vui lòng nhập đầy đủ thông tin người lưu trú!");
+      return;
+    }
+    
     const data = this.checkoutData();
     const method = this.selectedPaymentMethod();
 
     if (!data || this.isProcessing()) return;
 
-    // Chặn luồng TRANSFER nếu bác chưa code chức năng up bill
+    // 2. Chặn luồng TRANSFER nếu chưa phát triển
     if (method === 'TRANSFER') {
       alert("Tính năng chuyển khoản thủ công đang bảo trì, vui lòng chọn VNPAY hoặc MoMo!");
       return;
@@ -60,21 +76,33 @@ export class Checkout implements OnInit {
 
     this.isProcessing.set(true);
 
-    // Gọi API với method tương ứng
-    this.bookingService.getPaymentUrl(data.bookingCode, method).subscribe({
+    // 3. Đóng gói Payload thông tin liên hệ
+    const updatePayload = {
+      guestName: contact.guestName,
+      phone: contact.guestPhone,
+      email: contact.guestEmail,
+      specialRequests: contact.specialRequests
+    };
+    console.log('Payload thông tin liên hệ chuẩn bị gửi lên API:', updatePayload);
+
+    // 4. CHẠY API NỐI TIẾP: Cập nhật DB -> Thành công thì xin Link VNPAY
+    this.bookingService.updateContactInfo(data.bookingCode, updatePayload).pipe(
+      
+      // switchMap giúp "nối cầu", hứng kết quả của API 1 và tự động kích hoạt API 2
+      switchMap(() => this.bookingService.getPaymentUrl(data.bookingCode, method))
+    ).subscribe({
       next: (paymentUrl: string) => {
-        console.log(paymentUrl)
-        // Redirect sang VNPAY hoặc MoMo tùy vào url trả về
+        console.log('Link thanh toán đã tạo thành công:', paymentUrl);
+        // Đá khách sang cổng VNPAY/MoMo
         window.location.href = paymentUrl;
       },
       error: (err) => {
-        this.isProcessing.set(false);
-        console.error('❌ Lỗi tạo link thanh toán:', err);
-        alert('Không thể kết nối cổng thanh toán. Vui lòng thử lại!');
+        this.isProcessing.set(false); // Nhả nút loading ra nếu lỗi
+        console.error('❌ Lỗi xử lý thanh toán:', err);
+        alert('Có lỗi xảy ra khi cập nhật thông tin hoặc kết nối cổng thanh toán!');
       }
     });
   }
-
 
   // Hàm hứng sự kiện từ component con
   onPaymentMethodChange(method: string) {

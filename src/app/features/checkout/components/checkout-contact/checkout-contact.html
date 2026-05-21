@@ -26,7 +26,9 @@
                 class="mb-8 flex items-center justify-between p-4 bg-primary/[0.03] border border-primary/10 rounded-2xl">
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-primary/60">info</span>
-                    <p class="text-sm font-medium text-on-surface-variant">Sử dụng thông tin từ tài khoản <strong>{{user.username}}</strong>?</p>
+                    <p class="text-sm font-medium text-on-surface-variant">Sử dụng thông tin từ tài khoản
+                        <strong>{{user.username}}</strong>?
+                    </p>
                 </div>
                 <!-- Switch hoặc Checkbox để tự động điền -->
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -42,7 +44,7 @@
                 <div class="md:col-span-2 space-y-1.5">
                     <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider ml-1">Họ và
                         tên người nhận phòng *</label>
-                    <input type="text" [value]="user.username"
+                    <input type="text" [(ngModel)]="contact.guestName" (ngModelChange)="onContactChange()"
                         class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3.5 text-on-surface font-bold focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all placeholder:font-normal"
                         placeholder="Nhập họ tên như trên CCCD/Hộ chiếu" />
                 </div>
@@ -52,7 +54,7 @@
                     <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider ml-1">Số điện
                         thoại liên lạc *</label>
                     <div class="relative">
-                        <input type="tel" [value]="user.phoneNumber"
+                        <input type="tel" [(ngModel)]="contact.guestPhone" (ngModelChange)="onContactChange()"
                             class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3.5 text-on-surface font-bold focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all" />
                         <span
                             class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-emerald-500 text-[18px]">check_circle</span>
@@ -63,7 +65,7 @@
                 <div class="space-y-1.5">
                     <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider ml-1">Email
                         nhận xác nhận *</label>
-                    <input type="email" [value]="user.email"
+                    <input type="email" [(ngModel)]="contact.guestEmail" (ngModelChange)="onContactChange()"
                         class="w-full bg-white border border-outline-variant/50 rounded-xl px-4 py-3.5 text-on-surface font-bold focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all" />
                 </div>
             </div>
@@ -77,7 +79,7 @@
             </div>
         </div>
     </section>
-    }
+}
 
     <!-- ========================================== -->
     <!-- 2. CÁ NHÂN HÓA DỊCH VỤ (SERVICE PREF)     -->
@@ -107,11 +109,13 @@
             <div class="space-y-3">
                 <label class="text-[11px] font-black text-on-surface-variant uppercase tracking-wider ml-1">Ghi chú cho
                     Butler / Chủ nhà</label>
-                <textarea
+                <textarea [(ngModel)]="contact.specialRequests" (ngModelChange)="onContactChange()"
                     class="w-full h-32 bg-surface-container-low border border-outline-variant/30 rounded-2xl p-4 text-sm font-medium focus:bg-white focus:border-primary outline-none transition-all resize-none placeholder:text-on-surface-variant/40"
-                    placeholder="Ví dụ: Vui lòng chuẩn bị phòng không hút thuốc, tôi sẽ đến muộn sau 8h tối..."></textarea>
+                    placeholder="Ví dụ: Vui lòng chuẩn bị phòng không hút thuốc..."></textarea>
+
             </div>
         </div>
     </section>
+
 
 </div>

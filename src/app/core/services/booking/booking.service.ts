@@ -8,7 +8,7 @@ import { ApiResponse } from "../../models/response/api.response";
 import { RoomResponse } from "../../models/response/room.response";
 import { TourResponse } from "../../models/response/tour.response";
 import { BookingInitRequest } from "../../models/request/booking.request";
-import { BookingInitResponse } from "../../models/response/booking.response";
+import { BookingInitResponse, HostBookingItemResponse } from "../../models/response/booking.response";
 import { PastTripResponse } from "../../models/response/past-trip.response";
 
 // booking.service.ts
@@ -26,7 +26,13 @@ export class BookingService {
     currentSelection = signal<RoomResponse | null>(null);
     currentSelectedPlan = signal<any | null>(null);
     selectedRoomCount = signal<number>(1);
-    currentTourSelections = signal<TourResponse[]>([]);
+    currentTourSelections = signal<TourResponse[]>([]);// Thêm đoạn này vào chung chỗ với các signals khác (checkInDate, checkoutData...)
+contactInfo = signal({
+    guestName: '',
+    guestPhone: '',
+    guestEmail: '',
+    specialRequests: ''
+});
 
     
 
@@ -98,6 +104,17 @@ export class BookingService {
     getPaymentUrl(bookingCode: string, method: string): Observable<string> {
         // API giờ có thêm biến method
         return this.apiService.getText(`/api/v1/payments/create-url?bookingCode=${bookingCode}&method=${method}`);
+    }
+    getHostBookings(): Observable<ApiResponse<HostBookingItemResponse[]>> {
+        return this.apiService.get<ApiResponse<HostBookingItemResponse[]>>('/api/v1/bookings/host/list');
+    }
+    // ... các hàm cũ giữ nguyên ...
+
+    /**
+     * Cập nhật thông tin người lưu trú trước khi thanh toán
+     */
+    updateContactInfo(bookingCode: string, payload: any): Observable<ApiResponse<any>> {
+        return this.apiService.put<ApiResponse<any>>(`/api/v1/bookings/${bookingCode}/contact`, payload);
     }
    
 }

@@ -16,7 +16,7 @@
         <div class="bg-white border border-stone-200/80 rounded-3xl p-4 shadow-sm flex flex-col xl:flex-row justify-between gap-4">
             <div class="flex flex-wrap gap-1.5 bg-stone-100 p-1.5 rounded-2xl">
                 <button class="px-5 py-2.5 bg-white text-[#173124] text-[11px] font-bold uppercase tracking-widest rounded-xl shadow border border-stone-200/50 hover:shadow-md transition-all">
-                    Tất cả (128)
+                    Tất cả ({{ totalBookings }})
                 </button>
                 <button class="px-5 py-2.5 text-stone-500 hover:text-stone-900 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Chờ duyệt (3)
@@ -31,21 +31,26 @@
 
             <div class="flex items-center gap-3">
                 <button class="h-12 px-5 rounded-2xl bg-stone-50 border border-stone-200 text-stone-700 hover:border-stone-300 hover:bg-stone-100 transition-all flex items-center gap-2 text-xs font-semibold">
-                    <span class="material-symbols-outlined text-[18px]">filter_list</span> Bộ lọc nâng cao
+                    <span class="material-symbols-outlined text-[18px]">filter_list</span> Bộ lọc
                 </button>
                 <div class="relative group flex-1 xl:flex-none">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[20px] text-stone-400 group-focus-within:text-[#173124] transition-colors">search</span>
-                    <input type="text" placeholder="Tên khách, mã booking, số ĐT..." class="w-full xl:w-72 h-12 pl-12 pr-4 bg-stone-50 border border-stone-200 rounded-2xl text-sm font-medium text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] transition-all" />
+                    <input type="text" [(ngModel)]="searchText" placeholder="Tên khách, mã booking, ĐT..." class="w-full xl:w-72 h-12 pl-12 pr-4 bg-stone-50 border border-stone-200 rounded-2xl text-sm font-medium text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] transition-all" />
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="bg-white border border-stone-200/60 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden group">
+    <div class="bg-white border border-stone-200/60 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden group relative">
+        
+        <div *ngIf="isLoading" class="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center">
+            <span class="w-8 h-8 border-4 border-[#173124]/30 border-t-[#173124] rounded-full animate-spin"></span>
+        </div>
+
         <div class="overflow-x-auto custom-scrollbar">
             <table class="w-full text-left border-collapse min-w-[1100px]">
                 <thead>
-                    <tr class="border-b border-stone-200/60">
+                    <tr class="border-b border-stone-200/60 bg-stone-50/30">
                         <th class="py-5 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest whitespace-nowrap">Thông tin khách</th>
                         <th class="py-5 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest whitespace-nowrap">Lưu trú</th>
                         <th class="py-5 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest whitespace-nowrap">Thời gian (In/Out)</th>
@@ -58,125 +63,128 @@
                 
                 <tbody>
                     
-                    <tr class="group/row hover:bg-stone-50/50 border-b border-stone-100 transition-colors">
+                    <tr *ngFor="let item of bookingList" 
+                        class="group/row hover:bg-stone-50/50 border-b border-stone-100 transition-colors"
+                        [ngClass]="{'bg-amber-50/20': item.status === 'PENDING'}">
+                        
                         <td class="py-5 px-6 relative">
-                            <span class="material-symbols-outlined absolute left-1 top-1 text-[14px] text-amber-500 opacity-0 group-hover/row:opacity-100 transition-opacity" title="Có ghi chú nội bộ">description</span>
+                            <span class="material-symbols-outlined absolute left-1 top-1 text-[14px] text-amber-500 opacity-0 group-hover/row:opacity-100 transition-opacity">description</span>
                             
                             <div class="flex items-center gap-3.5">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow group-hover/row:scale-105 transition-transform duration-300" alt="Avatar">
+                                <div *ngIf="item.status === 'PENDING'" class="w-12 h-12 rounded-full bg-white border-2 border-white shadow flex items-center justify-center text-amber-500 group-hover/row:scale-105 transition-transform duration-300">
+                                    <span class="material-symbols-outlined text-[24px]">person_search</span>
+                                </div>
+                                <img *ngIf="item.status !== 'PENDING'" [src]="item.guestAvatar || 'assets/images/default-avatar.png'" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow group-hover/row:scale-105 transition-transform duration-300" alt="Avatar">
+                                
                                 <div>
-                                    <p class="text-xs font-black text-[#173124] uppercase tracking-wider mb-1">#BK-987123</p>
-                                    <p class="text-sm font-bold text-stone-900 group-hover/row:text-[#173124] transition-colors">Sarah Jenkins</p>
-                                    <p class="text-[11px] font-medium text-stone-500 mt-0.5">sarah.j@example.com</p>
+                                    <p class="text-xs font-black uppercase tracking-wider mb-1" 
+                                       [ngClass]="item.status === 'PENDING' ? 'text-amber-700' : 'text-[#173124]'">
+                                        {{ item.bookingCode }}
+                                    </p>
+                                    <p class="text-sm font-bold text-stone-900 group-hover/row:text-[#173124] transition-colors">{{ item.guestName }}</p>
+                                    <p class="text-[11px] font-medium text-stone-500 mt-0.5">{{ item.guestPhone }}</p>
                                 </div>
                             </div>
                         </td>
+
                         <td class="py-5 px-6">
-                            <p class="text-xs font-bold text-stone-900 mb-1">Clyvasync Ocean Villa</p>
-                            <p class="text-[11px] font-medium text-stone-600">Phòng: <span class="font-bold text-stone-800">Ocean Deluxe King</span></p>
+                            <p class="text-xs font-bold text-stone-900 mb-1">{{ item.homestayName }}</p>
+                            <p class="text-[11px] font-medium text-stone-600">Phòng: <span class="font-bold text-stone-800">{{ item.roomName }}</span></p>
                             <p class="text-[10px] font-semibold text-stone-400 flex items-center gap-1 mt-1">
-                                <span class="material-symbols-outlined text-[14px]">group</span> 2 Người lớn, 1 Trẻ em
+                                <span class="material-symbols-outlined text-[14px]">group</span> 
+                                {{ item.adults }} Người lớn <span *ngIf="item.children > 0">, {{ item.children }} Trẻ em</span>
                             </p>
                         </td>
+
                         <td class="py-5 px-6">
-                            <div class="flex flex-col gap-1">
+                            <div class="flex flex-col gap-1" [class.opacity-70]="item.status === 'PENDING'">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-12 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-center">IN</span>
-                                    <p class="text-xs font-bold text-stone-900">20/05/2026 <span class="font-medium text-stone-500 ml-1">14:00</span></p>
+                                    <span class="w-12 text-[10px] font-bold px-1.5 py-0.5 rounded text-center"
+                                          [ngClass]="item.status === 'PENDING' ? 'text-stone-500 bg-stone-100' : 'text-emerald-700 bg-emerald-50'">IN</span>
+                                    <p class="text-xs font-bold text-stone-900">
+                                        {{ item.checkInDate | date:'dd/MM/yyyy' }} 
+                                        <span class="font-medium text-stone-500 ml-1">{{ item.checkInDate | date:'HH:mm' }}</span>
+                                    </p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="w-12 text-[10px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded text-center">OUT</span>
-                                    <p class="text-xs font-bold text-stone-900">24/05/2026 <span class="font-medium text-stone-500 ml-1">11:00</span></p>
+                                    <span class="w-12 text-[10px] font-bold px-1.5 py-0.5 rounded text-center"
+                                          [ngClass]="item.status === 'PENDING' ? 'text-stone-500 bg-stone-100' : 'text-rose-700 bg-rose-50'">OUT</span>
+                                    <p class="text-xs font-bold text-stone-900">
+                                        {{ item.checkOutDate | date:'dd/MM/yyyy' }} 
+                                        <span class="font-medium text-stone-500 ml-1">{{ item.checkOutDate | date:'HH:mm' }}</span>
+                                    </p>
                                 </div>
-                                <p class="text-[10px] font-semibold text-stone-400 mt-0.5 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">nightlight</span> Thời gian ở: 4 đêm</p>
+                                <p class="text-[10px] font-semibold text-stone-400 mt-0.5 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">nightlight</span> Thời gian ở: {{ item.nights }} đêm
+                                </p>
                             </div>
                         </td>
+
                         <td class="py-5 px-6">
-                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-100 shadow-inner">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_Bélo.svg/2560px-Airbnb_Logo_Bélo.svg.png" class="h-3 object-contain" alt="Airbnb">
-                                <span class="text-[10px] font-bold text-blue-800">Airbnb OTA</span>
+                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border"
+                                 [ngClass]="item.source === 'Airbnb OTA' ? 'bg-blue-50 border-blue-100 shadow-inner' : 'bg-stone-100 border-stone-200'">
+                                
+                                <span *ngIf="item.source !== 'Airbnb OTA'" class="material-symbols-outlined text-[16px] text-stone-600">language</span>
+                                <img *ngIf="item.source === 'Airbnb OTA'" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_Bélo.svg/2560px-Airbnb_Logo_Bélo.svg.png" class="h-3 object-contain" alt="Airbnb">
+                                
+                                <span class="text-[10px] font-bold" [ngClass]="item.source === 'Airbnb OTA' ? 'text-blue-800' : 'text-stone-700'">
+                                    {{ item.source }}
+                                </span>
                             </div>
                         </td>
+
                         <td class="py-5 px-6 text-right">
-                            <p class="text-sm font-black text-stone-900 mb-1">$1,250.00</p>
-                            <div class="flex flex-col items-end gap-1">
-                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[9px] font-bold rounded">Đã thu: $1,250</span>
-                                <span class="px-2 py-0.5 bg-stone-100 text-stone-600 text-[9px] font-bold rounded">Còn nợ: $0</span>
+                            <p class="text-sm font-black mb-1" [ngClass]="item.status === 'PENDING' ? 'text-amber-700' : 'text-stone-900'">
+                                {{ item.totalPrice | currency:'USD' }}
+                            </p>
+                            
+                            <div *ngIf="item.status === 'CONFIRMED'" class="flex flex-col items-end gap-1">
+                                <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[9px] font-bold rounded">
+                                    Đã thu: {{ item.paidAmount | currency:'USD' }}
+                                </span>
+                                <span *ngIf="item.totalPrice - item.paidAmount > 0" class="px-2 py-0.5 bg-rose-50 text-rose-600 text-[9px] font-bold rounded">
+                                    Còn nợ: {{ item.totalPrice - item.paidAmount | currency:'USD' }}
+                                </span>
                             </div>
-                        </td>
-                        <td class="py-5 px-6 text-center">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#173124]/10 text-[#173124] text-[10px] font-black uppercase tracking-widest border border-[#173124]/10 shadow-inner">
-                                <span class="w-1.5 h-1.5 rounded-full bg-[#173124]"></span> Đã chốt
+                            
+                            <span *ngIf="item.status === 'PENDING'" class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[9px] font-bold rounded">
+                                Chờ thanh toán
                             </span>
                         </td>
+
+                        <td class="py-5 px-6 text-center">
+                            <span *ngIf="item.status === 'CONFIRMED'" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-[#173124]/10 text-[#173124] text-[10px] font-black uppercase tracking-widest border border-[#173124]/10 shadow-inner">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#173124]"></span> Đã chốt
+                            </span>
+
+                            <span *ngIf="item.status === 'PENDING'" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-amber-50 text-amber-700 text-[10px] font-black uppercase tracking-widest border border-amber-200 shadow-inner">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Chờ duyệt
+                            </span>
+                        </td>
+
                         <td class="py-5 px-6 text-right">
                             <div class="flex items-center justify-end gap-1.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
-                                <button class="w-9 h-9 rounded-xl flex items-center justify-center text-stone-500 hover:text-[#173124] hover:bg-[#173124]/10 transition-colors" title="Xem chi tiết">
+                                
+                                <button *ngIf="item.status === 'PENDING'" 
+                                        (click)="approveBooking(item.bookingCode)"
+                                        class="h-9 px-4 rounded-xl bg-amber-500 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-amber-600 transition-colors shadow">
+                                    Duyệt ngay
+                                </button>
+                                
+                                <button *ngIf="item.status === 'CONFIRMED'" class="w-9 h-9 rounded-xl flex items-center justify-center text-stone-500 hover:text-[#173124] hover:bg-[#173124]/10 transition-colors" title="Xem chi tiết">
                                     <span class="material-symbols-outlined text-[20px]">visibility</span>
                                 </button>
-                                <button class="w-9 h-9 rounded-xl flex items-center justify-center text-stone-500 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Hủy đặt phòng">
-                                    <span class="material-symbols-outlined text-[20px]">cancel</span>
+                                <button class="w-9 h-9 rounded-xl flex items-center justify-center text-stone-400 hover:text-stone-900 hover:bg-stone-200 transition-colors" title="Tuỳ chọn thêm">
+                                    <span class="material-symbols-outlined text-[20px]">more_vert</span>
                                 </button>
                             </div>
                         </td>
                     </tr>
-
-                    <tr class="group/row hover:bg-stone-50/50 border-b border-stone-100 transition-colors bg-amber-50/20">
-                        <td class="py-5 px-6">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-12 h-12 rounded-full bg-white border-2 border-white shadow flex items-center justify-center text-amber-500 group-hover/row:scale-105 transition-transform duration-300">
-                                    <span class="material-symbols-outlined text-[24px]">person_search</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-black text-amber-700 uppercase tracking-wider mb-1">#BK-987001</p>
-                                    <p class="text-sm font-bold text-stone-900">Marcus Tran</p>
-                                    <p class="text-[11px] font-medium text-stone-500 mt-0.5">+84 908 123 456</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-5 px-6">
-                            <p class="text-xs font-bold text-stone-900 mb-1">Dalat Pine Hill Homestay</p>
-                            <p class="text-[11px] font-medium text-stone-600">Phòng: <span class="font-bold text-stone-800">Family Suite</span></p>
-                            <p class="text-[10px] font-semibold text-stone-400 flex items-center gap-1 mt-1">
-                                <span class="material-symbols-outlined text-[14px]">group</span> 4 Người lớn
-                            </p>
-                        </td>
-                        <td class="py-5 px-6">
-                            <div class="flex flex-col gap-1 opacity-70">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-12 text-[10px] font-bold text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded text-center">IN</span>
-                                    <p class="text-xs font-medium text-stone-900">22/05/2026</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="w-12 text-[10px] font-bold text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded text-center">OUT</span>
-                                    <p class="text-xs font-medium text-stone-900">23/05/2026</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-5 px-6">
-                            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-stone-100 border border-stone-200">
-                                <span class="material-symbols-outlined text-[16px] text-stone-600">language</span>
-                                <span class="text-[10px] font-bold text-stone-700">Website Trực tiếp</span>
-                            </div>
-                        </td>
-                        <td class="py-5 px-6 text-right">
-                            <p class="text-sm font-black text-amber-700 mb-1">$180.00</p>
-                            <span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[9px] font-bold rounded">Chờ thanh toán</span>
-                        </td>
-                        <td class="py-5 px-6 text-center">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-amber-50 text-amber-700 text-[10px] font-black uppercase tracking-widest border border-amber-200 shadow-inner">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Chờ duyệt
-                            </span>
-                        </td>
-                        <td class="py-5 px-6 text-right">
-                            <div class="flex items-center justify-end gap-1.5 group-hover/row:opacity-100 transition-opacity">
-                                <button class="h-9 px-4 rounded-xl bg-amber-500 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-amber-600 transition-colors">
-                                    Duyệt ngay
-                                </button>
-                                <button class="w-9 h-9 rounded-xl flex items-center justify-center text-stone-400 hover:text-stone-900 hover:bg-stone-200 transition-colors">
-                                    <span class="material-symbols-outlined text-[20px]">more_vert</span>
-                                </button>
-                            </div>
+                    
+                    <tr *ngIf="bookingList.length === 0 && !isLoading">
+                        <td colspan="7" class="py-12 text-center text-stone-500">
+                            <span class="material-symbols-outlined text-4xl text-stone-300 mb-2">inbox</span>
+                            <p class="text-sm font-medium">Chưa có đơn đặt phòng nào.</p>
                         </td>
                     </tr>
                     
@@ -187,7 +195,7 @@
         <div class="px-8 py-5 border-t border-stone-200/60 bg-stone-50/50 flex items-center justify-between">
             <p class="text-xs font-semibold text-stone-500">
                 Hiển thị <span class="font-extrabold text-stone-950">1 - 10</span> 
-                trong tổng số <span class="font-extrabold text-stone-950">128</span> đặt phòng
+                trong tổng số <span class="font-extrabold text-stone-950">{{ totalBookings }}</span> đặt phòng
             </p>
             <div class="flex items-center gap-1.5">
                 <button class="w-10 h-10 rounded-xl border border-stone-200 text-stone-400 flex items-center justify-center hover:bg-white hover:text-[#173124] hover:border-[#173124]/30 hover:shadow disabled:opacity-50 transition-all">
