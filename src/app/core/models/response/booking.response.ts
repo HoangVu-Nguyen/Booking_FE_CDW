@@ -25,12 +25,15 @@ export interface HostBookingItemResponse {
   totalPrice: number;
   paidAmount: number;
   
-  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED'| 'DRAFT';
+  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED'| 'DRAFT' | 'AWAITING_PAYMENT';
   includedTours?: MiniTourInfor[];
+  approved?: boolean; // Thêm trường này để đánh dấu đã từng được duyệt hay chưa
 }
 export interface MiniTourInfor {
   name: string;
   image: string;
   pricePerPerson: number;
   count: number;
+  startDate: string;
+  startTime: string;
 }

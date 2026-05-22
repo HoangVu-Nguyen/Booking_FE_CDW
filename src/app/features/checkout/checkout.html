@@ -1,17 +1,14 @@
 @if (checkoutData()) {
 <main class="min-h-screen pt-32 pb-24 max-w-screen-2xl mx-auto px-6 md:px-12 bg-[#fcfcf9]">
 
-    <!-- Tiêu đề trang -->
     <header class="mb-12">
         <h1 class="text-4xl font-headline font-bold text-primary italic">Hoàn tất đặt phòng</h1>
-        <p class="text-on-surface-variant mt-2">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận thanh toán.</p>
+        <p class="text-on-surface-variant mt-2">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.</p>
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-18 items-start">
 
-        <!-- CỘT TRÁI: Nhập liệu (7/12) -->
         <div class="lg:col-span-7 space-y-16">
-            <!-- Thông tin liên hệ -->
             <div class="block">
                 <app-checkout-contact></app-checkout-contact>
             </div>
@@ -20,14 +17,14 @@
                 <app-checkout-policies></app-checkout-policies>
             </div>
 
-            <div class="block">
+            @if (!isRequestMode) {
+            <div class="block animate-fade-in-down">
                 <app-checkout-payment (methodChange)="onPaymentMethodChange($event)"></app-checkout-payment>
             </div>
+            }
 
-            <!-- Nút xác nhận cho Desktop/Mobile ở cuối luồng nhập liệu -->
             <div class="pt-10 border-t border-outline-variant/20">
                 <div class="relative group">
-                    <!-- Lớp đổ bóng phát sáng (Glow Effect) phía sau nút -->
                     <div
                         class="absolute -inset-1 bg-gradient-to-r from-emerald-600 to-teal-700 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200">
                     </div>
@@ -38,24 +35,29 @@
 
                         @if (isProcessing()) {
                         <div class="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span class="relative z-10 tracking-tight">Đang chuyển hướng...</span>
+                        <span class="relative z-10 tracking-tight">
+                            {{ isRequestMode ? 'Đang gửi yêu cầu...' : 'Đang chuyển hướng...' }}
+                        </span>
                         } @else {
                         <div
                             class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shine">
                         </div>
 
-                        <span class="relative z-10 tracking-tight">Xác nhận & Thanh toán ngay</span>
+                        <span class="relative z-10 tracking-tight">
+                            {{ isRequestMode ? 'Gửi yêu cầu đặt phòng' : 'Xác nhận & Thanh toán ngay' }}
+                        </span>
 
                         <div
                             class="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm group-blur-sm group-hover:bg-white/20 transition-colors">
                             <span
-                                class="material-symbols-outlined text-[20px] font-bold transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
+                                class="material-symbols-outlined text-[20px] font-bold transition-transform duration-300 group-hover:translate-x-1">
+                                {{ isRequestMode ? 'send' : 'arrow_forward' }}
+                            </span>
                         </div>
                         }
                     </button>
                 </div>
 
-                <!-- Khối bảo chứng an toàn (Social Proof) -->
                 <div class="mt-6 flex flex-col items-center gap-3">
                     <div
                         class="flex items-center gap-4 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
@@ -72,7 +74,6 @@
             </div>
         </div>
 
-        <!-- CỘT PHẢI: Biên lai & Tóm tắt (5/12) -->
         <aside class="lg:col-span-5 sticky top-32">
             <app-checkout-summary></app-checkout-summary>
 

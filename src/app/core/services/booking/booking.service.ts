@@ -116,5 +116,26 @@ contactInfo = signal({
     updateContactInfo(bookingCode: string, payload: any): Observable<ApiResponse<any>> {
         return this.apiService.put<ApiResponse<any>>(`/api/v1/bookings/${bookingCode}/contact`, payload);
     }
+    /**
+     * Dành cho Host: Duyệt đơn đặt phòng (Approve)
+     */
+    approveBooking(bookingCode: string): Observable<ApiResponse<string>> {
+        // Gọi API lên cổng backend đã mở
+        return this.apiService.put<ApiResponse<string>>(`/api/v1/bookings/host/approve/${bookingCode}`, {});
+    }
+
+    /**
+     * Dành cho Host: Từ chối đơn đặt phòng (Reject)
+     * Có truyền kèm lý do (nếu có)
+     */
+    rejectBooking(bookingCode: string, reason?: string): Observable<ApiResponse<string>> {
+        // Xây dựng URL kèm query param (nếu có lý do)
+        let url = `/api/v1/bookings/host/reject/${bookingCode}`;
+        if (reason) {
+            // Encode để tránh lỗi tiếng Việt khi đẩy lên URL
+            url += `?reason=${encodeURIComponent(reason)}`; 
+        }
+        return this.apiService.put<ApiResponse<string>>(url, {});
+    }
    
 }

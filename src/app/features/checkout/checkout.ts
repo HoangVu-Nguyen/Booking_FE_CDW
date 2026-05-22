@@ -4,21 +4,20 @@ import { CheckoutPolicies } from './components/checkout-policies/checkout-polici
 import { CheckoutPayment } from './components/checkout-payment/checkout-payment';
 import { CheckoutSummary } from './components/checkout-summary/checkout-summary';
 import { BookingService } from '../../core/services/booking/booking.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router'; // ĐÃ IMPORT ROUTER
 import { CommonModule } from '@angular/common';
-
-// NHỚ IMPORT THÊM switchMap Ở ĐÂY NHÉ BÁC
 import { switchMap } from 'rxjs/operators'; 
 
 @Component({
   selector: 'app-checkout',
-  standalone: true, // Nếu bác đang dùng standalone component
+  standalone: true,
   imports: [CheckoutContact, CheckoutPolicies, CheckoutPayment, CheckoutSummary, CommonModule],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })
 export class Checkout implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router); // INJECT ROUTER
   private bookingService = inject(BookingService);
   
   public checkoutData = this.bookingService.checkoutData;
@@ -28,7 +27,6 @@ export class Checkout implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const bookingCode = params['code'];
-
       if (bookingCode) {
         this.fetchCheckoutDetails(bookingCode);
       }
@@ -53,11 +51,8 @@ export class Checkout implements OnInit {
     });
   }
 
-  // --- HÀM CHỐT HẠ (ĐÃ BỌC SWITCHMAP CHẠY NỐI TIẾP API) ---
   onConfirmAndPay(): void {
     const contact = this.bookingService.contactInfo(); 
-
-    // 1. Validate Form
     if (!contact.guestName || !contact.guestPhone || !contact.guestEmail) {
       alert("Vui lòng nhập đầy đủ thông tin người lưu trú!");
       return;
@@ -67,46 +62,63 @@ export class Checkout implements OnInit {
     const method = this.selectedPaymentMethod();
 
     if (!data || this.isProcessing()) return;
-
-    // 2. Chặn luồng TRANSFER nếu chưa phát triển
-    if (method === 'TRANSFER') {
-      alert("Tính năng chuyển khoản thủ công đang bảo trì, vui lòng chọn VNPAY hoặc MoMo!");
-      return;
-    }
-
     this.isProcessing.set(true);
 
-    // 3. Đóng gói Payload thông tin liên hệ
     const updatePayload = {
       guestName: contact.guestName,
       phone: contact.guestPhone,
       email: contact.guestEmail,
       specialRequests: contact.specialRequests
     };
-    console.log('Payload thông tin liên hệ chuẩn bị gửi lên API:', updatePayload);
 
-    // 4. CHẠY API NỐI TIẾP: Cập nhật DB -> Thành công thì xin Link VNPAY
-    this.bookingService.updateContactInfo(data.bookingCode, updatePayload).pipe(
-      
-      // switchMap giúp "nối cầu", hứng kết quả của API 1 và tự động kích hoạt API 2
-      switchMap(() => this.bookingService.getPaymentUrl(data.bookingCode, method))
-    ).subscribe({
-      next: (paymentUrl: string) => {
-        console.log('Link thanh toán đã tạo thành công:', paymentUrl);
-        // Đá khách sang cổng VNPAY/MoMo
-        window.location.href = paymentUrl;
-      },
-      error: (err) => {
-        this.isProcessing.set(false); // Nhả nút loading ra nếu lỗi
-        console.error('❌ Lỗi xử lý thanh toán:', err);
-        alert('Có lỗi xảy ra khi cập nhật thông tin hoặc kết nối cổng thanh toán!');
+    // --- ĐIỀU KIỆN CHUẨN ĐỂ XÁC ĐỊNH LUỒNG ---
+    // Chỉ "Gửi yêu cầu" khi: Phòng KHÔNG đặt tức thì VÀ Đơn hàng ĐANG LÀ PENDING (lần đầu)
+    const isRequestMode = this.isRequestMode;
+
+    if (!isRequestMode) {
+      // LUỒNG THANH TOÁN (Áp dụng cho đơn đã duyệt AWAITING_PAYMENT hoặc phòng Instant)
+      if (method === 'TRANSFER') {
+        alert("Tính năng chuyển khoản đang bảo trì!");
+        this.isProcessing.set(false);
+        return;
       }
-    });
-  }
 
-  // Hàm hứng sự kiện từ component con
+      this.bookingService.updateContactInfo(data.bookingCode, updatePayload).pipe(
+        switchMap(() => this.bookingService.getPaymentUrl(data.bookingCode, method))
+      ).subscribe({
+        next: (paymentUrl: string) => { window.location.href = paymentUrl; },
+        error: (err) => { this.isProcessing.set(false); alert('Lỗi kết nối thanh toán!'); }
+      });
+
+    } else {
+      // LUỒNG GỬI YÊU CẦU (Chỉ chạy lần đầu)
+      this.bookingService.updateContactInfo(data.bookingCode, updatePayload).subscribe({
+        next: () => {
+          this.isProcessing.set(false);
+          alert('Đã gửi yêu cầu đặt phòng thành công! Vui lòng chờ Chủ nhà xác nhận.');
+          this.router.navigate(['/']); 
+        },
+        error: (err) => { this.isProcessing.set(false); alert('Không thể gửi yêu cầu!'); }
+      });
+    }
+  }
   onPaymentMethodChange(method: string) {
     this.selectedPaymentMethod.set(method);
-    console.log("Khách đã đổi sang cổng:", method);
   }
+  // Thêm hàm này vào class Checkout
+// Trong class Checkout
+get isRequestMode(): boolean {
+  const data = this.checkoutData();
+  if (!data) return false;
+
+  // CÁCH FIX DỨT ĐIỂM:
+  // Nếu đã từng được duyệt (isApproved == true) thì DÙ STATUS LÀ GÌ
+  // cũng KHÔNG ĐƯỢC PHÉP vào luồng "Gửi yêu cầu" nữa.
+  if (data.approved === true) {
+      return false; 
+  }
+
+  // Nếu chưa từng được duyệt, mới check status PENDING để hiện nút Gửi yêu cầu
+  return data.isInstantBook === false;
+}
 }

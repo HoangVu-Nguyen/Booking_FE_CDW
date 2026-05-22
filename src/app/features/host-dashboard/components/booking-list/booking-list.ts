@@ -6,27 +6,27 @@ import { WebsocketService } from '../../../../core/services/realtime/websocket.s
 import { BookingService } from '../../../../core/services/booking/booking.service';
 import { HostBookingItemResponse } from '../../../../core/models/response/booking.response';
 import { BookingDetailModal } from '../booking-detail-modal/booking-detail-modal';
+
 @Component({
   selector: 'app-booking-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe, BookingDetailModal], // Nạp các Module cốt lõi
+  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe, BookingDetailModal],
   templateUrl: './booking-list.html',
   styleUrl: './booking-list.css',
 })
 export class BookingList implements OnInit, OnDestroy {
 
-  // 2. BIẾN TRẠNG THÁI GIAO DIỆN
   bookingList: HostBookingItemResponse[] = [];
   totalBookings: number = 0;
   isLoading: boolean = false;
   searchText: string = '';
+  
   public expandedBookingCode: string | null = null;
   public isViewModalOpen: boolean = false;
   public selectedBooking: HostBookingItemResponse | null = null;
   private bookingSocketSub!: Subscription;
 
   constructor(
-    // private bookingService: BookingService, // Dùng để gọi API REST
     private websocketService: WebsocketService,
     private cdr: ChangeDetectorRef,
     private zone: NgZone,
@@ -37,17 +37,27 @@ export class BookingList implements OnInit, OnDestroy {
     this.loadBookingData();
     this.initRealtimeListener();
   }
+getStatusLabel(status: string): string {
+    const map: any = { 'DRAFT': 'Giữ chỗ', 'PENDING': 'Chờ duyệt', 'AWAITING_PAYMENT': 'Chờ thanh toán', 'CONFIRMED': 'Đã chốt', 'CANCELLED': 'Đã hủy' };
+    return map[status] || status;
+  }
 
-
-
+  getRowStatusClass(status: string): string {
+    const map: any = {
+      'PENDING': 'bg-amber-50/30 border-amber-100/50',
+      'AWAITING_PAYMENT': 'bg-sky-50/30 border-sky-100/50',
+      'DRAFT': 'bg-stone-50/30 opacity-80',
+      'CONFIRMED': 'hover:bg-stone-50/50',
+      'CANCELLED': 'bg-rose-50/10 opacity-60 grayscale-[40%]'
+    };
+    return map[status] || '';
+  }
   loadBookingData(): void {
     this.isLoading = true;
-
-    // GỌI THẲNG API BE VỪA VIẾT
     this.bookingService.getHostBookings().subscribe({
       next: (res) => {
-        this.bookingList = res.data; // Đổ cái ụp dữ liệu thật vào đây
-        console.log('Danh sách booking đã tải:', this.bookingList);
+        this.bookingList = res.data;
+         console.log('Dữ liệu đơn hàng đã tải:', this.bookingList);
         this.totalBookings = res.data.length;
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -57,65 +67,84 @@ export class BookingList implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     });
-    this.cdr.detectChanges(); // Báo Angular render lại bảng
   }
 
-
-
-  // 4. HÀM LẮNG NGHE REALTIME WEBSOCKET (Đã bọc NgZone an toàn)
   private initRealtimeListener(): void {
     this.bookingSocketSub = this.websocketService.listenBookingStatus().subscribe({
       next: (notification) => {
-        // Bắt buộc đẩy vào NgZone để không bị đóng băng UI khi có luồng chạy ngầm
         this.zone.run(() => {
-          console.log('🔔 [REALTIME] BẮT ĐƯỢC ĐƠN HÀNG MỚI:', notification);
-
-          // Khách thanh toán xong -> Tải lại danh sách
           this.loadBookingData();
-
-          // Bắn chuông thông báo (Toastr/Alert)
-          setTimeout(() => {
-            alert(notification.message || `Đơn hàng ${notification.bookingCode} vừa được thanh toán thành công!`);
-          }, 150);
         });
       },
-      error: (err) => console.error('Lỗi socket tại BookingList:', err)
+      error: (err) => console.error('Lỗi socket:', err)
     });
   }
 
-  // 5. HÀM XỬ LÝ SỰ KIỆN NÚT BẤM (Ví dụ)
-  approveBooking(bookingCode: string): void {
-    if (confirm(`Bạn có chắc muốn duyệt đơn ${bookingCode} không?`)) {
-      // Gọi API duyệt đơn ở đây
-      console.log('Đang duyệt đơn:', bookingCode);
-    }
-  }
-
   ngOnDestroy(): void {
-    // Dọn dẹp bộ nhớ an toàn
     if (this.bookingSocketSub) {
       this.bookingSocketSub.unsubscribe();
     }
   }
+
   toggleExpandRow(code: string): void {
-    console.log('Toggling row for booking code:', code);
     if (this.expandedBookingCode === code) {
-      this.expandedBookingCode = null; // Bấm lần 2 thì đóng lại
+      this.expandedBookingCode = null;
     } else {
-      this.expandedBookingCode = code; // Mở dòng mới ra
+      this.expandedBookingCode = code;
     }
   }
+
   openBookingDetails(booking: HostBookingItemResponse): void {
     this.selectedBooking = booking;
     this.isViewModalOpen = true;
   }
 
-  // Hàm này hứng sự kiện (close) từ Modal con bắn ra
   closeBookingDetails(): void {
     this.isViewModalOpen = false;
-    // Delay 300ms đợi hiệu ứng animation đóng cửa sổ xong rồi mới xóa data
     setTimeout(() => {
       this.selectedBooking = null;
     }, 300);
+  }
+
+  // --- API ACTIONS ---
+  approveBooking(bookingCode: string): void {
+    if (confirm(`Bạn có chắc chắn muốn duyệt đơn hàng ${bookingCode}? Hệ thống sẽ gửi email thanh toán cho khách.`)) {
+      this.isLoading = true;
+      this.bookingService.approveBooking(bookingCode).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          alert(res.message || 'Đã duyệt đơn và gửi email cho khách thành công!');
+          this.loadBookingData();
+          if (this.selectedBooking?.bookingCode === bookingCode) {
+            this.closeBookingDetails();
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          alert('Không thể duyệt đơn lúc này. Vui lòng thử lại!');
+        }
+      });
+    }
+  }
+
+  rejectBooking(bookingCode: string): void {
+    const reason = prompt(`Nhập lý do từ chối đơn ${bookingCode} (hoặc để trống):`, "Chủ nhà không thể sắp xếp phòng");
+    if (reason === null) return; 
+
+    this.isLoading = true;
+    this.bookingService.rejectBooking(bookingCode, reason).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          alert(res.message || 'Đã từ chối đơn và giải phóng phòng thành công!');
+          this.loadBookingData();
+          if (this.selectedBooking?.bookingCode === bookingCode) {
+            this.closeBookingDetails();
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          alert('Không thể từ chối đơn lúc này!');
+        }
+    });
   }
 }
