@@ -31,5 +31,6 @@ export interface HostBookingItemResponse {
 export interface MiniTourInfor {
   name: string;
   image: string;
+  pricePerPerson: number;
   count: number;
 }

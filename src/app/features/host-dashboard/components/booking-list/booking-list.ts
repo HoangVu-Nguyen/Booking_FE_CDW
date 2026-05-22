@@ -5,11 +5,11 @@ import { Subscription } from 'rxjs';
 import { WebsocketService } from '../../../../core/services/realtime/websocket.service';
 import { BookingService } from '../../../../core/services/booking/booking.service';
 import { HostBookingItemResponse } from '../../../../core/models/response/booking.response';
-
+import { BookingDetailModal } from '../booking-detail-modal/booking-detail-modal';
 @Component({
   selector: 'app-booking-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe], // Nạp các Module cốt lõi
+  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe, BookingDetailModal], // Nạp các Module cốt lõi
   templateUrl: './booking-list.html',
   styleUrl: './booking-list.css',
 })
@@ -21,7 +21,8 @@ export class BookingList implements OnInit, OnDestroy {
   isLoading: boolean = false;
   searchText: string = '';
   public expandedBookingCode: string | null = null;
-
+  public isViewModalOpen: boolean = false;
+  public selectedBooking: HostBookingItemResponse | null = null;
   private bookingSocketSub!: Subscription;
 
   constructor(
@@ -103,5 +104,18 @@ export class BookingList implements OnInit, OnDestroy {
     } else {
       this.expandedBookingCode = code; // Mở dòng mới ra
     }
+  }
+  openBookingDetails(booking: HostBookingItemResponse): void {
+    this.selectedBooking = booking;
+    this.isViewModalOpen = true;
+  }
+
+  // Hàm này hứng sự kiện (close) từ Modal con bắn ra
+  closeBookingDetails(): void {
+    this.isViewModalOpen = false;
+    // Delay 300ms đợi hiệu ứng animation đóng cửa sổ xong rồi mới xóa data
+    setTimeout(() => {
+      this.selectedBooking = null;
+    }, 300);
   }
 }
