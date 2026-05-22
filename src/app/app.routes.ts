@@ -4,7 +4,6 @@ import { Register } from './features/auth/register/register';
 import { Active } from './features/auth/active/active';
 import { Forgot } from './features/auth/forgot/forgot';
 import { MainLayout } from './layout/main-layout/main-layout';
-import { Dashboard } from './features/dashboard/dashboard';
 import { CallbackComponent } from './features/auth/callback/callback.component';
 import { HomestayList } from './features/homestay/homestay-list/homestay-list';
 import { Discover } from './features/discover/discover';
@@ -29,6 +28,11 @@ import { BookingList } from './features/host-dashboard/components/booking-list/b
 import { HostWallet } from './features/host-dashboard/components/host-wallet/host-wallet';
 import { AdminDashboard } from './features/admin-dashboard/admin-dashboard';
 import { AdminWalletApproval } from './features/admin-dashboard/components/admin-wallet-approval/admin-wallet-approval';
+import { Transactions } from './features/admin-dashboard/components/transactions/transactions';
+import { Hosts } from './features/admin-dashboard/components/hosts/hosts';
+import { Dashboard } from './features/admin-dashboard/components/dashboard/dashboard';
+import { Portfolio } from './features/host-dashboard/components/portfolio/portfolio';
+import { CalendarPricing } from './features/host-dashboard/components/calendar-pricing/calendar-pricing';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -78,11 +82,26 @@ export const routes: Routes = [
         path: 'admin',
         component: AdminDashboard,
         title: 'Dashboard - Clyvasync',
-        children:[
+        children: [
           {
-            path:'wallet-approvals',
+            path: 'dashboard',
+            component: Dashboard,
+            title: 'Tổng quan - Admin Dashboard - Clyvasync'
+          },
+          {
+            path: 'wallet-approvals',
             component: AdminWalletApproval,
             title: 'Duyệt rút tiền - Admin Dashboard - Clyvasync'
+          },
+          {
+            path: 'transactions',
+            component: Transactions,
+            title: 'Giao dịch - Admin Dashboard - Clyvasync'
+          },
+          {
+            path: 'hosts',
+            component: Hosts,
+            title: 'Quản lý Host - Admin Dashboard - Clyvasync'
           }
         ]
       },
@@ -112,12 +131,22 @@ export const routes: Routes = [
         path: 'host-dashboard', component: HostDashboard, title: 'Host Dashboard - Clyvasync',
         children: [
           {
+            path: '', redirectTo: 'overview', pathMatch: 'full'
+          }, {
+            path: 'portfolio', component: Portfolio, title: 'Danh mục homestay - Host Dashboard - Clyvasync'
+          },
+          {
             path: 'overview', component: HomestayListManager, title: 'Danh sách homestay - Host Dashboard - Clyvasync'
           }, {
             path: 'bookings', component: BookingList, title: 'Danh sách đặt phòng - Host Dashboard - Clyvasync'
           },
           {
             path: 'wallet', component: HostWallet, title: 'Ví / Doanh thu - Host Dashboard - Clyvasync'
+          },
+          {
+            path: 'calendar/:homestayId',
+            component: CalendarPricing
+
           }
         ]
       }

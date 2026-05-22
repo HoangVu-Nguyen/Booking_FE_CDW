@@ -1,0 +1,182 @@
+<div class="p-8 lg:p-10 max-w-[1600px] mx-auto animate-fade-in space-y-8 font-sans">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+            <h3 class="text-[10px] font-extrabold text-stone-400 uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#173124]"></span> Trung tâm vận hành
+            </h3>
+            <h1 class="text-3xl font-black text-stone-900 tracking-tight">Quản lý Đối tác & Chủ nhà</h1>
+            <p class="text-sm text-stone-500 mt-1">Kiểm duyệt hồ sơ (KYC), đánh giá hiệu suất và quản lý tài khoản.</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <button class="h-10 px-5 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-all font-bold text-[11px] uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">person_add</span>
+                Tạo tài khoản
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+        <div class="bg-white border border-stone-200/80 rounded-[1.5rem] p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-[#173124]/5 flex items-center justify-center border border-[#173124]/10">
+                <span class="material-symbols-outlined text-[24px] text-[#173124]">group</span>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Tổng Chủ nhà</p>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">1,248</h2>
+            </div>
+        </div>
+
+        <div class="bg-white border border-stone-200/80 rounded-[1.5rem] p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center border border-amber-100">
+                <span class="material-symbols-outlined text-[24px] text-amber-600">how_to_reg</span>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Chờ duyệt KYC</p>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">24</h2>
+            </div>
+        </div>
+
+        <div class="bg-white border border-stone-200/80 rounded-[1.5rem] p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
+                <span class="material-symbols-outlined text-[24px] text-emerald-600">real_estate_agent</span>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Tài sản (Listings)</p>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">3,492</h2>
+            </div>
+        </div>
+
+        <div class="bg-white border border-stone-200/80 rounded-[1.5rem] p-5 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center border border-rose-100">
+                <span class="material-symbols-outlined text-[24px] text-rose-600">gavel</span>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Bị đình chỉ</p>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">12</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-stone-200/80 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] overflow-hidden">
+        
+        <div class="p-4 border-b border-stone-200 bg-stone-50/30 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2 bg-stone-200/50 p-1 rounded-xl w-fit">
+                <button class="px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-stone-900 bg-white rounded-lg shadow-sm">Tất cả</button>
+                <button class="px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Đang hoạt động</button>
+                <button class="px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Chờ KYC</button>
+            </div>
+
+            <div class="relative group w-full xl:w-80">
+                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] text-stone-400 group-focus-within:text-[#173124] transition-colors">search</span>
+                <input type="text" placeholder="Tìm tên, email, số điện thoại..." class="w-full h-10 pl-10 pr-4 bg-white border border-stone-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] transition-all placeholder:text-stone-400 shadow-sm">
+            </div>
+        </div>
+
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left border-collapse min-w-[1100px]">
+                <thead>
+                    <tr class="border-b border-stone-200 bg-stone-50/50">
+                        <th class="py-4 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest whitespace-nowrap">Hồ sơ Chủ nhà</th>
+                        <th class="py-4 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest whitespace-nowrap">Xác minh (KYC)</th>
+                        <th class="py-4 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest whitespace-nowrap">Chỉ số kinh doanh</th>
+                        <th class="py-4 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest text-right whitespace-nowrap">Trạng thái</th>
+                        <th class="py-4 px-4"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-stone-100/80">
+                    <tr *ngFor="let host of hosts" class="group hover:bg-stone-50/50 transition-colors duration-200">
+                        
+                        <td class="py-4 px-6">
+                            <div class="flex items-center gap-3.5">
+                                <img [src]="host.user.avatar" class="w-11 h-11 rounded-full object-cover border border-stone-200 shadow-sm">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="text-[13px] font-bold text-stone-900 truncate hover:text-[#173124] cursor-pointer transition-colors">{{ host.user.name }}</h4>
+                                        <span *ngIf="getVerificationProgress(host.verification) === 100" class="material-symbols-outlined text-[14px] text-blue-500" title="Đã xác minh 100%">verified</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <p class="text-[11px] text-stone-500 flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">mail</span> {{ host.user.email }}</p>
+                                    </div>
+                                    <p class="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1.5 font-mono">{{ host.id }}</p>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="py-4 px-6">
+                            <div class="flex flex-col gap-2 w-48">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-bold text-stone-500 uppercase tracking-widest">Tiến độ hồ sơ</span>
+                                    <span class="text-[10px] font-black" [ngClass]="getVerificationProgress(host.verification) === 100 ? 'text-emerald-600' : 'text-amber-600'">{{ getVerificationProgress(host.verification) | number:'1.0-0' }}%</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                                    <div class="h-full rounded-full transition-all duration-500"
+                                         [ngClass]="getVerificationProgress(host.verification) === 100 ? 'bg-emerald-500' : 'bg-amber-400'"
+                                         [style.width.%]="getVerificationProgress(host.verification)"></div>
+                                </div>
+                                <div class="flex gap-1.5 mt-1">
+                                    <span class="w-6 h-6 rounded border flex items-center justify-center text-[12px]" title="Định danh (CMND/CCCD)" [ngClass]="host.verification.identity ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-stone-50 border-stone-200 text-stone-300'"><span class="material-symbols-outlined text-[14px]">badge</span></span>
+                                    <span class="w-6 h-6 rounded border flex items-center justify-center text-[12px]" title="Tài khoản Ngân hàng" [ngClass]="host.verification.bankAccount ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-stone-50 border-stone-200 text-stone-300'"><span class="material-symbols-outlined text-[14px]">account_balance</span></span>
+                                    <span class="w-6 h-6 rounded border flex items-center justify-center text-[12px]" title="Giấy phép kinh doanh" [ngClass]="host.verification.businessLicense ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-stone-50 border-stone-200 text-stone-300'"><span class="material-symbols-outlined text-[14px]">storefront</span></span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="py-4 px-6">
+                            <div class="flex items-center gap-6">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Listings</span>
+                                    <span class="text-sm font-black text-stone-900 tabular-nums">{{ host.metrics.properties }}</span>
+                                </div>
+                                <div class="w-px h-6 bg-stone-200"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Đánh giá</span>
+                                    <div class="flex items-center gap-1 text-sm font-black text-stone-900 tabular-nums">
+                                        {{ host.metrics.rating > 0 ? (host.metrics.rating | number:'1.1-1') : '--' }}
+                                        <span class="material-symbols-outlined text-[14px] text-amber-400" *ngIf="host.metrics.rating > 0" style="font-variation-settings: 'FILL' 1;">star</span>
+                                    </div>
+                                </div>
+                                <div class="w-px h-6 bg-stone-200"></div>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Tổng GMV</span>
+                                    <span class="text-sm font-black tabular-nums" [ngClass]="host.metrics.totalRevenue > 0 ? 'text-emerald-600' : 'text-stone-400'">
+                                        {{ host.metrics.totalRevenue > 0 ? (host.metrics.totalRevenue | currency:'VND':'':'1.0-0') : '0' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="py-4 px-6 text-right">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border"
+                                 [ngClass]="[getStatusConfig(host.status).bg, getStatusConfig(host.status).border]">
+                                <span class="w-1.5 h-1.5 rounded-full" [ngClass]="getStatusConfig(host.status).dot"></span>
+                                <span class="text-[9px] font-black uppercase tracking-widest" [ngClass]="getStatusConfig(host.status).text">
+                                    {{ getStatusConfig(host.status).label }}
+                                </span>
+                            </div>
+                            <p class="text-[10px] font-medium text-stone-400 mt-1.5 tracking-wide">Tham gia: {{ host.joinDate | date:'MM/yyyy' }}</p>
+                        </td>
+
+                        <td class="py-4 px-4 text-right">
+                            <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button *ngIf="host.status === 'PENDING'" class="h-8 px-3 bg-stone-900 text-white rounded-lg text-[10px] font-bold tracking-widest uppercase hover:bg-[#173124] transition-colors shadow-sm">Duyệt KYC</button>
+                                <button class="w-8 h-8 rounded-lg hover:bg-stone-200/80 text-stone-400 hover:text-stone-900 transition-colors flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[18px]">more_vert</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="p-4 border-t border-stone-200 bg-stone-50/30 flex items-center justify-between">
+            <p class="text-[11px] font-semibold text-stone-500">Hiển thị <span class="text-stone-900 font-black">1 - 4</span> / <span class="text-stone-900 font-black">1,248</span> Chủ nhà</p>
+            <div class="flex items-center gap-1">
+                <button class="h-8 px-3 rounded-lg border border-stone-200 text-stone-500 hover:bg-white text-[11px] font-bold disabled:opacity-40">Trang trước</button>
+                <button class="h-8 px-3 rounded-lg border border-stone-200 bg-white text-stone-900 hover:bg-stone-50 text-[11px] font-bold shadow-sm">Trang sau</button>
+            </div>
+        </div>
+    </div>
+</div>
