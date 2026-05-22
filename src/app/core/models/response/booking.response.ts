@@ -1,6 +1,7 @@
 export interface BookingInitResponse {
     bookingCode: string;
     bookingId: number;
+    isInstantBook:boolean;
 }
 export interface HostBookingItemResponse {
   bookingCode: string;
@@ -11,6 +12,7 @@ export interface HostBookingItemResponse {
   
   homestayName: string;
   roomName: string;
+  roomImage: string;
   
   adults: number;
   children: number;
@@ -23,5 +25,11 @@ export interface HostBookingItemResponse {
   totalPrice: number;
   paidAmount: number;
   
-  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED';
+  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED'| 'DRAFT';
+  includedTours?: MiniTourInfor[];
+}
+export interface MiniTourInfor {
+  name: string;
+  image: string;
+  count: number;
 }

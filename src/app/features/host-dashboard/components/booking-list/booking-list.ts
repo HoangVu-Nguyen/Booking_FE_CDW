@@ -20,6 +20,7 @@ export class BookingList implements OnInit, OnDestroy {
   totalBookings: number = 0;
   isLoading: boolean = false;
   searchText: string = '';
+  public expandedBookingCode: string | null = null;
 
   private bookingSocketSub!: Subscription;
 
@@ -93,6 +94,14 @@ export class BookingList implements OnInit, OnDestroy {
     // Dọn dẹp bộ nhớ an toàn
     if (this.bookingSocketSub) {
       this.bookingSocketSub.unsubscribe();
+    }
+  }
+  toggleExpandRow(code: string): void {
+    console.log('Toggling row for booking code:', code);
+    if (this.expandedBookingCode === code) {
+      this.expandedBookingCode = null; // Bấm lần 2 thì đóng lại
+    } else {
+      this.expandedBookingCode = code; // Mở dòng mới ra
     }
   }
 }
