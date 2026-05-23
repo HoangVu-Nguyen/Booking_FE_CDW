@@ -1,4 +1,4 @@
-import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarService } from '../../../../core/services/calendar/calendar.service';
 import { ActivatedRoute } from '@angular/router';
@@ -12,11 +12,12 @@ import { CalendarInventoryResponse, CalendarRoomResponse, RoomCalendarStatus } f
   templateUrl: './calendar-pricing.html'
 })
 export class CalendarPricing implements OnInit {
-  
-  dateHeaders: { date: Date; isWeekend: boolean; isToday: boolean }[] = [];
+
+  dateHeaders: { date: Date; dateStr: string; isWeekend: boolean; isToday: boolean }[] = [];
   rooms: CalendarRoomResponse[] = []; // Dùng Interface chuẩn
   homestayId!: number;
   isLoading = true;
+  currentStartDate: Date = new Date(); // Ngày bắt đầu hiển thị
   // Expose Enum ra view để dùng trong *ngIf
   readonly Status = RoomCalendarStatus;
 
@@ -24,10 +25,11 @@ export class CalendarPricing implements OnInit {
     private calendarService: CalendarService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.generateDateHeaders();
+    const customStartDate = new Date(); // Lưu ý: Tháng trong JS tính từ 0 (8 = tháng 9)
+    this.generateDateHeaders(customStartDate, 6);
     this.route.params.subscribe(params => {
       this.homestayId = +params['homestayId'];
       this.loadCalendarData();
@@ -53,16 +55,31 @@ export class CalendarPricing implements OnInit {
     });
   }
 
-  generateDateHeaders() {
-    const today = new Date();
-    for (let i = 0; i < 14; i++) {
-      const nextDate = new Date(today);
-      nextDate.setDate(today.getDate() + i);
-      const dayOfWeek = nextDate.getDay();
+  refreshCalendar() {
+    this.generateDateHeaders(this.currentStartDate, 14); // Load 14 ngày
+    this.loadCalendarData();
+  }
+
+  goPreviousWeek() {
+    this.currentStartDate.setDate(this.currentStartDate.getDate() - 7);
+    this.refreshCalendar();
+  }
+
+  goNextWeek() {
+    this.currentStartDate.setDate(this.currentStartDate.getDate() + 7);
+    this.refreshCalendar();
+  }
+
+  generateDateHeaders(startDate: Date, numberOfDays: number) {
+    this.dateHeaders = [];
+    for (let i = 0; i < numberOfDays; i++) {
+      const nextDate = new Date(startDate);
+      nextDate.setDate(startDate.getDate() + i);
       this.dateHeaders.push({
         date: nextDate,
-        isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
-        isToday: i === 0
+        dateStr: nextDate.toISOString().split('T')[0],
+        isWeekend: nextDate.getDay() === 0 || nextDate.getDay() === 6,
+        isToday: nextDate.toDateString() === new Date().toDateString()
       });
     }
   }

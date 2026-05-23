@@ -5,13 +5,21 @@ export enum RoomCalendarStatus {
   BLOCKED = 'BLOCKED'
 }
 
+export interface BookingSimpleInfo {
+  bookingCode: string;
+  guestName: string;
+  quantity: number;
+}
+
 export interface CalendarInventoryResponse {
-  date: string; // ISO Date (YYYY-MM-DD)
+  date: string;
   priceOverride: number | null;
   availableQuantity: number;
   status: RoomCalendarStatus;
   bookingCode?: string;
   guestName?: string;
+  totalBookedInDay: number; // Mới
+  bookings: BookingSimpleInfo[]; // Danh sách các đơn trong ngày
 }
 
 export interface CalendarRoomResponse {
