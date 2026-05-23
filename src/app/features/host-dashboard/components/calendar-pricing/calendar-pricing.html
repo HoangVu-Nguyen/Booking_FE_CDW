@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-[#f8f9fa] font-sans flex flex-col">
+<div class="min-h-screen bg-[#f8f9fa] font-sans flex flex-col relative">
 
     <header class="h-16 bg-white border-b border-stone-200 px-6 flex items-center justify-between sticky top-0 z-40">
         <div class="flex items-center gap-4">
@@ -117,10 +117,8 @@
                             <div *ngFor="let header of dateHeaders"
                                 class="w-[128px] shrink-0 flex flex-col items-center justify-center border-r border-stone-200 relative overflow-hidden"
                                 [ngClass]="header.isWeekend ? 'bg-stone-100/50' : 'bg-transparent'">
-
                                 <div *ngIf="header.isToday" class="absolute top-0 left-0 right-0 h-1 bg-emerald-500">
                                 </div>
-
                                 <p class="text-[10px] font-black uppercase tracking-[0.2em] mb-1"
                                     [ngClass]="header.isToday ? 'text-emerald-600' : 'text-stone-400'">
                                     {{ header.date | date:'EEE' }}
@@ -146,92 +144,129 @@
                     </div>
 
                     <div *ngFor="let room of rooms"
-                        class="flex h-[100px] shrink-0 border-b border-stone-100 relative group/row">
+                        class="flex h-[100px] shrink-0 border-b border-stone-100 relative group/row"
+                        (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()">
                         <div
                             class="absolute inset-0 bg-stone-50/30 opacity-0 group-hover/row:opacity-100 pointer-events-none transition-opacity">
                         </div>
 
                         <div *ngFor="let header of dateHeaders"
                             class="w-[128px] shrink-0 border-r border-stone-100 relative group/cell p-1.5">
+                            <div class="w-full h-full relative rounded-xl transition-all"
+                                (mousedown)="onMouseDown(room.id, header.date)"
+                                (mouseenter)="onMouseEnter(room.id, header.date)"
+                                [class.ring-4]="isInRange(room.id, header.date)"
+                                [class.ring-[#173124]]="isInRange(room.id, header.date)"
+                                [class.ring-opacity-30]="isInRange(room.id, header.date)">
 
-                            <ng-container
-                                *ngIf="getCalendarCell(room.id, formatDateStr(header.date)) as cellData; else emptyCell">
+                                <ng-container
+                                    *ngIf="getCalendarCell(room.id, formatDateStr(header.date)) as cellData; else emptyCell">
 
-                                <div *ngIf="cellData.status === Status.BOOKED"
-                                    class="w-full h-full bg-gradient-to-br from-[#173124] to-[#0a1610] rounded-xl p-2 flex flex-col justify-between cursor-pointer group/booked border border-[#173124]/50 relative">
+                                    <div *ngIf="cellData.status === Status.BOOKED"
+                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
+                                        class="w-full h-full bg-[#173124] rounded-xl p-2 flex flex-col justify-center items-center text-white cursor-pointer group/booked shadow-md hover:bg-[#1f4231] transition-all relative">
 
-                                    <div class="text-[10px] font-black text-emerald-400">
-                                        {{ cellData.totalBookedInDay }} Đơn
-                                    </div>
+                                        <div class="text-[13px] font-black leading-none">{{ cellData.totalBookedInDay }}
+                                            Đơn</div>
+                                        <div class="text-[9px] font-bold uppercase tracking-widest opacity-70 mt-0.5">
+                                            Đặt phòng</div>
 
-                                    <div
-                                        class="absolute top-full left-0 z-50 hidden group-hover/booked:block w-56 bg-white border border-stone-200 shadow-xl rounded-xl p-3 mt-2 text-stone-700">
-                                        <p class="text-[10px] font-black uppercase text-stone-400 mb-2">Chi tiết đơn đặt
-                                        </p>
-                                        <div *ngFor="let b of cellData.bookings"
-                                            class="border-b border-stone-100 py-1.5 last:border-0 text-[11px]">
-                                            <div class="font-bold text-stone-900">{{ b.guestName }}</div>
-                                            <div class="text-stone-500">{{ b.bookingCode }} - {{ b.quantity }} phòng
+                                        <div
+                                            class="absolute top-[calc(100%+10px)] left-0 z-[100] hidden group-hover/booked:block w-[320px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-stone-100 overflow-hidden">
+                                            <div
+                                                class="bg-stone-50 px-4 py-3 border-b border-stone-100 flex justify-between items-center">
+                                                <span class="text-[10px] font-black uppercase text-stone-500">Chi tiết
+                                                    đặt phòng</span>
+                                                <span
+                                                    class="text-[9px] font-bold bg-[#173124] text-white px-2 py-0.5 rounded-full">{{
+                                                    cellData.totalBookedInDay }} Đơn</span>
+                                            </div>
+
+                                            <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
+                                                <div *ngFor="let b of cellData.bookings"
+                                                    class="p-4 border-b border-stone-50 hover:bg-stone-50 transition-colors">
+                                                    <div class="flex items-start gap-3">
+                                                        <img src="https://ui-avatars.com/api/?name={{b.guestName}}&background=random&color=fff"
+                                                            class="w-9 h-9 rounded-full shadow-sm">
+                                                        <div class="flex-1">
+                                                            <div class="text-[13px] font-black text-stone-900">{{
+                                                                b.guestName }}</div>
+                                                            <div class="text-[11px] text-stone-500 font-medium mb-1">{{
+                                                                b.bookingCode }}</div>
+                                                            <div class="flex gap-2">
+                                                                <span
+                                                                    class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded">{{
+                                                                    b.quantity }} Phòng</span>
+                                                                <span
+                                                                    class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Đã
+                                                                    xác nhận</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div *ngIf="cellData.status === 'MAINTENANCE'"
-                                    class="w-full h-full bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] rounded-xl p-2 flex flex-col justify-center items-center border border-rose-100 cursor-not-allowed group/lock">
-                                    <div
-                                        class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-500 mb-1 group-hover/lock:scale-110 transition-transform">
-                                        <span class="material-symbols-outlined text-[14px]">lock</span>
-                                    </div>
-                                    <span
-                                        class="text-[9px] font-black text-rose-600 uppercase tracking-[0.1em] bg-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">Bảo
-                                        trì</span>
-                                </div>
-                                <div *ngIf="cellData.status === 'BLOCKED'"
-                                    class="w-full h-full bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] rounded-xl p-2 flex flex-col justify-center items-center border border-rose-100 cursor-not-allowed group/lock">
-                                    <div
-                                        class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-500 mb-1 group-hover/lock:scale-110 transition-transform">
-                                        <span class="material-symbols-outlined text-[14px]">lock</span>
-                                    </div>
-                                    <span
-                                        class="text-[9px] font-black text-rose-600 uppercase tracking-[0.1em] bg-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">Bị
-                                        khoá</span>
-                                </div>
-                                <div *ngIf="cellData.status === 'AVAILABLE'"
-                                    class="w-full h-full bg-amber-50/50 rounded-xl p-2.5 flex flex-col justify-between border-2 border-amber-200/60 hover:border-amber-400 cursor-pointer transition-colors relative">
-
-                                    <div class="flex justify-between items-start">
+                                    <div *ngIf="cellData.status === 'MAINTENANCE'"
+                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
+                                        class="w-full h-full bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] rounded-xl p-2 flex flex-col justify-center items-center border border-rose-100 cursor-pointer group/lock">
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-500 mb-1 group-hover/lock:scale-110 transition-transform">
+                                            <span class="material-symbols-outlined text-[14px]">lock</span>
+                                        </div>
                                         <span
-                                            class="text-[10px] font-black text-amber-600 px-1.5 py-0.5 bg-amber-100 rounded-md">{{
-                                            cellData.availableQuantity }} trống</span>
+                                            class="text-[9px] font-black text-rose-600 uppercase tracking-[0.1em] bg-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">Bảo
+                                            trì</span>
+                                    </div>
+
+                                    <div *ngIf="cellData.status === 'BLOCKED'"
+                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
+                                        class="w-full h-full bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] rounded-xl p-2 flex flex-col justify-center items-center border border-rose-100 cursor-pointer group/lock">
+                                        <div
+                                            class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-500 mb-1 group-hover/lock:scale-110 transition-transform">
+                                            <span class="material-symbols-outlined text-[14px]">lock</span>
+                                        </div>
                                         <span
-                                            class="material-symbols-outlined text-[14px] text-amber-500">edit_note</span>
+                                            class="text-[9px] font-black text-rose-600 uppercase tracking-[0.1em] bg-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">Bị
+                                            khoá</span>
                                     </div>
-                                    <div class="flex items-end justify-between mt-auto">
-                                        <p class="text-sm font-black text-stone-900 tabular-nums leading-none">{{
-                                            (cellData.priceOverride || room.basePrice) / 1000 }}K</p>
-                                        <span class="text-[8px] font-black text-stone-400 uppercase tracking-widest"
-                                            title="Tối thiểu 2 đêm">Min 2</span>
-                                    </div>
-                                </div>
 
-                            </ng-container>
-
-                            <ng-template #emptyCell>
-                                <div
-                                    class="w-full h-full bg-white rounded-xl p-2.5 flex flex-col justify-between border-2 border-transparent hover:border-stone-200 hover:shadow-sm cursor-pointer transition-all group/empty relative">
-                                    <div
-                                        class="absolute top-2 right-2 opacity-0 group-hover/empty:opacity-100 text-stone-300 transition-opacity">
-                                        <span class="material-symbols-outlined text-[14px]">add</span>
+                                    <div *ngIf="cellData.status === 'AVAILABLE'"
+                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
+                                        class="w-full h-full bg-amber-50/50 rounded-xl p-2.5 flex flex-col justify-between border-2 border-amber-200/60 hover:border-amber-400 cursor-pointer transition-colors relative">
+                                        <div class="flex justify-between items-start">
+                                            <span
+                                                class="text-[10px] font-black text-amber-600 px-1.5 py-0.5 bg-amber-100 rounded-md">{{
+                                                cellData.availableQuantity }} trống</span>
+                                            <span
+                                                class="material-symbols-outlined text-[14px] text-amber-500">edit_note</span>
+                                        </div>
+                                        <div class="flex items-end justify-between mt-auto">
+                                            <p class="text-sm font-black text-stone-900 tabular-nums leading-none">{{
+                                                (cellData.priceOverride || room.basePrice) / 1000 }}K</p>
+                                            <span class="text-[8px] font-black text-stone-400 uppercase tracking-widest"
+                                                title="Tối thiểu 2 đêm">Min 2</span>
+                                        </div>
                                     </div>
-                                    <div class="mt-auto">
-                                        <p
-                                            class="text-xs font-black text-stone-400 tabular-nums leading-none group-hover/empty:text-stone-900 transition-colors">
-                                            {{ room.basePrice / 1000 }}K</p>
-                                    </div>
-                                </div>
-                            </ng-template>
 
+                                </ng-container>
+
+                                <ng-template #emptyCell>
+                                    <div (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
+                                        class="w-full h-full bg-white rounded-xl p-2.5 flex flex-col justify-between border-2 border-transparent hover:border-stone-200 hover:shadow-sm cursor-pointer transition-all group/empty relative">
+                                        <div
+                                            class="absolute top-2 right-2 opacity-0 group-hover/empty:opacity-100 text-stone-300 transition-opacity">
+                                            <span class="material-symbols-outlined text-[14px]">add</span>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <p
+                                                class="text-xs font-black text-stone-400 tabular-nums leading-none group-hover/empty:text-stone-900 transition-colors">
+                                                {{ room.basePrice / 1000 }}K</p>
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div>
                         </div>
                     </div>
 
@@ -240,8 +275,8 @@
 
             <div class="h-8 border-t border-stone-200 bg-stone-50 flex items-center justify-between px-4">
                 <p class="text-[10px] font-bold text-stone-500 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Đồng bộ lần cuối: Vừa
-                    xong
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Đồng bộ lần cuối:
+                    Vừa xong
                 </p>
                 <p class="text-[10px] font-medium text-stone-400">
                     Mẹo: Kéo thả chuột để chọn nhiều ngày
@@ -250,4 +285,9 @@
 
         </div>
     </div>
+
+    <app-room-action-drawer *ngIf="showDrawer" [selectedRoomId]="activeRoomId" [dateRange]="activeRange"
+        [initialData]="drawerData" (close)="closeDrawer()" (save)="handleCalendarUpdate($event)">
+    </app-room-action-drawer>
+
 </div>

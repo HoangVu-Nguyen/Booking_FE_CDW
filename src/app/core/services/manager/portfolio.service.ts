@@ -24,7 +24,7 @@ loadPortfolioTimeline(month: number, year: number): Observable<ApiResponse<Portf
   // Truyền Object bình thường như này thôi
   const params = { month: month.toString(), year: year.toString() };
 
-  return this.apiService.get<ApiResponse<PortfolioTimelineResponse>>('/api/host/portfolio-timeline', params)
+  return this.apiService.get<ApiResponse<PortfolioTimelineResponse>>('/api/v1/host/homestays/portfolio-timeline', params)
     .pipe(
       tap({
         next: (data) => {
