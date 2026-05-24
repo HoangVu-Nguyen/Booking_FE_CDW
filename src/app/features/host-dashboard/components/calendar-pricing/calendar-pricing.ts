@@ -60,24 +60,52 @@ export class CalendarPricing implements OnInit {
 
   // --- Logic Modal Drawer ---
   openEditDrawer(roomId: number, start: string, end: string) {
+    // 1. Reset trạng thái và dọn sạch dữ liệu cũ ngay lập tức
     this.drawerData = null; 
     this.activeRoomId = roomId;
     this.activeRange = { start, end };
 
+    // 2. Tìm giá và số lượng thực tế đang hiển thị trên ô lịch làm phương án dự phòng (Fallback)
+    const currentRoom = this.rooms.find(r => r.id === roomId);
+    const startCell = currentRoom?.inventory.find(inv => inv.date.toString().split('T')[0] === start);
+    
+    // Ưu tiên lấy giá ô lịch đang hiện, nếu không có mới lấy basePrice, cuối cùng là giá sàn hệ thống
+    const defaultPrice = startCell?.priceOverride || currentRoom?.basePrice || 1200000;
+    const defaultInventory = startCell?.availableQuantity !== undefined ? startCell.availableQuantity : 8;
+
+    // 3. Gọi API lấy dữ liệu chi tiết từ DB
     this.calendarService.getCalendarDetails(this.homestayId, roomId, start, end)
       .subscribe({
         next: (response) => {
           const data = response.data || [];
+          
           if (data.length > 0) {
             const firstPrice = data[0].priceOverride;
             const isMixed = data.some((d: any) => d.priceOverride !== firstPrice);
+
+            // Đóng gói dữ liệu gửi xuống component con
             this.drawerData = { 
               ...data[0], 
-              priceOverride: isMixed ? null : firstPrice, 
+              // Nếu các ngày bị lệch giá (Mixed) thì để null, nếu giống nhau thì lấy giá override từ DB. 
+              // Nếu giá override từ DB là null (chưa từng sửa), dùng ngay giá dự phòng đang hiện ở ô lịch.
+              priceOverride: isMixed ? null : (firstPrice !== null ? firstPrice : defaultPrice), 
+              availableQuantity: data[0].availableQuantity !== null ? data[0].availableQuantity : defaultInventory,
               isMixed 
             };
+          } else {
+            // Trường hợp dải ngày này hoàn toàn trống (chưa từng có bản ghi trong bảng room_calendar)
+            this.drawerData = {
+              roomId: roomId,
+              priceOverride: defaultPrice,
+              availableQuantity: defaultInventory,
+              status: 'AVAILABLE',
+              isMixed: false
+            };
           }
+
+          // 4. Bật Drawer và ÉP Angular đồng bộ dữ liệu xuống Component con ngay tức thì
           this.showDrawer = true;
+          this.cdr.detectChanges(); 
         },
         error: (err) => console.error('Error loading details:', err)
       });
