@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
   styleUrl: './host-wallet.css',
 })
 export class HostWallet implements OnInit {
-  
+
   // Khởi tạo giá trị mặc định để UI không bị vỡ lúc chưa load xong
   walletInfo: HostWalletInfo = {
     availableBalance: 0,
@@ -27,21 +27,24 @@ export class HostWallet implements OnInit {
   withdrawAmount: number | null = null;
   bankAccountInfo: string = '';
   transactions: WalletTransaction[] = [];
-  
+
   isLoading: boolean = false;
   currentPage: number = 0;
+  pageSize: number = 10;
+  totalPages: number = 0;
+  totalElements: number = 0;
   private walletSocketSub!: Subscription;
 
-  constructor(private walletService: WalletService,private cdr: ChangeDetectorRef,private websocketService: WebsocketService,private zone: NgZone) {}
+  constructor(private walletService: WalletService, private cdr: ChangeDetectorRef, private websocketService: WebsocketService, private zone: NgZone) { }
 
   ngOnInit(): void {
     this.loadWalletData();
     this.loadTransactions();
-    
+
     this.loadTransactions();
-    
+
     this.initRealtimeListener();
-  
+
   }
 
   loadWalletData() {
@@ -49,9 +52,9 @@ export class HostWallet implements OnInit {
       next: (res) => {
         console.log('Thông tin ví:', res.data);
         this.walletInfo = res.data;
-        
+
         // 3. Báo cáo cho Angular biết dữ liệu đã thay đổi hợp lệ
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Lỗi tải ví:', err);
@@ -60,12 +63,15 @@ export class HostWallet implements OnInit {
   }
 
   loadTransactions() {
-    this.walletService.getTransactionHistory(this.currentPage, 10).subscribe({
+    this.walletService.getTransactionHistory(this.currentPage, this.pageSize).subscribe({
       next: (res) => {
         this.transactions = res.data.content;
+
+        // Lấy thêm thông tin phân trang từ Backend trả về
+        this.totalPages = res.data.totalPages || 0;
+        this.totalElements = res.data.totalElements || 0;
+
         console.log('Lịch sử giao dịch:', this.transactions);
-        
-        // 4. Báo cáo thay đổi cho bảng lịch sử
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Lỗi tải lịch sử:', err)
@@ -87,7 +93,7 @@ export class HostWallet implements OnInit {
     }
 
     this.isLoading = true;
-    
+
     const payload = {
       amount: this.withdrawAmount,
       bankAccountInfo: this.bankAccountInfo
@@ -97,7 +103,7 @@ export class HostWallet implements OnInit {
       next: (res) => {
         alert('Tạo lệnh rút tiền thành công!');
         this.withdrawAmount = null;
-        
+
         // Cập nhật lại UI lập tức
         this.loadWalletData();
         this.loadTransactions();
@@ -116,24 +122,24 @@ export class HostWallet implements OnInit {
     this.walletSocketSub = this.websocketService.listenWalletStatus().subscribe({
       next: (notification) => {
         console.log('🔔 Nhận tín hiệu đổi trạng thái ví từ Admin:', notification);
-        
+
         // Ép Angular đưa luồng WebSocket ngầm vào lại trong Change Detection Zone
         this.zone.run(() => {
-          
+
           // Bước 1: Gọi API lấy dữ liệu mới nhất dưới DB lên
           this.walletService.getWalletInfo().subscribe({
             next: (res) => {
               this.walletInfo = res.data;
-              
+
               // Bước 2: Tải lại lịch sử bảng giao dịch
               this.walletService.getTransactionHistory(this.currentPage, 10).subscribe({
                 next: (txRes) => {
                   this.transactions = txRes.data.content;
                   console.log('Cập nhật lịch sử giao dịch sau khi nhận WebSocket:', this.transactions);
-                  
+
                   // Bước 3: Ép render giao diện khi TẤT CẢ dữ liệu mới đã nằm trong bộ nhớ JavaScipt
                   this.cdr.detectChanges();
-                  
+
                   // Bước 4: Hiển thị thông báo sau cùng để không chặn luồng tải dữ liệu
                   setTimeout(() => {
                     alert(notification.message);
@@ -154,5 +160,28 @@ export class HostWallet implements OnInit {
     if (this.walletSocketSub) {
       this.walletSocketSub.unsubscribe();
     }
+  }
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.loadTransactions();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadTransactions();
+    }
+  }
+
+  // Tính toán các con số để hiển thị chữ "Hiển thị 1-10 / 50 giao dịch"
+  get startIndex(): number {
+    return this.totalElements === 0 ? 0 : (this.currentPage * this.pageSize) + 1;
+  }
+
+  get endIndex(): number {
+    const end = (this.currentPage + 1) * this.pageSize;
+    return end > this.totalElements ? this.totalElements : end;
   }
 }
