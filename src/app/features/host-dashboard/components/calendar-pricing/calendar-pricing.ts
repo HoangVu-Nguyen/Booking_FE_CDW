@@ -2,7 +2,13 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarService } from '../../../../core/services/calendar/calendar.service';
 import { ActivatedRoute } from '@angular/router';
-import { CalendarInventoryResponse, CalendarRoomResponse, RoomCalendarStatus } from '../../../../core/models/response/calendar.response';
+import {Location} from '@angular/common';
+import { 
+  CalendarInventoryResponse, 
+  CalendarRoomResponse, 
+  HomestayCalendarResponse, 
+  RoomCalendarStatus 
+} from '../../../../core/models/response/calendar.response';
 import { RoomActionDrawer } from '../room-action-drawer/room-action-drawer';
 
 @Component({
@@ -14,7 +20,11 @@ import { RoomActionDrawer } from '../room-action-drawer/room-action-drawer';
 export class CalendarPricing implements OnInit {
 
   dateHeaders: { date: Date; dateStr: string; isWeekend: boolean; isToday: boolean }[] = [];
+  
+  // Dữ liệu API
+  homeCalendarDetail!: HomestayCalendarResponse; 
   rooms: CalendarRoomResponse[] = [];
+  
   currentStartDate: Date = new Date();
   homestayId!: number;
   
@@ -34,7 +44,8 @@ export class CalendarPricing implements OnInit {
   constructor(
     private calendarService: CalendarService,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private location: Location
   ) { }
 
   ngOnInit() {
@@ -51,7 +62,11 @@ export class CalendarPricing implements OnInit {
 
     this.calendarService.getCalendarData(this.homestayId, start, end).subscribe({
       next: (response) => {
-        this.rooms = response.data || [];
+        if (response.data) {
+          this.homeCalendarDetail = response.data;
+          console.log('Lấy dữ liệu calendar thành công:', this.homeCalendarDetail);
+          this.rooms = this.homeCalendarDetail.rooms || [];
+        }
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error loading calendar:', err)
@@ -60,50 +75,42 @@ export class CalendarPricing implements OnInit {
 
   // --- Logic Modal Drawer ---
   openEditDrawer(roomId: number, start: string, end: string) {
-    // 1. Reset trạng thái và dọn sạch dữ liệu cũ ngay lập tức
     this.drawerData = null; 
     this.activeRoomId = roomId;
     this.activeRange = { start, end };
 
-    // 2. Tìm giá và số lượng thực tế đang hiển thị trên ô lịch làm phương án dự phòng (Fallback)
     const currentRoom = this.rooms.find(r => r.id === roomId);
     const startCell = currentRoom?.inventory.find(inv => inv.date.toString().split('T')[0] === start);
     
-    // Ưu tiên lấy giá ô lịch đang hiện, nếu không có mới lấy basePrice, cuối cùng là giá sàn hệ thống
     const defaultPrice = startCell?.priceOverride || currentRoom?.basePrice || 1200000;
     const defaultInventory = startCell?.availableQuantity !== undefined ? startCell.availableQuantity : 8;
 
-    // 3. Gọi API lấy dữ liệu chi tiết từ DB
     this.calendarService.getCalendarDetails(this.homestayId, roomId, start, end)
       .subscribe({
         next: (response) => {
-          const data = response.data || [];
+          const data: CalendarInventoryResponse[] = response.data || [];
           
           if (data.length > 0) {
             const firstPrice = data[0].priceOverride;
-            const isMixed = data.some((d: any) => d.priceOverride !== firstPrice);
+            const isMixed = data.some(d => d.priceOverride !== firstPrice);
 
-            // Đóng gói dữ liệu gửi xuống component con
             this.drawerData = { 
               ...data[0], 
-              // Nếu các ngày bị lệch giá (Mixed) thì để null, nếu giống nhau thì lấy giá override từ DB. 
-              // Nếu giá override từ DB là null (chưa từng sửa), dùng ngay giá dự phòng đang hiện ở ô lịch.
               priceOverride: isMixed ? null : (firstPrice !== null ? firstPrice : defaultPrice), 
               availableQuantity: data[0].availableQuantity !== null ? data[0].availableQuantity : defaultInventory,
-              isMixed 
+              isMixed ,
+              owner: this.homeCalendarDetail.owner
             };
           } else {
-            // Trường hợp dải ngày này hoàn toàn trống (chưa từng có bản ghi trong bảng room_calendar)
             this.drawerData = {
               roomId: roomId,
               priceOverride: defaultPrice,
               availableQuantity: defaultInventory,
-              status: 'AVAILABLE',
+              status: RoomCalendarStatus.AVAILABLE,
               isMixed: false
             };
           }
 
-          // 4. Bật Drawer và ÉP Angular đồng bộ dữ liệu xuống Component con ngay tức thì
           this.showDrawer = true;
           this.cdr.detectChanges(); 
         },
@@ -112,6 +119,7 @@ export class CalendarPricing implements OnInit {
   }
 
   handleCalendarUpdate(payload: any) {
+    // Truyền thêm this.homestayId để Service gửi URL chuẩn REST (như đã thống nhất)
     this.calendarService.updateBatchCalendar( payload).subscribe({
       next: () => {
         this.loadCalendarData();
@@ -180,7 +188,10 @@ export class CalendarPricing implements OnInit {
   }
 
   formatDateStr(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   getCalendarCell(roomId: number, dateStr: string): CalendarInventoryResponse | undefined {
@@ -199,4 +210,7 @@ export class CalendarPricing implements OnInit {
     this.generateDateHeaders(this.currentStartDate, 14);
     this.loadCalendarData();
   }
+  goBack() {
+  this.location.back();
+}
 }

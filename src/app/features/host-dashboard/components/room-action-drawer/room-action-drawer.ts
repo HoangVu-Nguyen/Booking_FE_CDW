@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { OwnerResponse } from '../../../../core/models/response/homestay.response';
 
 @Component({
   selector: 'app-room-action-drawer',
@@ -24,7 +25,8 @@ ngOnChanges(changes: SimpleChanges) {
       this.newPrice = data.priceOverride;
       this.newInventory = data.availableQuantity;
       this.roomStatus = data.status;
-      
+      this.owner = data.owner;
+
       // LOG ĐỂ DEBUG: xem dữ liệu mới đã vào chưa
       console.log('Drawer nhận dữ liệu mới:', data);
     }
@@ -39,6 +41,7 @@ ngOnChanges(changes: SimpleChanges) {
   minNights: number = 1;
   weekendFee: number | null = null;
   syncOta: boolean = true;
+  owner!:OwnerResponse;
 
   // Dành riêng cho Tab Trạng thái (Bàn giao ca)
   blockReason: string = 'MAINTENANCE';

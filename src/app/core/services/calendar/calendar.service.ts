@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import { CalendarRoomResponse } from '../../models/response/calendar.response';
+import { CalendarInventoryResponse, CalendarRoomResponse, HomestayCalendarResponse } from '../../models/response/calendar.response';
 import { ApiResponse } from '../../models/response/api.response';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class CalendarService {
     homestayId: number,
     startDate: string,
     endDate: string
-  ): Observable<ApiResponse<CalendarRoomResponse[]>> {
+  ): Observable<ApiResponse<HomestayCalendarResponse>> {
 
     // API định nghĩa ở Controller: /api/v1/host/homestays/{homestayId}/calendar
     const endpoint = `/api/v1/host/homestays/${homestayId}/calendar`;
@@ -29,7 +29,7 @@ export class CalendarService {
       endDate: endDate
     };
 
-    return this.apiService.get<ApiResponse<CalendarRoomResponse[]>>(endpoint, params);
+    return this.apiService.get<ApiResponse<HomestayCalendarResponse>>(endpoint, params);
   }
   updateBatchCalendar(payload: any): Observable<ApiResponse<any>> {
     // API định nghĩa ở Controller: /api/v1/host/batch-update
@@ -38,13 +38,13 @@ export class CalendarService {
     // ApiService thường sử dụng phương thức post để truyền body phức tạp
     return this.apiService.post<ApiResponse<any>>(endpoint, payload);
   }
-  getCalendarDetails(homestayId: number, roomId: number, startDate: string, endDate: string): Observable<ApiResponse<any>> {
+  getCalendarDetails(homestayId: number, roomId: number, startDate: string, endDate: string): Observable<ApiResponse<CalendarInventoryResponse[]>> {
     const endpoint = `/api/v1/host/homestays/${homestayId}/calendar/details`;
     const params = {
       roomId: roomId,
       startDate: startDate,
       endDate: endDate
     };
-    return this.apiService.get<ApiResponse<any>>(endpoint, params);
+    return this.apiService.get<ApiResponse<CalendarInventoryResponse[]>>(endpoint, params);
   }
 }

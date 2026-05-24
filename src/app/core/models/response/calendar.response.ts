@@ -1,3 +1,6 @@
+import { HomestayStatus } from "../../enum/homestay-status";
+import { OwnerResponse } from "./homestay.response";
+
 export enum RoomCalendarStatus {
   AVAILABLE = 'AVAILABLE',
   BOOKED = 'BOOKED',
@@ -25,7 +28,16 @@ export interface CalendarInventoryResponse {
 export interface CalendarRoomResponse {
   id: number;
   name: string;
+  imageUrl: string;
   tag: string;
   basePrice: number;
   inventory: CalendarInventoryResponse[];
+}
+export interface HomestayCalendarResponse {
+  roomCode: string;
+  status: HomestayStatus;
+  homestayName: string;
+  homestayId: string;
+  rooms: CalendarRoomResponse[];
+  owner:OwnerResponse;
 }
