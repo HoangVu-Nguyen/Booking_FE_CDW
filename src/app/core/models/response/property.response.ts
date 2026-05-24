@@ -19,3 +19,12 @@ export interface PropertySummaryResponse {
   status: PropertyStatus | string; // Ưu tiên dùng union type ở trên
   stats: PropertyStats;
 }
+export interface HostPortfolioSummaryResponse {
+  totalPortfolioValue: number;
+  portfolioGrowthRate: number;
+  averageOccupancyRate: number;
+  occupancyTrend: string;
+  averageRating: number;
+  ratingGrowth: number;
+  totalProperties: number;
+}

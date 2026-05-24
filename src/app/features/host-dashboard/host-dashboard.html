@@ -67,7 +67,7 @@
                         <span class="w-2 h-2 rounded-full bg-[#173124] animate-pulse"></span> Báo cáo tóm tắt danh mục
                     </h3>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" *ngIf="summary as data">
 
                         <div
                             class="group bg-stone-50/50 hover:bg-white border border-stone-100 hover:border-stone-200 p-6 rounded-[2rem] h-48 flex flex-col justify-between hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] hover:-translate-y-1 transition-all duration-500">
@@ -77,14 +77,19 @@
                                     <span class="material-symbols-outlined">account_balance_wallet</span>
                                 </div>
                                 <span
-                                    class="px-2.5 py-1 bg-emerald-100/80 text-emerald-700 text-[10px] font-extrabold rounded-full flex items-center gap-0.5">
-                                    <span class="material-symbols-outlined text-[12px]">trending_up</span> 12.4%
+                                    class="px-2.5 py-1 text-[10px] font-extrabold rounded-full flex items-center gap-0.5"
+                                    [ngClass]="data.portfolioGrowthRate >= 0 ? 'bg-emerald-100/80 text-emerald-700' : 'bg-rose-100/80 text-rose-700'">
+                                    <span class="material-symbols-outlined text-[12px]">
+                                        {{ data.portfolioGrowthRate >= 0 ? 'trending_up' : 'trending_down' }}
+                                    </span>
+                                    {{ data.portfolioGrowthRate >= 0 ? '+' : '' }}{{ data.portfolioGrowthRate }}%
                                 </span>
                             </div>
                             <div>
                                 <p class="text-[10px] text-stone-400 uppercase font-bold tracking-widest mb-1">Giá trị
-                                    Portfolio</p>
-                                <h3 class="text-3xl font-black text-stone-900 tracking-tight">$4.2M</h3>
+                                    Portfolio (Tháng)</p>
+                                <h3 class="text-3xl font-black text-stone-900 tracking-tight">{{
+                                    data.totalPortfolioValue | currency:'VND':'symbol':'1.0-0' }}</h3>
                             </div>
                         </div>
 
@@ -96,14 +101,16 @@
                                     <span class="material-symbols-outlined">sensor_door</span>
                                 </div>
                                 <span
-                                    class="px-2.5 py-1 bg-stone-200/80 text-stone-600 text-[10px] font-extrabold rounded-full">
-                                    Ổn định
+                                    class="px-2.5 py-1 bg-stone-200/80 text-stone-600 text-[10px] font-extrabold rounded-full"
+                                    [ngClass]="data.occupancyTrend === 'Tăng trưởng' ? '!bg-emerald-100/80 !text-emerald-700' : (data.occupancyTrend === 'Giảm nhẹ' ? '!bg-rose-100/80 !text-rose-700' : '')">
+                                    {{ data.occupancyTrend }}
                                 </span>
                             </div>
                             <div>
                                 <p class="text-[10px] text-stone-400 uppercase font-bold tracking-widest mb-1">Tỷ lệ lấp
                                     đầy</p>
-                                <h3 class="text-3xl font-black text-stone-900 tracking-tight">96.8%</h3>
+                                <h3 class="text-3xl font-black text-stone-900 tracking-tight">{{
+                                    data.averageOccupancyRate }}%</h3>
                             </div>
                         </div>
 
@@ -116,15 +123,19 @@
                                         style="font-variation-settings: 'FILL' 1;">star</span>
                                 </div>
                                 <span
-                                    class="px-2.5 py-1 bg-emerald-100/80 text-emerald-700 text-[10px] font-extrabold rounded-full flex items-center gap-0.5">
-                                    <span class="material-symbols-outlined text-[12px]">trending_up</span> 0.02
+                                    class="px-2.5 py-1 text-[10px] font-extrabold rounded-full flex items-center gap-0.5"
+                                    [ngClass]="data.ratingGrowth >= 0 ? 'bg-emerald-100/80 text-emerald-700' : 'bg-rose-100/80 text-rose-700'">
+                                    <span class="material-symbols-outlined text-[12px]">
+                                        {{ data.ratingGrowth >= 0 ? 'trending_up' : 'trending_down' }}
+                                    </span>
+                                    {{ data.ratingGrowth > 0 ? '+' : '' }}{{ data.ratingGrowth }}
                                 </span>
                             </div>
                             <div>
                                 <p class="text-[10px] text-stone-400 uppercase font-bold tracking-widest mb-1">Độ hài
                                     lòng</p>
-                                <h3 class="text-3xl font-black text-stone-900 tracking-tight">4.98<span
-                                        class="text-lg text-stone-400 font-bold">/5</span></h3>
+                                <h3 class="text-3xl font-black text-stone-900 tracking-tight">{{ data.averageRating |
+                                    number:'1.1-2' }}<span class="text-lg text-stone-400 font-bold">/5</span></h3>
                             </div>
                         </div>
 
@@ -147,8 +158,8 @@
                             <div class="relative z-10">
                                 <p class="text-[10px] text-white/60 uppercase font-bold tracking-widest mb-1">Tổng tài
                                     sản quản lý</p>
-                                <h3 class="text-3xl font-black text-white tracking-tight">24 <span
-                                        class="text-lg text-white/60 font-bold">Căn</span></h3>
+                                <h3 class="text-3xl font-black text-white tracking-tight">{{ data.totalProperties }}
+                                    <span class="text-lg text-white/60 font-bold">Căn</span></h3>
                             </div>
                         </div>
 
