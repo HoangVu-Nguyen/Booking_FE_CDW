@@ -6,11 +6,11 @@ import { TokenService } from './core/services/token.service';
 import { authCodeFlowConfig } from './core/configs/auth.config';
 import { HybridStorage } from './core/configs/hybrid-storage';
 import { AuthService } from './core/services/auth.service';
-
+import {Toast} from './shared/components/toast/toast';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Toast],
   templateUrl: './app.html'
 })
 export class App implements OnInit {

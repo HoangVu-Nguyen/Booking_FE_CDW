@@ -1,186 +1,182 @@
-<!-- Cấu trúc lại Container để đồng bộ với layout Dashboard -->
-<div class="flex-1 w-full max-w-4xl mx-auto px-4 md:px-8 py-10">
+<div class="flex-1 px-4 md:px-8 lg:px-12 pb-24 overflow-x-hidden">
     
-    <!-- HEADER -->
-    <div class="mb-12 animate-[fade-in-up_0.8s_ease-out]">
-        <h1 class="text-stone-900 font-headline text-4xl md:text-5xl font-bold tracking-tight mb-3">
+    <div class="mb-10">
+        <h1 class="text-3xl font-extrabold tracking-tight mb-2">
             Bảo mật & Quyền riêng tư
         </h1>
-        <p class="text-stone-500 font-medium text-lg">
-            Quản lý các thiết lập an toàn để bảo vệ trải nghiệm của bạn tại <span class="font-bold text-[#173124]">Clyvasync</span>.
+        <p class="text-sm text-gray-500">
+            Quản lý mật khẩu, xác thực hai yếu tố và các thiết bị đang đăng nhập của bạn.
         </p>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 1. QUẢN LÝ MẬT KHẨU -->
-    <!-- ========================================== -->
-    <section class="bg-white rounded-[2rem] p-8 md:p-10 mb-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-stone-100 animate-[fade-in-up_1s_ease-out]">
-        <h2 class="text-stone-900 font-headline text-2xl font-bold mb-8">Đổi mật khẩu</h2>
+    <section class="mb-8 bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+            <h2 class="text-lg font-bold text-gray-900">Đổi mật khẩu</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Sử dụng mật khẩu mạnh có ít nhất 8 ký tự để bảo vệ tài khoản.</p>
+        </div>
         
-        <div class="space-y-6">
-            <!-- Mật khẩu hiện tại -->
-            <div>
-                <label class="block text-[11px] font-bold uppercase tracking-[0.15em] text-stone-500 mb-2">Mật khẩu hiện tại</label>
-                <input class="w-full bg-stone-50 rounded-xl border border-stone-200 px-5 py-3.5 text-[15px] text-stone-900 focus:bg-white focus:border-[#173124] focus:ring-1 focus:ring-[#173124] outline-none transition-all placeholder:text-stone-400" placeholder="••••••••••••" type="password" />
+        <div class="p-6 space-y-6">
+            <div class="max-w-md">
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mật khẩu hiện tại</label>
+                <input class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none transition-all placeholder:text-gray-400" 
+                       placeholder="Nhập mật khẩu hiện tại" type="password" />
             </div>
             
-            <div class="w-full h-[1px] bg-stone-100 my-4"></div>
+            <div class="w-full h-px bg-gray-100"></div>
             
-            <!-- Mật khẩu mới -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-[0.15em] text-stone-500 mb-2">Mật khẩu mới</label>
-                    <input class="w-full bg-stone-50 rounded-xl border border-stone-200 px-5 py-3.5 text-[15px] text-stone-900 focus:bg-white focus:border-[#173124] focus:ring-1 focus:ring-[#173124] outline-none transition-all placeholder:text-stone-400" placeholder="Ít nhất 8 ký tự" type="password" />
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mật khẩu mới</label>
+                    <input class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:border-[#173124] focus:ring-1 focus:ring-[#173124] outline-none transition-all placeholder:text-gray-400" 
+                           placeholder="Ít nhất 8 ký tự" type="password" />
                     
-                    <!-- Password Strength Bar (Bổ sung mới) -->
-                    <div class="mt-3 flex items-center gap-2">
-                        <div class="h-1.5 flex-1 bg-emerald-500 rounded-full"></div>
-                        <div class="h-1.5 flex-1 bg-emerald-500 rounded-full"></div>
-                        <div class="h-1.5 flex-1 bg-stone-200 rounded-full"></div>
-                        <span class="text-[11px] font-bold text-stone-500 ml-2">Khá mạnh</span>
+                    <div class="mt-2.5 flex items-center gap-1.5">
+                        <div class="h-1.5 w-1/3 bg-emerald-500 rounded-full"></div>
+                        <div class="h-1.5 w-1/3 bg-emerald-500 rounded-full"></div>
+                        <div class="h-1.5 w-1/3 bg-gray-200 rounded-full"></div>
+                        <span class="text-xs font-semibold text-gray-500 ml-2">Khá</span>
                     </div>
                 </div>
                 
                 <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-[0.15em] text-stone-500 mb-2">Xác nhận mật khẩu mới</label>
-                    <input class="w-full bg-stone-50 rounded-xl border border-stone-200 px-5 py-3.5 text-[15px] text-stone-900 focus:bg-white focus:border-[#173124] focus:ring-1 focus:ring-[#173124] outline-none transition-all placeholder:text-stone-400" placeholder="Nhập lại mật khẩu" type="password" />
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Xác nhận mật khẩu</label>
+                    <input class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:border-[#173124] focus:ring-1 focus:ring-[#173124] outline-none transition-all placeholder:text-gray-400" 
+                           placeholder="Nhập lại mật khẩu mới" type="password" />
                 </div>
             </div>
         </div>
         
-        <div class="flex justify-end mt-10">
-            <button class="bg-[#173124] text-white rounded-full px-8 py-3.5 text-[13px] font-bold uppercase tracking-widest shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                Lưu thay đổi
+        <div class="px-6 py-4 bg-gray-50/80 border-t border-gray-100 flex justify-end">
+            <button class="bg-[#173124] text-white rounded-xl px-6 py-2.5 text-sm font-bold shadow-sm hover:bg-[#0a1610] active:scale-95 transition-all">
+                Cập nhật mật khẩu
             </button>
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- 2. XÁC THỰC HAI YẾU TỐ (2FA) & CẢNH BÁO -->
-    <!-- ========================================== -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 animate-[fade-in-up_1.2s_ease-out]">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         
-        <!-- 2FA Section -->
-        <section class="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-stone-100 flex flex-col h-full">
-            <div class="flex justify-between items-start mb-6">
+        <section class="bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-start bg-gray-50/50">
                 <div>
-                    <h2 class="text-stone-900 font-headline text-xl font-bold mb-2">Xác thực 2 bước</h2>
-                    <p class="text-stone-500 text-sm leading-relaxed">Tăng cường bảo mật bằng mã xác nhận qua điện thoại.</p>
+                    <h2 class="text-lg font-bold text-gray-900">Xác thực 2 bước (2FA)</h2>
+                    <p class="text-xs text-gray-500 mt-0.5">Bảo vệ tài khoản bằng mã xác nhận.</p>
                 </div>
-                <span class="px-3 py-1 rounded-md bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-widest border border-rose-100">
-                    Chưa kích hoạt
+                <span class="px-2.5 py-1 rounded-md bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider border border-gray-200">
+                    Chưa bật
                 </span>
             </div>
             
-            <div class="mt-auto space-y-3">
-                <button class="w-full group flex items-center justify-between p-4 rounded-xl border border-stone-200 hover:border-[#173124] hover:bg-stone-50 transition-colors">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:text-[#173124] transition-colors">
+            <div class="p-6 flex-1 flex flex-col justify-center space-y-3">
+                <button class="group w-full flex items-center justify-between p-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-600 group-hover:text-blue-600 transition-colors">
                             <span class="material-symbols-outlined text-[20px]">phonelink_lock</span>
                         </div>
-                        <span class="text-[14px] font-bold text-stone-800">Dùng Ứng dụng (Khuyên dùng)</span>
+                        <div class="text-left">
+                            <p class="text-sm font-bold text-gray-900">Ứng dụng xác thực</p>
+                            <p class="text-xs text-gray-500">Google Authenticator, Authy</p>
+                        </div>
                     </div>
-                    <span class="material-symbols-outlined text-stone-300 group-hover:text-[#173124]">chevron_right</span>
+                    <span class="material-symbols-outlined text-gray-400 group-hover:text-gray-900">chevron_right</span>
                 </button>
                 
-                <button class="w-full group flex items-center justify-between p-4 rounded-xl border border-stone-200 hover:border-[#173124] hover:bg-stone-50 transition-colors">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:text-[#173124] transition-colors">
+                <button class="group w-full flex items-center justify-between p-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-white border border-gray-100 shadow-sm flex items-center justify-center text-gray-600 group-hover:text-emerald-600 transition-colors">
                             <span class="material-symbols-outlined text-[20px]">sms</span>
                         </div>
-                        <span class="text-[14px] font-bold text-stone-800">Nhận mã qua SMS</span>
+                        <div class="text-left">
+                            <p class="text-sm font-bold text-gray-900">Tin nhắn SMS</p>
+                            <p class="text-xs text-gray-500">Nhận mã qua số điện thoại</p>
+                        </div>
                     </div>
-                    <span class="material-symbols-outlined text-stone-300 group-hover:text-[#173124]">chevron_right</span>
+                    <span class="material-symbols-outlined text-gray-400 group-hover:text-gray-900">chevron_right</span>
                 </button>
             </div>
         </section>
 
-        <!-- Login Alerts (Bổ sung mới) -->
-        <section class="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-stone-100 flex flex-col h-full">
-            <h2 class="text-stone-900 font-headline text-xl font-bold mb-2">Cảnh báo bảo mật</h2>
-            <p class="text-stone-500 text-sm leading-relaxed mb-8">Nhận thông báo khi có đăng nhập từ thiết bị hoặc vị trí không xác định.</p>
+        <section class="bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col overflow-hidden">
+            <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+                <h2 class="text-lg font-bold text-gray-900">Cảnh báo bảo mật</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Thông báo đăng nhập từ thiết bị lạ.</p>
+            </div>
             
-            <div class="space-y-6 mt-auto">
-                <div class="flex items-center justify-between">
+            <div class="p-6 flex-1 flex flex-col justify-center divide-y divide-gray-100">
+                
+                <div class="flex items-center justify-between py-4 first:pt-0">
                     <div>
-                        <p class="text-[14px] font-bold text-stone-800 mb-1">Qua Email</p>
-                        <p class="text-[12px] text-stone-500">vu.nguyen@clyvasync.com</p>
+                        <p class="text-sm font-bold text-gray-900">Qua Email</p>
+                        <p class="text-xs text-gray-500 mt-0.5">vu.nguyen&#64;clyvasync.com</p>
                     </div>
-                    <!-- Custom Toggle Switch -->
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" value="" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#173124]"></div>
+                        <input type="checkbox" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#173124]"></div>
                     </label>
                 </div>
                 
-                <div class="w-full h-[1px] bg-stone-100"></div>
-                
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between py-4 last:pb-0">
                     <div>
-                        <p class="text-[14px] font-bold text-stone-800 mb-1">Thông báo đẩy (Push)</p>
-                        <p class="text-[12px] text-stone-500">Trên ứng dụng di động</p>
+                        <p class="text-sm font-bold text-gray-900">Thông báo đẩy (Push)</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Trực tiếp trên trình duyệt/App</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" value="" class="sr-only peer">
-                        <div class="w-11 h-6 bg-stone-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#173124]"></div>
+                        <input type="checkbox" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#173124]"></div>
                     </label>
                 </div>
+
             </div>
         </section>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 3. LỊCH SỬ ĐĂNG NHẬP -->
-    <!-- ========================================== -->
-    <section class="bg-white rounded-[2rem] p-8 md:p-10 mb-8 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-stone-100 animate-[fade-in-up_1.4s_ease-out]">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-stone-100 pb-6 mb-6">
+    <section class="mb-8 bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/50">
             <div>
-                <h2 class="text-stone-900 font-headline text-2xl font-bold mb-2">Thiết bị đang hoạt động</h2>
-                <p class="text-stone-500 text-sm">Xem và quản lý các thiết bị đã đăng nhập vào tài khoản của bạn.</p>
+                <h2 class="text-lg font-bold text-gray-900">Thiết bị đang hoạt động</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Các thiết bị đã đăng nhập gần đây.</p>
             </div>
-            <button class="text-stone-900 border-b border-stone-900 font-bold text-[11px] uppercase tracking-widest pb-0.5 hover:text-rose-600 hover:border-rose-600 transition-colors">
+            <button class="text-xs font-bold text-gray-600 hover:text-red-600 transition-colors">
                 Đăng xuất tất cả
             </button>
         </div>
         
-        <div class="space-y-2">
-            <!-- Current Session -->
-            <div class="flex items-center gap-5 p-4 rounded-xl bg-stone-50 border border-stone-100">
-                <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#173124] shrink-0">
+        <div class="divide-y divide-gray-100">
+            <div class="flex items-center gap-4 p-6 bg-emerald-50/30">
+                <div class="w-12 h-12 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center text-[#173124] shrink-0">
                     <span class="material-symbols-outlined text-[24px]">laptop_mac</span>
                 </div>
                 <div class="flex-1">
-                    <div class="flex items-center gap-3 mb-1">
-                        <p class="text-[15px] font-bold text-stone-900">MacBook Pro - TP.HCM</p>
-                        <span class="text-[9px] font-bold text-[#173124] bg-emerald-100 px-2 py-0.5 rounded uppercase tracking-widest">Thiết bị này</span>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <p class="text-sm font-bold text-gray-900">MacBook Pro - TP.HCM</p>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700 tracking-wider">THIẾT BỊ NÀY</span>
                     </div>
-                    <p class="text-stone-500 text-[13px]">Safari • Đang hoạt động</p>
+                    <p class="text-xs text-gray-500">Trình duyệt Chrome • Đang hoạt động</p>
                 </div>
             </div>
             
-            <!-- Past Session -->
-            <div class="flex items-center gap-5 p-4 rounded-xl hover:bg-stone-50 transition-colors group">
-                <div class="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 shrink-0 group-hover:bg-white group-hover:shadow-sm transition-all">
+            <div class="group flex items-center gap-4 p-6 hover:bg-gray-50 transition-colors">
+                <div class="w-12 h-12 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center text-gray-500 shrink-0">
                     <span class="material-symbols-outlined text-[24px]">smartphone</span>
                 </div>
                 <div class="flex-1">
-                    <p class="text-[15px] font-bold text-stone-900 mb-1">iPhone 14 Pro - Hà Nội</p>
-                    <p class="text-stone-500 text-[13px]">App Clyvasync • Hoạt động 2 giờ trước</p>
+                    <p class="text-sm font-bold text-gray-900 mb-0.5">iPhone 14 Pro - Hà Nội</p>
+                    <p class="text-xs text-gray-500">App Clyvasync • Hoạt động 2 giờ trước</p>
                 </div>
-                <button class="text-[13px] font-bold text-stone-400 hover:text-rose-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-rose-50 opacity-0 group-hover:opacity-100">
+                <button class="opacity-0 group-hover:opacity-100 text-xs font-bold text-gray-400 hover:text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-all">
                     Đăng xuất
                 </button>
             </div>
         </div>
     </section>
 
-    <!-- ========================================== -->
-    <!-- 4. DANGER ZONE (Vùng nguy hiểm) -->
-    <!-- ========================================== -->
-    <section class="rounded-[2rem] p-8 md:p-10 border border-rose-100 bg-rose-50/30 animate-[fade-in-up_1.6s_ease-out]">
-        <h2 class="text-rose-600 font-headline text-xl font-bold mb-2">Vùng nguy hiểm</h2>
-        <p class="text-stone-600 text-sm mb-6">Sau khi xóa, tài khoản của bạn và toàn bộ dữ liệu chuyến đi sẽ không thể khôi phục.</p>
-        <button class="bg-white text-rose-600 border border-rose-200 rounded-full px-6 py-2.5 text-[11px] font-bold uppercase tracking-widest shadow-sm hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-300">
+    <section class="bg-white border border-red-200 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
+        
+        <div>
+            <h2 class="text-base font-bold text-gray-900 mb-1">Xóa tài khoản</h2>
+            <p class="text-sm text-gray-500">Hành động này không thể hoàn tác. Toàn bộ dữ liệu của bạn sẽ bị xóa vĩnh viễn.</p>
+        </div>
+        <button class="shrink-0 bg-white text-red-600 border border-red-200 rounded-xl px-5 py-2.5 text-sm font-bold hover:bg-red-50 transition-colors">
             Xóa tài khoản
         </button>
     </section>

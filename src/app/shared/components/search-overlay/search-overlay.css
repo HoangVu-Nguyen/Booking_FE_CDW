@@ -1,49 +1,46 @@
-@keyframes slideDownFade {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.search-modal-animate {
-  animation: slideDownFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeInScale {
-  0% {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-.search-card-animate {
-  animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes fadeIn {
-    from {
-        opacity: 0;
+@keyframes searchOverlayFadeIn {
     }
 
-    to {
-        opacity: 1;
-    }
-}
+    @keyframes searchSlideRight {
+        from {
+            opacity: 0;
+            transform: translateX(18px);
+        }
 
-@keyframes openSearch {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(.98);
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+    @keyframes searchItemIn {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-}
+
+    .search-overlay-enter {
+        animation: searchOverlayFadeIn 220ms ease-out both;
+    }
+
+    .search-header-enter {
+        animation: searchPanelUp 320ms cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .search-filter-enter {
+        animation: searchSlideLeft 360ms cubic-bezier(.2, .8, .2, 1) 80ms both;
+    }
+
+    .search-content-enter {
+        animation: searchSlideRight 360ms cubic-bezier(.2, .8, .2, 1) 110ms both;
+    }
+
+    .search-item-enter {
+        animation: searchItemIn 360ms cubic-bezier(.2, .8, .2, 1) both;
+    }

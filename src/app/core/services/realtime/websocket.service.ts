@@ -2,16 +2,19 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Client, Message } from '@stomp/stompjs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Observable, Subject } from 'rxjs';
+import { SocketPayload } from '../../enum/socket-payload';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService implements OnDestroy {
   private stompClient!: Client;
-  
+
   // Trạm trung chuyển dữ liệu bằng RxJS để các component đăng ký tiêu thụ
   private walletNotification$ = new Subject<any>();
   private bookingNotification$ = new Subject<any>();
+  private globalNotificationSource = new Subject<SocketPayload<any>>();
+  public globalNotification$ = this.globalNotificationSource.asObservable();
 
   constructor(private oauthService: OAuthService) {
     this.establishConnection();
@@ -23,11 +26,11 @@ export class WebsocketService implements OnDestroy {
   private establishConnection(): void {
     // ĐỔI SANG WSS NATIVE: Bỏ hoàn toàn SockJS, trỏ đúng endpoint /ws của Backend
     // Lưu ý: Đổi thành 'ws://' nếu môi trường dev của bác chạy HTTP thường
-    const brokerUrl = 'wss://localhost:8443/ws'; 
+    const brokerUrl = 'wss://localhost:8443/ws';
 
     this.stompClient = new Client({
       brokerURL: brokerUrl,
-      
+
       // Đút Token vào Headers để Spring Boot Security / WebSocket Interceptor tự phân tách Principal
       connectHeaders: {
         Authorization: `Bearer ${this.oauthService.getAccessToken()}`
@@ -37,7 +40,7 @@ export class WebsocketService implements OnDestroy {
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-      
+
       // Bắn log ra màn hình console để dev dễ theo dõi luồng tin nhắn
       debug: (str: string) => {
         console.log('[STOMP-NATIVE]:', str);
@@ -63,7 +66,7 @@ export class WebsocketService implements OnDestroy {
    * Đăng ký lắng nghe các kênh riêng tư (User-specific) từ Backend gửi về
    */
   private subscribeToPrivateChannels(): void {
-    
+
     // 1. Kênh biến động số dư Ví (Rút tiền, hoàn tiền, giải ngân)
     // Khớp 100% với hằng số SocketDestinations.WALLET_QUEUE (/queue/wallet) ở Backend
     this.stompClient.subscribe('/user/queue/wallet', (message: Message) => {
@@ -91,6 +94,11 @@ export class WebsocketService implements OnDestroy {
         }
       }
     });
+    this.stompClient.subscribe('/user/queue/notifications', (message: Message) => {
+      const payload = JSON.parse(message.body);
+      this.globalNotificationSource.next(payload);
+    });
+
   }
 
   /**

@@ -1,0 +1,27 @@
+/* A smooth, springing slide-in from the bottom right */
+  @keyframes toastPopIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Smooth linear progress */
+  @keyframes toastShrink {
+    0% { width: 100%; }
+    100% { width: 0%; }
+  }
+
+  .toast-enter-anim {
+    /* The cubic-bezier gives it that crisp, modern snap */
+    animation: toastPopIn 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .toast-timer-line {
+    animation: toastShrink 4s linear forwards;
+    transform-origin: left;
+  }

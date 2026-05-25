@@ -5,15 +5,20 @@ import { UserHeaderResponse } from '../../../../core/models/response/user-header
 import { authCodeFlowConfig } from '../../../../core/configs/auth.config';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ClickOutsideDirective } from '../../../../shared/components/directives/click-outside.directive';
+import { NotificationMenu } from './components/notification-menu/notification-menu';
+import { MessageMenu } from './components/message-menu/message-menu';
 @Component({
   selector: 'app-user-profile',
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule,ClickOutsideDirective, NotificationMenu, MessageMenu],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
 export class UserProfile implements OnInit {
   userHeaderResponse!: UserHeaderResponse;
   isOpen = false;
+  isNotifOpen = false;      // Của Notification Menu
+  isMessageOpen = false;
   private userService = inject(UserService);
   public userInfo = this.userService.userHeader;
   constructor(private eRef: ElementRef, private oauthService: OAuthService, private cdr: ChangeDetectorRef, private storage: OAuthStorage) {
@@ -49,15 +54,9 @@ export class UserProfile implements OnInit {
   isAdmin = computed(() => {
     return this.userRoles.includes('ROLE_ADMIN');
   });
-  toggleMenu() {
-    this.isOpen = !this.isOpen;
-  }
-  @HostListener('document:click', ['$event'])
-  clickout(event: Event) {
-    if (!this.eRef.nativeElement.contains(event.target)) {
-      this.isOpen = false;
-    }
-  }
+
+
+
   logout() {
     // 1. Lấy ID Token trực tiếp từ HybridStorage (đang nằm trong RAM)
     const idToken = this.oauthService.getIdToken();
@@ -78,5 +77,35 @@ export class UserProfile implements OnInit {
 
     // 4. Chuyển hướng thủ công sang Server xác thực
     window.location.href = logoutUrl;
+  }
+  toggleNotif() {
+    this.isNotifOpen = !this.isNotifOpen;
+    if (this.isNotifOpen) {
+      this.isOpen = false;
+      this.isMessageOpen = false;
+    }
+  }
+
+  // Hàm chuyển đổi Tin nhắn
+  toggleMessage() {
+    this.isMessageOpen = !this.isMessageOpen;
+    if (this.isMessageOpen) {
+      this.isOpen = false;
+      this.isNotifOpen = false;
+    }
+  }
+
+  // Cập nhật lại hàm toggleMenu cũ
+  toggleMenu() {
+    this.isOpen = !this.isOpen;
+    if (this.isOpen) {
+      this.isNotifOpen = false;
+      this.isMessageOpen = false;
+    }
+  }
+  closeAllPopups() {
+    this.isOpen = false;
+    this.isNotifOpen = false;
+    this.isMessageOpen = false;
   }
 }

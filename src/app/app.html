@@ -10,6 +10,7 @@
 
     @if (isInitialized()) {
       <router-outlet></router-outlet>
+      <app-toast></app-toast>
     } @else {
       <div class="loading-container" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
         <p>Đang tải ứng dụng...</p>

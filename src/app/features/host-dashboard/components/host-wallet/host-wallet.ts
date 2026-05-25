@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, NgZone, OnDestroy } from '@angular/core'; // <-- Nhớ import thêm NgZone ở đâyimport { DecimalPipe } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit, NgZone, OnDestroy, inject } from '@angular/core'; // <-- Nhớ import thêm NgZone ở đâyimport { DecimalPipe } from '@angular/common';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HostWalletInfo, WalletTransaction } from '../../../../core/models/response/wallet.response';
@@ -6,6 +6,7 @@ import { WalletService } from '../../../../core/services/wallet/wallet.service';
 import { ApiResponse } from '../../../../core/models/response/api.response';
 import { WebsocketService } from '../../../../core/services/realtime/websocket.service';
 import { Subscription } from 'rxjs';
+import { ToastService } from '../../../../core/services/toast/toast.service';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class HostWallet implements OnInit {
   pageSize: number = 10;
   totalPages: number = 0;
   totalElements: number = 0;
+  private toastService = inject(ToastService);
   private walletSocketSub!: Subscription;
 
   constructor(private walletService: WalletService, private cdr: ChangeDetectorRef, private websocketService: WebsocketService, private zone: NgZone) { }
@@ -71,7 +73,6 @@ export class HostWallet implements OnInit {
         this.totalPages = res.data.totalPages || 0;
         this.totalElements = res.data.totalElements || 0;
 
-        console.log('Lịch sử giao dịch:', this.transactions);
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Lỗi tải lịch sử:', err)
@@ -80,15 +81,15 @@ export class HostWallet implements OnInit {
 
   submitWithdraw() {
     if (!this.withdrawAmount || this.withdrawAmount < 50000) {
-      alert('Số tiền rút tối thiểu là 50,000 VNĐ');
+      this.toastService.error('Lỗi', 'Số tiền rút phải lớn hơn hoặc bằng 50,000 VND.');
       return;
     }
     if (this.withdrawAmount > this.walletInfo.availableBalance) {
-      alert('Số dư khả dụng không đủ!');
+      this.toastService.error('Lỗi', 'Số tiền rút vượt quá số dư khả dụng của bạn.');
       return;
     }
     if (!this.bankAccountInfo.trim()) {
-      alert('Vui lòng nhập thông tin ngân hàng!');
+     this.toastService.error('Lỗi', 'Vui lòng cung cấp thông tin tài khoản ngân hàng để rút tiền.');
       return;
     }
 
@@ -101,7 +102,7 @@ export class HostWallet implements OnInit {
 
     this.walletService.requestWithdraw(payload).subscribe({
       next: (res) => {
-        alert('Tạo lệnh rút tiền thành công!');
+        this.toastService.success('Thành công', 'Yêu cầu rút tiền của bạn đã được gửi đi và đang chờ xử lý bởi Admin.');
         this.withdrawAmount = null;
 
         // Cập nhật lại UI lập tức
@@ -111,7 +112,8 @@ export class HostWallet implements OnInit {
       error: (err) => {
         console.error(err);
         // Ưu tiên hiển thị message từ App Exception của Backend trả về
-        alert(err.error?.message || 'Có lỗi xảy ra khi tạo lệnh rút tiền.');
+       
+        this.toastService.error('Lỗi', err.error?.message || 'Có lỗi xảy ra khi tạo lệnh rút tiền.');
       },
       complete: () => {
         this.isLoading = false;

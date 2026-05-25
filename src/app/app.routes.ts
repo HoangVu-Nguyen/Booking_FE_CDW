@@ -33,6 +33,7 @@ import { Hosts } from './features/admin-dashboard/components/hosts/hosts';
 import { Dashboard } from './features/admin-dashboard/components/dashboard/dashboard';
 import { Portfolio } from './features/host-dashboard/components/portfolio/portfolio';
 import { CalendarPricing } from './features/host-dashboard/components/calendar-pricing/calendar-pricing';
+import { InvoiceHistory } from './features/profile/components/invoice-history/invoice-history';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -125,6 +126,10 @@ export const routes: Routes = [
           {
             path: 'trip/:code',
             component: MyTrip
+          },
+          {
+            path: 'invoices',
+            component: InvoiceHistory
           }
         ]
       }, {
