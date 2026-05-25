@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, ElementRef, HostListener, inject, OnInit } from '@angular/core';
 import { UserService } from '../../../../core/services/user/user.service';
 import { AuthConfig, OAuthService, OAuthStorage } from 'angular-oauth2-oidc';
 import { UserHeaderResponse } from '../../../../core/models/response/user-header.response';
 import { authCodeFlowConfig } from '../../../../core/configs/auth.config';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-user-profile',
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
@@ -15,7 +16,7 @@ export class UserProfile implements OnInit {
   isOpen = false;
   private userService = inject(UserService);
   public userInfo = this.userService.userHeader;
-  constructor(private eRef: ElementRef, private oauthService: OAuthService,  private cdr: ChangeDetectorRef, private storage: OAuthStorage) {
+  constructor(private eRef: ElementRef, private oauthService: OAuthService, private cdr: ChangeDetectorRef, private storage: OAuthStorage) {
 
   }
   ngOnInit(): void {
@@ -25,7 +26,7 @@ export class UserProfile implements OnInit {
     if (this.oauthService.hasValidAccessToken()) {
       if (!this.userInfo()) {
         this.userService.fetchHeaderInfo();
-            console.log(this.userInfo())
+        console.log(this.userInfo())
 
       }
 
@@ -33,6 +34,21 @@ export class UserProfile implements OnInit {
 
     }
   }
+  get userRoles(): string[] {
+    const claims = this.oauthService.getIdentityClaims() as any;
+    if (!claims) return [];
+
+    // Lưu ý: Nhớ console.log(claims) ra xem cấu trúc thực tế của Backend trả về
+    // Có thể là claims['roles'], claims['authorities'], hoặc claims['realm_access']?.['roles']
+    return claims['roles'] || [];
+  }
+  isHost = computed(() => {
+    return this.userRoles.includes('ROLE_HOST');
+  });
+
+  isAdmin = computed(() => {
+    return this.userRoles.includes('ROLE_ADMIN');
+  });
   toggleMenu() {
     this.isOpen = !this.isOpen;
   }

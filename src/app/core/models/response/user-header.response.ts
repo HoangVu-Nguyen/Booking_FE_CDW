@@ -5,5 +5,6 @@ export interface UserHeaderResponse {
     email:string;
     phoneNumber:string;
     createdAt:Date;
+    roles:string[];
 
 }

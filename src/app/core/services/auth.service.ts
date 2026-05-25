@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest, AuthResponse } from '../models/auth.model';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable({
   providedIn: 'root' // Service này có thể dùng ở bất cứ đâu
@@ -10,7 +11,7 @@ import { RegisterRequest, AuthResponse } from '../models/auth.model';
 export class AuthService {
   private readonly API_URL = 'https://localhost:8443/api/v1/auth'; 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private oauthService: OAuthService) {}
 
   // Hàm gọi đăng ký
   register(data: RegisterRequest): Observable<AuthResponse> {
@@ -28,5 +29,13 @@ export class AuthService {
       { withCredentials: true }
     );
   }
+  getRolesFromToken(): string[] {
+  // Lấy payload của token đã lưu trong RAM
+  const claims = this.oauthService.getIdentityClaims(); 
   
+  if (!claims) return [];
+
+  // Tùy cấu hình server mà key có thể là 'roles', 'realm_access.roles', hoặc 'authorities'
+  return claims['roles'] || []; 
+}
 }
