@@ -6,7 +6,8 @@ import { WebsocketService } from '../../../../core/services/realtime/websocket.s
 import { BookingService } from '../../../../core/services/booking/booking.service';
 import { HostBookingItemResponse } from '../../../../core/models/response/booking.response';
 import { BookingDetailModal } from '../booking-detail-modal/booking-detail-modal';
-
+import { ToastService } from '../../../../core/services/toast/toast.service';
+import {ConfirmationService} from "../../../../core/services/confirm/confirm.service";
 @Component({
   selector: 'app-booking-list',
   standalone: true,
@@ -30,7 +31,9 @@ export class BookingList implements OnInit, OnDestroy {
     private websocketService: WebsocketService,
     private cdr: ChangeDetectorRef,
     private zone: NgZone,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private toastService: ToastService,
+    private confirmationService: ConfirmationService
   ) { }
 
   ngOnInit(): void {
@@ -108,12 +111,17 @@ getStatusLabel(status: string): string {
 
   // --- API ACTIONS ---
   approveBooking(bookingCode: string): void {
-    if (confirm(`Bạn có chắc chắn muốn duyệt đơn hàng ${bookingCode}? Hệ thống sẽ gửi email thanh toán cho khách.`)) {
+
+
+    this.confirmationService.confirm(
+      'Xác nhận duyệt đơn',
+      `Bạn có chắc chắn muốn duyệt đơn ${bookingCode}? Phòng sẽ được chốt và email xác nhận sẽ được gửi cho khách.`,
+      () => {
       this.isLoading = true;
       this.bookingService.approveBooking(bookingCode).subscribe({
         next: (res) => {
           this.isLoading = false;
-          alert(res.message || 'Đã duyệt đơn và gửi email cho khách thành công!');
+          this.toastService.success('Duyệt đơn thành công', `Đơn ${bookingCode} đã được duyệt và email đã gửi cho khách.`);
           this.loadBookingData();
           if (this.selectedBooking?.bookingCode === bookingCode) {
             this.closeBookingDetails();
@@ -121,10 +129,11 @@ getStatusLabel(status: string): string {
         },
         error: (err) => {
           this.isLoading = false;
-          alert('Không thể duyệt đơn lúc này. Vui lòng thử lại!');
+          this.toastService.error('Duyệt đơn thất bại', `Không thể duyệt đơn ${bookingCode} lúc này. Vui lòng thử lại sau.`);
         }
       });
-    }
+    });
+    
   }
 
   rejectBooking(bookingCode: string): void {
@@ -135,7 +144,7 @@ getStatusLabel(status: string): string {
     this.bookingService.rejectBooking(bookingCode, reason).subscribe({
         next: (res) => {
           this.isLoading = false;
-          alert(res.message || 'Đã từ chối đơn và giải phóng phòng thành công!');
+          this.toastService.success('Từ chối đơn thành công', `Đơn ${bookingCode} đã được từ chối và phòng đã được giải phóng.`);
           this.loadBookingData();
           if (this.selectedBooking?.bookingCode === bookingCode) {
             this.closeBookingDetails();
@@ -143,7 +152,7 @@ getStatusLabel(status: string): string {
         },
         error: (err) => {
           this.isLoading = false;
-          alert('Không thể từ chối đơn lúc này!');
+          this.toastService.error('Từ chối đơn thất bại', `Không thể từ chối đơn ${bookingCode} lúc này. Vui lòng thử lại sau.`);
         }
     });
   }

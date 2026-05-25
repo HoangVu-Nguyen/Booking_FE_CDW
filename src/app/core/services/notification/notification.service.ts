@@ -56,6 +56,8 @@ export class NotificationService {
                 // this.handleWallet(payload.data);
                 break;
             case 'BOOKING_CONFIRMED':
+            case 'BOOKING_CANCELLED':
+            case 'BOOKING_REQUEST':
                 this.handleBooking(payload.data);
                 break;
             case 'NEW_MESSAGE':

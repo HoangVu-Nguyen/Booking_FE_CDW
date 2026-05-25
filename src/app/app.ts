@@ -7,10 +7,11 @@ import { authCodeFlowConfig } from './core/configs/auth.config';
 import { HybridStorage } from './core/configs/hybrid-storage';
 import { AuthService } from './core/services/auth.service';
 import {Toast} from './shared/components/toast/toast';
+import {Confirm} from "./shared/components/confirm/confirm";
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Toast],
+  imports: [RouterOutlet, Toast, Confirm],
   templateUrl: './app.html'
 })
 export class App implements OnInit {
