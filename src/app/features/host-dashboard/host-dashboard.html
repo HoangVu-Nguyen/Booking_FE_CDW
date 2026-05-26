@@ -26,6 +26,20 @@
                         class="material-symbols-outlined group-hover:scale-110 transition-transform">book_online</span>
                     <span class="font-semibold text-sm uppercase tracking-wider mt-0.5">Đặt phòng</span>
                 </a>
+
+                <a routerLink="/host-dashboard/inbox"
+                    routerLinkActive="bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-stone-200/50 !text-[#173124]"
+                    class="flex items-center justify-between px-6 py-4 text-stone-500 border border-transparent hover:text-[#173124] hover:bg-stone-200/50 rounded-2xl transition-all duration-300 group">
+                    <div class="flex items-center gap-4">
+                        <span class="material-symbols-outlined group-hover:scale-110 transition-transform">forum</span>
+                        <span class="font-semibold text-sm uppercase tracking-wider mt-0.5">Tin nhắn</span>
+                    </div>
+
+                    <span class="bg-rose-500 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                        3
+                    </span>
+                </a>
+
                 <a routerLink="/host-dashboard/wallet"
                     routerLinkActive="bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-stone-200/50 !text-[#173124]"
                     class="flex items-center gap-4 px-6 py-4 text-stone-500 border border-transparent hover:text-[#173124] hover:bg-stone-200/50 rounded-2xl transition-all duration-300 group">
@@ -159,7 +173,8 @@
                                 <p class="text-[10px] text-white/60 uppercase font-bold tracking-widest mb-1">Tổng tài
                                     sản quản lý</p>
                                 <h3 class="text-3xl font-black text-white tracking-tight">{{ data.totalProperties }}
-                                    <span class="text-lg text-white/60 font-bold">Căn</span></h3>
+                                    <span class="text-lg text-white/60 font-bold">Căn</span>
+                                </h3>
                             </div>
                         </div>
 

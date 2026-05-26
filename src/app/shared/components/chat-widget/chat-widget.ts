@@ -1,47 +1,55 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, computed, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ChatContext, ChatStateService } from '../../../core/services/chat/chat-state.service';
 
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './chat-widget.html',
-  styleUrls: ['./chat-widget.css'] // Có thể để trống
+  styleUrls: ['./chat-widget.css']
 })
 export class ChatWidget {
-  // Trạng thái mở/đóng khung chat
-  isOpen = signal<boolean>(false);
-  
-  // Tab hiện tại: 'host' hoặc 'group'
-  activeTab = signal<'host' | 'group'>('host');
-
-  // Input chat
+  public chatState = inject(ChatStateService);
   newMessage = signal<string>('');
 
-  // ----------------------------------------------------
-  // DỮ LIỆU HARDCODE (MOCK DATA) ĐỂ CHECK GIAO DIỆN
-  // ----------------------------------------------------
-  
-  hostMessages = signal([
-    { id: 1, senderName: 'Chủ nhà (Clyvasync Villa)', text: 'Chào bạn, cảm ơn bạn đã đặt phòng. Bạn có cần hỗ trợ gì thêm không?', time: '10:00', isMine: false, avatar: 'https://ui-avatars.com/api/?name=Host&background=173124&color=fff' },
-    { id: 2, senderName: 'Tôi', text: 'Chào anh/chị, em muốn hỏi có thể check-in sớm lúc 12h được không ạ?', time: '10:05', isMine: true, avatar: '' },
-    { id: 3, senderName: 'Chủ nhà (Clyvasync Villa)', text: 'Được bạn nhé, hôm đó phòng trống nên mình hỗ trợ check-in sớm miễn phí cho bạn nha.', time: '10:15', isMine: false, avatar: 'https://ui-avatars.com/api/?name=Host&background=173124&color=fff' }
+  currentConversation = computed(() => {
+    const context = this.chatState.activeContext();
+    const id = this.chatState.currentTargetId();
+
+    if (context === 'ADMIN') return this.chatState.adminConversation();
+    if (context === 'HOST') return this.chatState.hostConversations().find(c => c.id === id);
+    if (context === 'GROUP') return this.chatState.groupConversations().find(c => c.id === id);
+    return null;
+  });
+
+  // MOCK DATA TIN NHẮN (Tạm thời gộp chung, sau này bạn gọi API để set lại mảng này dựa trên currentConversation().id )
+  messages = signal([
+    { id: 1, senderName: 'Clyvasync', text: 'Xin chào! Tôi có thể giúp gì cho chuyến đi của bạn?', time: '10:00', isMine: false, avatar: '' },
+    { id: 2, senderName: 'Tôi', text: 'Tôi muốn hỏi về chính sách hủy phòng.', time: '10:05', isMine: true, avatar: '' }
   ]);
 
-  groupMessages = signal([
-    { id: 1, senderName: 'Hải Đăng', text: 'Mọi người ơi, mai mấy giờ tập trung ở cổng thế?', time: '20:00', isMine: false, avatar: 'https://ui-avatars.com/api/?name=HD&background=f59e0b&color=fff' },
-    { id: 2, senderName: 'Tôi', text: 'Chắc tầm 8h sáng nhé. Ai có mang loa bluetooth không?', time: '20:10', isMine: true, avatar: '' },
-    { id: 3, senderName: 'Thùy Linh', text: 'Mình có nè, để mai mình mang theo cho. Khỏi lo nha! 🎉', time: '20:15', isMine: false, avatar: 'https://ui-avatars.com/api/?name=TL&background=3b82f6&color=fff' }
-  ]);
-
-  // Các actions
-  toggleChat() {
-    this.isOpen.update(v => !v);
+  // Lắng nghe sự thay đổi của tab/id để giả lập load tin nhắn mới
+  constructor() {
+    effect(() => {
+      const current = this.currentConversation();
+      if (current) {
+         // TODO: Khi nối API, bạn sẽ gọi `this.chatService.getMessages(current.id).subscribe(...)` ở đây
+         console.log('Đã chuyển sang hội thoại:', current.name);
+      }
+    });
   }
 
-  setTab(tab: 'host' | 'group') {
-    this.activeTab.set(tab);
+  setTab(tab: ChatContext) {
+    this.chatState.activeContext.set(tab);
+    if (tab === 'HOST' && this.chatState.hostConversations().length > 0) {
+      this.chatState.currentTargetId.set(this.chatState.hostConversations()[0].id);
+    } else if (tab === 'GROUP' && this.chatState.groupConversations().length > 0) {
+      this.chatState.currentTargetId.set(this.chatState.groupConversations()[0].id);
+    } else if (tab === 'ADMIN') {
+      this.chatState.currentTargetId.set(0);
+    }
   }
 
   sendMessage() {
@@ -57,14 +65,7 @@ export class ChatWidget {
       avatar: ''
     };
 
-    if (this.activeTab() === 'host') {
-      this.hostMessages.update(msgs => [...msgs, newMsg]);
-    } else {
-      this.groupMessages.update(msgs => [...msgs, newMsg]);
-    }
-
+    this.messages.update(msgs => [...msgs, newMsg]);
     this.newMessage.set('');
-    
-    // Gợi ý nhỏ: Thường sau khi gửi sẽ scroll xuống bottom
   }
 }

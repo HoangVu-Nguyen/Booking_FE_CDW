@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Client, Message } from '@stomp/stompjs';
+import { Client, Message, StompSubscription } from '@stomp/stompjs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Observable, Subject } from 'rxjs';
 import { SocketPayload } from '../../enum/socket-payload';
@@ -15,6 +15,8 @@ export class WebsocketService implements OnDestroy {
   private bookingNotification$ = new Subject<any>();
   private globalNotificationSource = new Subject<SocketPayload<any>>();
   public globalNotification$ = this.globalNotificationSource.asObservable();
+  private currentChatSubscription?: StompSubscription;
+  private activeChatSource = new Subject<any>();
 
   constructor(private oauthService: OAuthService) {
     this.establishConnection();
@@ -98,6 +100,7 @@ export class WebsocketService implements OnDestroy {
       const payload = JSON.parse(message.body);
       this.globalNotificationSource.next(payload);
     });
+    
 
   }
 
@@ -122,6 +125,49 @@ export class WebsocketService implements OnDestroy {
     if (this.stompClient) {
       this.stompClient.deactivate();
       console.log('[STOMP-NATIVE] Đã ngắt kết nối WebSocket hoàn toàn.');
+    }
+  }
+  public subscribeToChatRoom(conversationId: number): void {
+    // 1. Nếu Client chưa connect xong thì không làm gì cả
+    if (!this.stompClient || !this.stompClient.connected) {
+      console.warn('STOMP chưa connect, không thể subscribe phòng chat.');
+      return;
+    }
+
+    // 2. HỦY KẾT NỐI phòng cũ (nếu đang ở phòng khác) để tránh nhận rác
+    if (this.currentChatSubscription) {
+      this.currentChatSubscription.unsubscribe();
+      console.log('Đã thoát phòng chat cũ.');
+    }
+
+    // 3. ĐĂNG KÝ phòng mới
+    const topic = `/topic/conversations/${conversationId}`;
+    console.log(`Đang vào phòng chat: ${topic}`);
+
+    this.currentChatSubscription = this.stompClient.subscribe(topic, (message: Message) => {
+      console.log(`Tin nhắn mới từ phòng ${conversationId}:`, message);
+      if (message.body) {
+        try {
+          console.log(message)
+          const payload = JSON.parse(message.body);
+          console.log(`💬 [TIN NHẮN MỚI TỪ PHÒNG ${conversationId}]:`, payload);
+          
+          // Đẩy data ra cho Inbox Component nhận (Thường data nằm trong payload.data nếu bạn bọc ApiResponse ở Backend)
+          this.activeChatSource.next(payload.data ? payload.data : payload); 
+        } catch (error) {
+          console.error('Lỗi parse gói tin Chat:', error);
+        }
+      }
+    });
+  }
+  public listenActiveChatMessages(): Observable<any> {
+    return this.activeChatSource.asObservable();
+  }
+  public leaveChatRoom(): void {
+    if (this.currentChatSubscription) {
+      this.currentChatSubscription.unsubscribe();
+      this.currentChatSubscription = undefined;
+      console.log('Đã thoát phòng chat.');
     }
   }
 }

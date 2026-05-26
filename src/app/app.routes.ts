@@ -34,6 +34,7 @@ import { Dashboard } from './features/admin-dashboard/components/dashboard/dashb
 import { Portfolio } from './features/host-dashboard/components/portfolio/portfolio';
 import { CalendarPricing } from './features/host-dashboard/components/calendar-pricing/calendar-pricing';
 import { InvoiceHistory } from './features/profile/components/invoice-history/invoice-history';
+import { Inbox } from './features/host-dashboard/components/inbox/inbox';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -152,6 +153,11 @@ export const routes: Routes = [
             path: 'calendar/:homestayId',
             component: CalendarPricing
 
+          },
+          {
+            path: 'inbox',
+            component: Inbox,
+            title: 'Hộp thư - Host Dashboard - Clyvasync'
           }
         ]
       }
