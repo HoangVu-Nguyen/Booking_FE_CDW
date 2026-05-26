@@ -8,10 +8,11 @@ import { HybridStorage } from './core/configs/hybrid-storage';
 import { AuthService } from './core/services/auth.service';
 import {Toast} from './shared/components/toast/toast';
 import {Confirm} from "./shared/components/confirm/confirm";
+import{ChatWidget} from "./shared/components/chat-widget/chat-widget";
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Toast, Confirm],
+  imports: [RouterOutlet, Toast, Confirm, ChatWidget],
   templateUrl: './app.html'
 })
 export class App implements OnInit {

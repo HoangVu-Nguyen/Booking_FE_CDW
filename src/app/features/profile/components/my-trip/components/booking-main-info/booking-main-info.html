@@ -38,6 +38,11 @@
                 <span class="material-symbols-outlined text-[18px]">block</span>
                 <span class="text-[12px] font-bold uppercase tracking-wide">Không thể hoàn tiền</span>
             </div>
+        }@else if(data.paymentStatus === 'PARTIALLY_REFUNDED') {
+            <div class="flex items-center gap-1.5 bg-purple-50 text-purple-700 px-3.5 py-2 rounded-full border border-purple-200 shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">keyboard_return</span>
+                <span class="text-[12px] font-bold uppercase tracking-wide">Một phần đã hoàn tiền</span>
+            </div>  
         }
              @else {
             <div class="flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3.5 py-2 rounded-full border border-amber-200 shadow-sm">

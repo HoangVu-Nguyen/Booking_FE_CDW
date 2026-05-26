@@ -8,9 +8,10 @@ import { CommonModule } from '@angular/common';
 import { ClickOutsideDirective } from '../../../../shared/components/directives/click-outside.directive';
 import { NotificationMenu } from './components/notification-menu/notification-menu';
 import { MessageMenu } from './components/message-menu/message-menu';
+import { MailMenu } from './components/mail-menu/mail-menu';
 @Component({
   selector: 'app-user-profile',
-  imports: [RouterModule, CommonModule,ClickOutsideDirective, NotificationMenu, MessageMenu],
+  imports: [RouterModule, CommonModule,ClickOutsideDirective, NotificationMenu, MessageMenu, MailMenu],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.css',
 })
