@@ -7,6 +7,7 @@ import { BookingService } from '../../core/services/booking/booking.service';
 import { ActivatedRoute, Router } from '@angular/router'; // ĐÃ IMPORT ROUTER
 import { CommonModule } from '@angular/common';
 import { switchMap } from 'rxjs/operators'; 
+import { ToastService } from '../../core/services/toast/toast.service';
 
 @Component({
   selector: 'app-checkout',
@@ -19,6 +20,7 @@ export class Checkout implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router); // INJECT ROUTER
   private bookingService = inject(BookingService);
+  private toast = inject(ToastService);
   
   public checkoutData = this.bookingService.checkoutData;
   public isProcessing = signal(false);
@@ -54,7 +56,7 @@ export class Checkout implements OnInit {
   onConfirmAndPay(): void {
     const contact = this.bookingService.contactInfo(); 
     if (!contact.guestName || !contact.guestPhone || !contact.guestEmail) {
-      alert("Vui lòng nhập đầy đủ thông tin người lưu trú!");
+      this.toast.error('Lỗi', 'Vui lòng nhập đầy đủ thông tin người lưu trú!');
       return;
     }
     
@@ -78,7 +80,7 @@ export class Checkout implements OnInit {
     if (!isRequestMode) {
       // LUỒNG THANH TOÁN (Áp dụng cho đơn đã duyệt AWAITING_PAYMENT hoặc phòng Instant)
       if (method === 'TRANSFER') {
-        alert("Tính năng chuyển khoản đang bảo trì!");
+        this.toast.error('Lỗi', 'Tính năng chuyển khoản đang bảo trì!');
         this.isProcessing.set(false);
         return;
       }
@@ -87,7 +89,7 @@ export class Checkout implements OnInit {
         switchMap(() => this.bookingService.getPaymentUrl(data.bookingCode, method))
       ).subscribe({
         next: (paymentUrl: string) => { window.location.href = paymentUrl; },
-        error: (err) => { this.isProcessing.set(false); alert('Lỗi kết nối thanh toán!'); }
+        error: (err) => { this.isProcessing.set(false); this.toast.error('Lỗi', 'Không thể khởi tạo thanh toán. Vui lòng thử lại!'); }
       });
 
     } else {
@@ -95,10 +97,10 @@ export class Checkout implements OnInit {
       this.bookingService.updateContactInfo(data.bookingCode, updatePayload).subscribe({
         next: () => {
           this.isProcessing.set(false);
-          alert('Đã gửi yêu cầu đặt phòng thành công! Vui lòng chờ Chủ nhà xác nhận.');
+          this.toast.success('Yêu cầu đã gửi', 'Vui lòng chờ Chủ nhà xác nhận!');
           this.router.navigate(['/']); 
         },
-        error: (err) => { this.isProcessing.set(false); alert('Không thể gửi yêu cầu!'); }
+        error: (err) => { this.isProcessing.set(false); this.toast.error('Lỗi', 'Không thể gửi yêu cầu. Vui lòng thử lại!'); }
       });
     }
   }

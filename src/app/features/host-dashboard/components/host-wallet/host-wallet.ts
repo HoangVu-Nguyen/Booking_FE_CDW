@@ -186,4 +186,14 @@ export class HostWallet implements OnInit {
     const end = (this.currentPage + 1) * this.pageSize;
     return end > this.totalElements ? this.totalElements : end;
   }
+  getTxColor(type: string): string {
+    const map: Record<string, string> = {
+        'WITHDRAWAL': 'text-stone-900',
+        'REFUND_DEDUCTION': 'text-stone-900',
+        'BOOKING_REVENUE': 'text-emerald-600',
+        'CANCELLATION_FEE_REVENUE': 'text-emerald-600'
+    };
+    return map[type] || 'text-stone-600';
+}// Thêm vào class Component
+
 }

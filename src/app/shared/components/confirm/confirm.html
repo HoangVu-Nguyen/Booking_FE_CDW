@@ -8,8 +8,7 @@
 
         <h2 class="text-xl font-extrabold text-gray-900 mb-3 text-center">{{ s.title }}</h2>
         
-        <p class="text-base text-gray-600 mb-8 text-center leading-relaxed">
-            {{ s.message }}
+        <p class="text-base text-gray-600 mb-8 text-center leading-relaxed" [innerHTML]="s.message | safeHtml">
         </p>
 
         <div class="flex gap-4">

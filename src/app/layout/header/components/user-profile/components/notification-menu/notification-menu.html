@@ -56,14 +56,14 @@
         <div class="max-h-[360px] overflow-y-auto custom-scrollbar p-2 bg-white">
 
             @for (item of filteredNotifs(); track item.id) {
-            <a [routerLink]="getNotificationConfig(item.type).link" (click)="onMarkAsRead(item.id)"
+            <a [routerLink]="getNotificationConfig(item.type, item.metadata).link" (click)="onMarkAsRead(item.id)"
                 class="group relative flex items-start gap-3.5 p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors mb-0.5 no-underline">
 
                 <div class="relative shrink-0 mt-0.5">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center"
-                        [ngClass]="getNotificationConfig(item.type).bg + ' ' + getNotificationConfig(item.type).color">
+                        [ngClass]="getNotificationConfig(item.type, item.metadata).bg + ' ' + getNotificationConfig(item.type, item.metadata).color">
                         <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1">
-                            {{ getNotificationConfig(item.type).icon }}
+                            {{ getNotificationConfig(item.type, item.metadata).icon }}
                         </span>
                     </div>
                     @if (!item.isRead) {

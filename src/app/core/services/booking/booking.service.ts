@@ -137,5 +137,19 @@ contactInfo = signal({
         }
         return this.apiService.put<ApiResponse<string>>(url, {});
     }
-   
+   /**
+     * Dành cho Khách (Guest) hoặc Chủ (Host): Xem trước thông tin tài chính trước khi xác nhận hủy
+     */
+    previewCancelBooking(bookingCode: string): Observable<ApiResponse<any>> {
+        // DTO trả về sẽ map với class CancelPreviewResponse (Backend)
+        // Gồm: totalPaid, refundAmount, penaltyFee, refundPolicyMessage
+        return this.apiService.get<ApiResponse<any>>(`/api/v1/bookings/${bookingCode}/cancel-preview`);
+    }
+
+    /**
+     * Dành cho Khách (Guest) hoặc Chủ (Host): Xác nhận hủy đơn đặt phòng chính thức
+     */
+    cancelBooking(bookingCode: string): Observable<ApiResponse<string>> {
+        return this.apiService.put<ApiResponse<string>>(`/api/v1/bookings/${bookingCode}/cancel`, {});
+    }
 }

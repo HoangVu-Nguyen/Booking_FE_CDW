@@ -17,7 +17,7 @@
             class="text-[13px] font-bold pb-4 -mb-[1px] whitespace-nowrap uppercase tracking-[0.15em] transition-colors"
             [class]="activeTab === 'PENDING' ? 'text-[#173124] border-b-2 border-[#173124]' : 'text-stone-400 hover:text-stone-800'">
             Đang chờ thanh toán
-            <span *ngIf="activeTab === 'PENDING'"
+            <span *ngIf="activeTab === 'AWAITING_PAYMENT'"
                 class="bg-[#173124] text-white px-2 py-0.5 rounded-full ml-1 text-[10px]">1</span>
         </button>
 

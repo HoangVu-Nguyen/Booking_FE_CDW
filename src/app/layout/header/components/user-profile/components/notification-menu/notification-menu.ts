@@ -73,7 +73,7 @@ export class NotificationMenu implements OnInit {
     });
   }
 // Định nghĩa cấu hình Icon và Route
-getNotificationConfig(type: string) {
+getNotificationConfig(type: string, metadata: any) {
     switch (type) {
         case 'SUCCESS':
         case 'BOOKING_CONFIRMED':
@@ -83,6 +83,8 @@ getNotificationConfig(type: string) {
             return { icon: 'error', color: 'text-rose-600', bg: 'bg-rose-50', link: null };
         case 'BOOKING_REQUEST':
             return { icon: 'schedule', color: 'text-amber-600', bg: 'bg-amber-50', link: '/host-dashboard/bookings' };
+        case 'BOOKING_AWAITING_PAYMENT':
+            return { icon: 'check_circle', color: 'text-blue-600', bg: 'bg-blue-50', link: `/checkout/${metadata.bookingCode}` };
         default:
             return { icon: 'notifications', color: 'text-blue-600', bg: 'bg-blue-50', link: null };
     }

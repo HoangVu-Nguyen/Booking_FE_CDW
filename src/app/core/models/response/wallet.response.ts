@@ -14,7 +14,7 @@ export interface WithdrawRequest {
   bankAccountInfo: string;
 }
 
-export type TransactionType = 'BOOKING_REVENUE' | 'ESCROW_RELEASE' | 'WITHDRAWAL' | 'REFUND_DEDUCTION';
+export type TransactionType = 'BOOKING_REVENUE' | 'ESCROW_RELEASE' | 'WITHDRAWAL' | 'REFUND_DEDUCTION' | 'CANCELLATION_FEE_REVENUE';
 export type TransactionStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 
 export interface WalletTransaction {
