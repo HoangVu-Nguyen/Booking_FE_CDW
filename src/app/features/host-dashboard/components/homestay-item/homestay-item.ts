@@ -76,7 +76,7 @@ export class HomestayItem {
   // Ví dụ: roomId 1 sẽ lấy màu 1, roomId 7 quay lại lấy màu 1.
   return confirmedColors[(roomId || 0) % confirmedColors.length];
 }
-  @Input() startDate: Date = new Date(2026, 4, 18); // Nhận ngày từ cha
+  @Input() startDate: Date = new Date(); // Nhận ngày từ cha
   weekDays: string[] = [];
 
   ngOnChanges() {

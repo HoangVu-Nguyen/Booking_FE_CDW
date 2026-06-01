@@ -3,7 +3,7 @@ import { AuthConfig } from 'angular-oauth2-oidc';
 export const authCodeFlowConfig: AuthConfig & { useIdTokenHintForLogout?: boolean } = {
    issuer: 'https://localhost:8443',
   //issuer: 'https://vcebook.io.vn',
-  clientId: 'clyvasync-client-id',
+  clientId: 'clyvasync-client',
 
   responseType: 'code',
 

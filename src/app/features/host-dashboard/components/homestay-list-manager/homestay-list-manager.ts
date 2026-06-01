@@ -14,7 +14,7 @@ export class HomestayListManager implements OnInit {
   
   // Data từ Service (Sử dụng Signal)
   portfolio = this.service.portfolioData;
-  currentStartDate: Date = new Date(2026, 4, 18); // Ngày bắt đầu hiện tại
+  currentStartDate: Date = new Date(); // Ngày bắt đầu hiện tại
 
   ngOnInit() {
     this.service.loadPortfolioTimeline(5, 2026).subscribe();
