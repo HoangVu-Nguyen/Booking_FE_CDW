@@ -24,7 +24,7 @@ export interface MessageResponse {
   content: string;
   type: 'TEXT' | 'IMAGE' | 'SYSTEM';
   time: string;
-  isMine: boolean;
+  mine: boolean;
   attachments: AttachmentResponse[];
 }
 
@@ -32,4 +32,9 @@ export interface SendMessageRequest {
   content: string;
   type: 'TEXT' | 'IMAGE' | 'SYSTEM';
   attachments?: { fileUrl: string; fileType: string }[];
+}
+export interface ChatHistoryResponse {
+  messages: MessageResponse[];
+  nextCursor: number | null; 
+  hasNext: boolean;         
 }

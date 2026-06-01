@@ -1,3 +1,5 @@
+import { ChatContext } from "../../services/chat/chat-state.service";
+
 export interface BookingInitResponse {
     bookingCode: string;
     bookingId: number;
@@ -36,4 +38,21 @@ export interface MiniTourInfor {
   count: number;
   startDate: string;
   startTime: string;
+}
+export interface Conversation {
+  id: number;
+  type: ChatContext;
+  name: string;
+  avatar: string;
+  lastMessage?: string;
+  unreadCount: number;
+  // THÊM THÔNG TIN BOOKING (Nếu có)
+  booking?: {
+    code: string;
+    propertyName: string;
+    image: string;
+    status: string; // VD: 'Sắp nhận phòng', 'Đang lưu trú'
+    dates?: string; // THÊM MỚI (Ví dụ: '28/05 - 30/05')
+    price?: string;
+  };
 }

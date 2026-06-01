@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnChanges, OnDestroy, OnInit, signal, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -18,6 +18,7 @@ import { RoomCard } from './components/room-card/room-card';
 import { HomestayService } from '../../../../core/services/homestay/homestay.service';
 import { BookingService } from '../../../../core/services/booking/booking.service';
 import { RoomService } from '../../../../core/services/room.service';
+import { ChatStateService } from '../../../../core/services/chat/chat-state.service';
 
 @Component({
   selector: 'app-homestay-detail',
@@ -39,7 +40,7 @@ import { RoomService } from '../../../../core/services/room.service';
   templateUrl: './homestay-detail.html',
   styleUrl: './homestay-detail.css',
 })
-export class HomestayDetail implements OnInit {
+export class HomestayDetail implements OnInit, OnChanges,OnDestroy {
   // 1. Kết nối trực tiếp State từ Services
   homestay = computed(() => this.homestayService.currentHomestay());
 
@@ -55,16 +56,33 @@ export class HomestayDetail implements OnInit {
   private bookingService = inject(BookingService);
   private roomService = inject(RoomService);
   private route = inject(ActivatedRoute);
-  constructor(
-
-  ) {
-    // Tự động load ngày đã đặt khi ID homestay thay đổi
+  private chatStateService = inject(ChatStateService);
+constructor() {
+    // 2. KÉO LOGIC CHAT VÀO ĐÂY: Tự động chạy mỗi khi Signal homestay() nhận data từ API
     effect(() => {
-      const id = this.homestay()?.id;
-      if (id) {
-        this.loadUnavailableDates(id);
+      const current = this.homestay();
+      if (current) {
+        // Chạy hàm lịch
+        this.loadUnavailableDates(current.id);
+        
+        // BƠM DATA VÀO WIDGET CHAT (Nhớ gọi hàm kiếu Signal là current.id hoặc current.name)
+        this.chatStateService.autoTargetHost.set({
+          id: current.id,
+          name: current.name,
+          avatar: current.imageUrls && current.imageUrls.length > 0
+            ? current.imageUrls[0]
+            : 'assets/images/homestay-placeholder.jpg'
+        });
+        
+        console.log('Đã cấu hình tự động chat với chủ nhà:', current.name);
       }
     }, { allowSignalWrites: true });
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    throw new Error('Method not implemented.');
+  }
+  ngOnDestroy() {
+    this.chatStateService.autoTargetHost.set(null);
   }
   checkInDate = this.bookingService.checkInDate;
   checkOutDate = this.bookingService.checkOutDate;
@@ -188,4 +206,5 @@ export class HomestayDetail implements OnInit {
       this.bookingService.searchGuests.set(newVal);
     }
   }
+
 }
