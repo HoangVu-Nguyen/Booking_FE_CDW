@@ -19,6 +19,7 @@ export class HomestayListManager implements OnInit {
   ngOnInit() {
     this.service.loadPortfolioTimeline(5, 2026).subscribe();
     console.log('Loaded Portfolio Data:', this.portfolio()?.homes);
+    this.onWeekChanged(0);
   }
 onWeekChanged(direction: number) {
   // Tạo date mới (Cộng trừ 7 ngày)
