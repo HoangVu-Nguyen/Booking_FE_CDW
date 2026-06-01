@@ -40,7 +40,7 @@ import { ChatStateService } from '../../../../core/services/chat/chat-state.serv
   templateUrl: './homestay-detail.html',
   styleUrl: './homestay-detail.css',
 })
-export class HomestayDetail implements OnInit, OnChanges,OnDestroy {
+export class HomestayDetail implements OnInit, OnChanges, OnDestroy {
   // 1. Kết nối trực tiếp State từ Services
   homestay = computed(() => this.homestayService.currentHomestay());
 
@@ -57,23 +57,24 @@ export class HomestayDetail implements OnInit, OnChanges,OnDestroy {
   private roomService = inject(RoomService);
   private route = inject(ActivatedRoute);
   private chatStateService = inject(ChatStateService);
-constructor() {
+  constructor() {
     // 2. KÉO LOGIC CHAT VÀO ĐÂY: Tự động chạy mỗi khi Signal homestay() nhận data từ API
     effect(() => {
       const current = this.homestay();
       if (current) {
         // Chạy hàm lịch
         this.loadUnavailableDates(current.id);
-        
+
         // BƠM DATA VÀO WIDGET CHAT (Nhớ gọi hàm kiếu Signal là current.id hoặc current.name)
         this.chatStateService.autoTargetHost.set({
-          id: current.id,
+          id: current.owner.id,
           name: current.name,
           avatar: current.imageUrls && current.imageUrls.length > 0
             ? current.imageUrls[0]
             : 'assets/images/homestay-placeholder.jpg'
         });
-        
+        console.log(this.chatStateService.autoTargetHost())
+
         console.log('Đã cấu hình tự động chat với chủ nhà:', current.name);
       }
     }, { allowSignalWrites: true });

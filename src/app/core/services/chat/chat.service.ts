@@ -24,7 +24,7 @@ export class ChatService {
   totalUnreadCount = signal<number>(0);
   nextCursor = signal<number | null>(null);
   hasNextMessages = signal<boolean>(false);
-
+isLoadingMessages = signal<boolean>(false);
   // ==========================================
   // 3. CÁC HÀM GỌI API & CẬP NHẬT SIGNAL
   // ==========================================
@@ -92,9 +92,12 @@ export class ChatService {
     this.apiService.post<ApiResponse<MessageResponse>>(`/api/v1/chat/conversations/${conversationId}/messages`, request)
       .subscribe({
         next: (res) => {
+          console.log(res)
           if (res.data) {
+             console.log(this.activeMessages())
             // 1. Thêm ngay tin nhắn vừa gửi vào cuối mảng để UI hiện lập tức
             this.activeMessages.update(msgs => [...msgs, res.data]);
+            console.log(this.activeMessages())
 
             // 2. Cập nhật lại danh sách Inbox (Đẩy phòng này lên Top và đổi dòng text preview)
             this.updateConversationSummaryLocal(conversationId, res.data);
@@ -153,5 +156,27 @@ export class ChatService {
       }
       return convs; // Nếu không tìm thấy thì giữ nguyên
     });
+  }
+  initHostConversation(targetUserId: number) {
+    
+    this.apiService.post<ApiResponse<{ conversationId: number }>>(`/api/v1/chat/conversations/init?targetUserId=${targetUserId}`, {})
+      .subscribe({
+        next: (res) => {
+          console.log(res)
+          if (res.data && res.data.conversationId) {
+            const realConversationId = res.data.conversationId;
+            
+            this.activeConversationId.set(realConversationId);
+            
+            this.loadChatHistory(realConversationId, null);
+            
+            this.loadConversations();
+          }
+        },
+        error: (err) => {
+          console.error('Lỗi khi khởi tạo phòng chat:', err);
+          // Tắt loading nếu có
+        }
+      });
   }
 }

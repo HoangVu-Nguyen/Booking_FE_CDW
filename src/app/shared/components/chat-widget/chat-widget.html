@@ -87,7 +87,7 @@
       </button>
     </div>
 
-    @if (currentConversation()?.booking; as booking) {
+    <!-- @if (currentConversation()?.booking; as booking) {
     <div (click)="viewBookingDetail()" class="mt-4 p-2.5 bg-white border border-[#173124]/10 rounded-[14px] shadow-[0_4px_12px_-4px_rgba(23,49,36,0.08)]
             flex items-start gap-3.5 cursor-pointer group hover:border-[#173124]/30 hover:shadow-[0_8px_16px_-6px_rgba(23,49,36,0.12)]
             transition-all duration-300 relative overflow-hidden">
@@ -109,19 +109,19 @@
           <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">event</span>{{ booking.dates || '28/05 - 30/05' }}</span>
         </div>
         <div class="flex items-center justify-between">
-          <p class="text-[12.5px] font-bold text-[#173124]">{{ booking.price || '1.200.000' }} ₫</p>
+          <p class="text-[12.5px] font-bold text-[#173124]">{{ booking || '1.200.000' }} ₫</p>
           <span class="text-[11px] font-semibold text-emerald-600/80 flex items-center group-hover:translate-x-1 transition-transform">Chi tiết <span class="material-symbols-outlined text-[16px]">chevron_right</span></span>
         </div>
       </div>
     </div>
-    }
+    } -->
   </header>
 
 <main #chatScroll
   (scroll)="onScroll($event)"
   class="flex-1 overflow-y-auto px-4 py-5 bg-[#f5f7f6] chat-scroll">
   
-  @if (chatState.isLoadingMessages() && chatState.activeMessages().length === 0) {
+  @if (chatService.isLoadingMessages() && chatService.activeMessages().length === 0) {
   <div class="h-full flex items-center justify-center">
     <div class="w-6 h-6 border-2 border-[#173124] border-t-transparent rounded-full animate-spin"></div>
   </div>
@@ -132,14 +132,14 @@
     <p class="text-[13px] font-medium">Chưa có cuộc hội thoại nào</p>
   </div>
   }
-  @else if (chatState.activeMessages().length === 0) {
+  @else if (chatService.activeMessages().length === 0) {
   <div class="h-full flex flex-col items-center justify-center text-stone-400 gap-2">
     <span class="material-symbols-outlined text-[40px] opacity-50">waving_hand</span>
     <p class="text-[13px] font-medium">Hãy gửi tin nhắn đầu tiên</p>
   </div>
   }
   @else {
-  @if (chatState.isLoadingMessages()) {
+  @if (chatService.isLoadingMessages()) {
     <div class="flex justify-center mb-4"><div class="w-4 h-4 border-2 border-[#173124] border-t-transparent rounded-full animate-spin"></div></div>
   }
 
@@ -148,7 +148,7 @@
   </div>
 
   <div class="flex flex-col gap-5 w-full">
-    @for (msg of chatState.activeMessages(); track msg.id) {
+    @for (msg of chatService.activeMessages(); track msg.id) {
     
     <div class="flex flex-col w-full" [ngClass]="msg.mine ? 'items-end' : 'items-start'">
       

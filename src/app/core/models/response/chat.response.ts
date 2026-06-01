@@ -1,13 +1,20 @@
+import { ChatContext } from "../../services/chat/chat-state.service";
+import { BookingDetails } from "./chat-detail.reponse";
+
 export interface ConversationSummaryResponse {
   id: number;
-  type: 'ADMIN' | 'HOST' | 'GROUP';
   targetName: string;
   targetAvatar: string;
-  lastMessage: string;
   lastMessageTime: string;
-  unreadCount: number;
   bookingStatus: string;
   propertyName: string;
+  booking?: BookingDetails[]
+  type: ChatContext;
+  name: string;
+  avatar: string;
+  
+  lastMessage?: string;
+  unreadCount: number;
 }
 
 export interface AttachmentResponse {
@@ -35,6 +42,6 @@ export interface SendMessageRequest {
 }
 export interface ChatHistoryResponse {
   messages: MessageResponse[];
-  nextCursor: number | null; 
-  hasNext: boolean;         
+  nextCursor: number | null;
+  hasNext: boolean;
 }

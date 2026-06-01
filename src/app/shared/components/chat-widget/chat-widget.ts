@@ -11,16 +11,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import {
-  ChatContext,
-  ChatStateService
-} from '../../../core/services/chat/chat-state.service';
-
-import {
-  SendMessageRequest
-} from '../../../core/models/response/chat.response';
-
+import { ChatContext, ChatStateService } from '../../../core/services/chat/chat-state.service';
 import { ChatService } from '../../../core/services/chat/chat.service';
+import { SendMessageRequest } from '../../../core/models/response/chat.response';
 
 @Component({
   selector: 'app-chat-widget',
@@ -31,7 +24,7 @@ import { ChatService } from '../../../core/services/chat/chat.service';
 })
 export class ChatWidget implements AfterViewChecked {
   public chatState = inject(ChatStateService);
-  private chatService = inject(ChatService);
+  public chatService = inject(ChatService);
   private router = inject(Router);
 
   @ViewChild('chatScroll') private chatScrollContainer?: ElementRef<HTMLElement>;
@@ -45,16 +38,26 @@ export class ChatWidget implements AfterViewChecked {
   private isPrependingOldMessages = false;
   private isProgrammaticScroll = false;
 
-  currentConversation = computed(() => {
-    const context = this.chatState.activeContext();
-    const id = this.chatState.currentTargetId();
+  // Lấy dữ liệu từ CHAT SERVICE
+currentConversation = computed(() => {
+  const context = this.chatState.activeContext();
+  const id = this.chatService.activeConversationId();
+  const auto = this.chatState.autoTargetHost(); // Lấy dữ liệu bạn vừa set
+  console.log(auto)
 
-    if (context === 'ADMIN') return this.chatState.adminConversation();
-    if (context === 'HOST') return this.chatState.hostConversations().find(c => c.id === id);
-    if (context === 'GROUP') return this.chatState.groupConversations().find(c => c.id === id);
+  // Ưu tiên 1: Nếu đang ở tab HOST và có dữ liệu "tạm" từ trang Homestay, hiện luôn nó!
+  if (context == 'HOST' && auto) {
+    return {
+      id: auto.id,
+      name: auto.name, 
+      avatar: auto.avatar,
+      type: 'HOST'
+    } as any;
+  }
 
-    return null;
-  });
+  // Ưu tiên 2: Lấy từ danh sách đã load được từ API
+  return this.chatService.conversations().find(c => c.id === id) || null;
+});
 
   ngAfterViewChecked(): void {
     const element = this.getScrollElement();
@@ -64,33 +67,27 @@ export class ChatWidget implements AfterViewChecked {
     const conversation = this.currentConversation();
     const conversationKey = `${context}-${conversation?.id ?? 'none'}`;
 
-    const messages = this.chatState.activeMessages();
+    // LẤY DỮ LIỆU TỪ CHAT SERVICE
+    const messages = this.chatService.activeMessages();
     const messageCount = messages.length;
 
-    // 1. Khi đổi phòng chat thì kéo xuống cuối 1 lần
     if (conversationKey !== this.lastConversationKey) {
       this.lastConversationKey = conversationKey;
       this.lastMessageCount = messageCount;
       this.shouldStickToBottom = true;
-
       this.scrollToBottomAfterRender();
       return;
     }
 
-    // 2. Khi đang prepend tin nhắn cũ thì tuyệt đối không auto scroll xuống đáy
     if (this.isPrependingOldMessages) {
       this.lastMessageCount = messageCount;
       return;
     }
 
-    // 3. Chỉ auto scroll khi có message mới và user đang ở gần đáy
     if (messageCount !== this.lastMessageCount) {
       const oldCount = this.lastMessageCount;
       this.lastMessageCount = messageCount;
-
-      const hasNewMessage = messageCount > oldCount;
-
-      if (hasNewMessage && this.shouldStickToBottom) {
+      if (messageCount > oldCount && this.shouldStickToBottom) {
         this.scrollToBottomAfterRender();
       }
     }
@@ -98,17 +95,16 @@ export class ChatWidget implements AfterViewChecked {
 
   onScroll(event: Event): void {
     const element = event.target as HTMLElement;
-
     if (this.isProgrammaticScroll) return;
 
     this.shouldStickToBottom = this.isNearBottom(element);
-
     const isAtTop = element.scrollTop <= 2;
 
+    // LẤY TRẠNG THÁI TỪ CHAT SERVICE
     if (
       isAtTop &&
-      this.chatState.hasNextMessages() &&
-      !this.chatState.isLoadingMessages() &&
+      this.chatService.hasNextMessages() &&
+      // Giả sử bạn thêm signal này vào ChatService
       !this.isPrependingOldMessages
     ) {
       this.loadOlderMessagesAndKeepPosition(element);
@@ -117,24 +113,21 @@ export class ChatWidget implements AfterViewChecked {
 
   private loadOlderMessagesAndKeepPosition(element: HTMLElement): void {
     this.isPrependingOldMessages = true;
-
     const oldScrollHeight = element.scrollHeight;
     const oldScrollTop = element.scrollTop;
 
-    this.chatState.loadMoreOldMessages();
+    // Gọi load từ ChatService
+    const id = this.chatService.activeConversationId();
+    const cursor = this.chatService.nextCursor();
+    if (id !== null && cursor) {
+      this.chatService.loadChatHistory(id, cursor);
+    }
 
-    /**
-     * Chờ Angular render xong danh sách message cũ.
-     * Dùng 2 lần requestAnimationFrame để chắc chắn DOM đã cập nhật chiều cao.
-     */
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const newScrollHeight = element.scrollHeight;
-
         this.isProgrammaticScroll = true;
-
         element.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
-
         requestAnimationFrame(() => {
           this.isProgrammaticScroll = false;
           this.isPrependingOldMessages = false;
@@ -145,31 +138,19 @@ export class ChatWidget implements AfterViewChecked {
   }
 
   private scrollToBottomAfterRender(): void {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.scrollToBottom();
-      });
-    });
+    requestAnimationFrame(() => requestAnimationFrame(() => this.scrollToBottom()));
   }
 
   private scrollToBottom(): void {
     const element = this.getScrollElement();
     if (!element) return;
-
     this.isProgrammaticScroll = true;
-
     element.scrollTop = element.scrollHeight;
-
-    requestAnimationFrame(() => {
-      this.isProgrammaticScroll = false;
-    });
+    requestAnimationFrame(() => this.isProgrammaticScroll = false);
   }
 
   private isNearBottom(element: HTMLElement): boolean {
-    const distanceToBottom =
-      element.scrollHeight - element.scrollTop - element.clientHeight;
-
-    return distanceToBottom < 160;
+    return (element.scrollHeight - element.scrollTop - element.clientHeight) < 160;
   }
 
   private getScrollElement(): HTMLElement | null {
@@ -178,61 +159,31 @@ export class ChatWidget implements AfterViewChecked {
 
   setTab(tab: ChatContext): void {
     this.chatState.activeContext.set(tab);
-
     this.shouldStickToBottom = true;
     this.lastConversationKey = null;
     this.lastMessageCount = 0;
-
-    if (tab === 'HOST') {
-      const autoHost = this.autoTargetHost();
-      const hosts = this.chatState.hostConversations();
-
-      if (autoHost && hosts.some(h => h.id === autoHost.id)) {
-        this.chatState.currentTargetId.set(autoHost.id);
-      } else {
-        this.chatState.currentTargetId.set(hosts.length > 0 ? hosts[0].id : null);
-      }
-    } else if (tab === 'GROUP') {
-      const groups = this.chatState.groupConversations();
-      this.chatState.currentTargetId.set(groups.length > 0 ? groups[0].id : null);
-    } else if (tab === 'ADMIN') {
-      this.chatState.currentTargetId.set(0);
-    }
-  }
-
-  private autoTargetHost() {
-    return this.chatState.autoTargetHost();
+    
+    this.chatService.activeConversationId.set(null);
   }
 
   sendMessage(): void {
     const text = this.newMessage().trim();
     if (!text) return;
 
-    const id = this.chatState.currentTargetId()
+    const id = this.chatService.activeConversationId();
     if (!id) return;
 
-    const request: SendMessageRequest = {
+    this.chatService.sendMessage(id, {
       content: text,
       type: 'TEXT',
       attachments: []
-    };
-
-    this.shouldStickToBottom = true;
-    console.log(id)
-
-    this.chatService.sendMessage(id, request);
+    });
 
     this.newMessage.set('');
-
-    this.scrollToBottomAfterRender();
+    this.shouldStickToBottom = true;
   }
 
   viewBookingDetail(): void {
-    const booking = this.currentConversation()?.booking;
-
-    if (booking?.code) {
-      this.chatState.isOpen.set(false);
-      this.router.navigate(['/booking', booking.code]);
-    }
+    
   }
 }
