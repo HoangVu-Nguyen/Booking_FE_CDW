@@ -3,6 +3,7 @@ import { ApiService } from '../api/api.service';
 import { ChatHistoryResponse, ConversationSummaryResponse, MessageResponse, SendMessageRequest } from '../../models/response/chat.response';
 import { ApiResponse } from '../../models/response/api.response';
 import { PageResponse } from '../../models/response/page.response';
+import { BookingContextInfo, ChatInitResponse } from '../../models/response/homestay-card.response';
 
 // Định nghĩa interface cho 1 cuộc hội thoại (Conversation)
 
@@ -24,7 +25,8 @@ export class ChatService {
   totalUnreadCount = signal<number>(0);
   nextCursor = signal<number | null>(null);
   hasNextMessages = signal<boolean>(false);
-isLoadingMessages = signal<boolean>(false);
+  isLoadingMessages = signal<boolean>(false);
+  activeBooking = signal<BookingContextInfo | null>(null);
   // ==========================================
   // 3. CÁC HÀM GỌI API & CẬP NHẬT SIGNAL
   // ==========================================
@@ -94,7 +96,7 @@ isLoadingMessages = signal<boolean>(false);
         next: (res) => {
           console.log(res)
           if (res.data) {
-             console.log(this.activeMessages())
+            console.log(this.activeMessages())
             // 1. Thêm ngay tin nhắn vừa gửi vào cuối mảng để UI hiện lập tức
             this.activeMessages.update(msgs => [...msgs, res.data]);
             console.log(this.activeMessages())
@@ -158,25 +160,55 @@ isLoadingMessages = signal<boolean>(false);
     });
   }
   initHostConversation(targetUserId: number) {
-    
-    this.apiService.post<ApiResponse<{ conversationId: number }>>(`/api/v1/chat/conversations/init?targetUserId=${targetUserId}`, {})
+    // 1. Đổi kiểu trả về thành ChatInitResponse
+    this.apiService.post<ApiResponse<ChatInitResponse>>(`/api/v1/chat/conversations/init?targetUserId=${targetUserId}`, {})
       .subscribe({
         next: (res) => {
-          console.log(res)
+          console.log('Dữ liệu phòng chat mới:', res);
+
           if (res.data && res.data.conversationId) {
-            const realConversationId = res.data.conversationId;
-            
-            this.activeConversationId.set(realConversationId);
-            
-            this.loadChatHistory(realConversationId, null);
-            
+            const { conversationId, name, avatar, booking } = res.data;
+            console.log(booking)
+
+            // 2. Set ID phòng chat hiện tại
+            this.activeConversationId.set(conversationId);
+
+            // 3. Set thông tin Booking để UI hiển thị thẻ đơn hàng
+            this.activeBooking.set(booking || null);
+
+            // 4. Update thông tin Host vào danh sách Cột 1 (Inbox) ngay lập tức để Header có tên
+            this.conversations.update(list => {
+              const exists = list.find(c => c.id === conversationId);
+              if (!exists) {
+                // Tạo một object ĐẦY ĐỦ các trường theo đúng interface
+                const newConv: ConversationSummaryResponse = {
+                  id: conversationId,
+                  targetName: name,         // Sửa 'name' thành 'targetName'
+                  targetAvatar: avatar,     // Sửa 'avatar' thành 'targetAvatar'
+                  lastMessage: 'Bắt đầu cuộc trò chuyện',
+                  unreadCount: 0,
+                  type: 'HOST',
+                  lastMessageTime: new Date().toISOString(), // Lấy giờ hiện tại
+                  bookingStatus: this.activeBooking()?.status || null, 
+                  propertyName: this.activeBooking()?.homestayName || null 
+                };
+
+                return [newConv, ...list];
+              }
+              return list; // Nếu có rồi thì giữ nguyên
+            });
+
+            // 5. Tải lịch sử tin nhắn
+            this.loadChatHistory(conversationId, null);
+
+            // 6. Có thể gọi loadConversations để đồng bộ lại danh sách chuẩn xác từ BE
             this.loadConversations();
           }
         },
         error: (err) => {
           console.error('Lỗi khi khởi tạo phòng chat:', err);
-          // Tắt loading nếu có
         }
       });
   }
+  
 }

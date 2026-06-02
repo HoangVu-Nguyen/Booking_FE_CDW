@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 
 import { ChatContext, ChatStateService } from '../../../core/services/chat/chat-state.service';
 import { ChatService } from '../../../core/services/chat/chat.service';
-import { SendMessageRequest } from '../../../core/models/response/chat.response';
+import { ConversationSummaryResponse, SendMessageRequest } from '../../../core/models/response/chat.response';
 
 @Component({
   selector: 'app-chat-widget',
@@ -37,27 +37,44 @@ export class ChatWidget implements AfterViewChecked {
   private shouldStickToBottom = true;
   private isPrependingOldMessages = false;
   private isProgrammaticScroll = false;
+  // Trạng thái đóng/mở của thẻ Booking
+  isBookingExpanded = signal<boolean>(false);
+  
+  // Hàm toggle
+  toggleBookingDetails(): void {
+    this.isBookingExpanded.set(!this.isBookingExpanded());
+  }
 
   // Lấy dữ liệu từ CHAT SERVICE
 currentConversation = computed(() => {
-  const context = this.chatState.activeContext();
-  const id = this.chatService.activeConversationId();
-  const auto = this.chatState.autoTargetHost(); // Lấy dữ liệu bạn vừa set
-  console.log(auto)
+    const context = this.chatState.activeContext();
+    const id = this.chatService.activeConversationId();
+    const auto = this.chatState.autoTargetHost(); // Lấy dữ liệu tạm từ trang Homestay
 
-  // Ưu tiên 1: Nếu đang ở tab HOST và có dữ liệu "tạm" từ trang Homestay, hiện luôn nó!
-  if (context == 'HOST' && auto) {
-    return {
-      id: auto.id,
-      name: auto.name, 
-      avatar: auto.avatar,
-      type: 'HOST'
-    } as any;
-  }
+    // Ưu tiên 1: Lấy từ danh sách đã load được từ API (Dữ liệu THẬT)
+    const realConv = this.chatService.conversations().find(c => c.id === id);
+    if (realConv) {
+      return realConv;
+    }
 
-  // Ưu tiên 2: Lấy từ danh sách đã load được từ API
-  return this.chatService.conversations().find(c => c.id === id) || null;
-});
+    // Ưu tiên 2: Nếu API đang quay (chưa có Data thật), thì lấy dữ liệu tạm ra làm "Bình phong"
+    if (context === 'HOST' && auto) {
+      return {
+        id: -1, // ID ảo vì chưa biết ID phòng thực sự
+        type: 'HOST',
+        targetName: auto.name,      // Map vào đúng trường của Interface
+        targetAvatar: auto.avatar,  // Map vào đúng trường của Interface
+        lastMessage: null,
+        lastMessageTime: null,
+        unreadCount: 0,
+        bookingStatus: null,
+        propertyName: null
+      } as ConversationSummaryResponse; // Ép kiểu cho chuẩn
+    }
+
+    // Nếu không có gì thì trả về null
+    return null;
+  });
 
   ngAfterViewChecked(): void {
     const element = this.getScrollElement();

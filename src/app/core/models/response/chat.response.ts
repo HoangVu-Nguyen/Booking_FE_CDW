@@ -1,22 +1,26 @@
 import { ChatContext } from "../../services/chat/chat-state.service";
-import { BookingDetails } from "./chat-detail.reponse";
 
 export interface ConversationSummaryResponse {
   id: number;
-  targetName: string;
-  targetAvatar: string;
-  lastMessageTime: string;
-  bookingStatus: string;
-  propertyName: string;
-  booking?: BookingDetails[]
-  type: ChatContext;
-  name: string;
-  avatar: string;
+  type: ChatContext;       // 'HOST' | 'ADMIN' | 'GROUP'
   
-  lastMessage?: string;
+  // Thông tin người chat cùng
+  targetName: string;      // Thay vì dùng 'name' và 'targetName' lẫn lộn
+  targetAvatar: string;    // Thay vì dùng 'avatar' và 'targetAvatar' lẫn lộn
+  
+  // Tin nhắn xem trước
+  lastMessage: string | null;
+  lastMessageTime: string | null;
   unreadCount: number;
+
+  // Dành cho UI hiển thị tag nhỏ dưới tên (nếu có)
+  propertyName: string | null;
+  bookingStatus: string | null;
 }
 
+// ==========================================
+// 2. DỮ LIỆU TIN NHẮN (Khung chat chính)
+// ==========================================
 export interface AttachmentResponse {
   id: number;
   fileUrl: string;
@@ -31,7 +35,7 @@ export interface MessageResponse {
   content: string;
   type: 'TEXT' | 'IMAGE' | 'SYSTEM';
   time: string;
-  mine: boolean;
+  mine: boolean; // Lưu ý: Trong HTML nhớ dùng msg.mine nhé
   attachments: AttachmentResponse[];
 }
 
@@ -40,6 +44,7 @@ export interface SendMessageRequest {
   type: 'TEXT' | 'IMAGE' | 'SYSTEM';
   attachments?: { fileUrl: string; fileType: string }[];
 }
+
 export interface ChatHistoryResponse {
   messages: MessageResponse[];
   nextCursor: number | null;
