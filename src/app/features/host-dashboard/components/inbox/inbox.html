@@ -30,18 +30,18 @@
       </button>
     </div>
 
-    <div class="flex-1 overflow-y-auto no-scrollbar">
+    <div class="flex-1 overflow-y-auto no-scrollbar relative">
       @for (conv of filteredConversations(); track conv.id) {
-        <button (click)="selectConversation(conv.id)" 
+        <button  (click)="selectConversation(conv.id, conv.targetUserId)"
                 class="w-full px-5 py-4 flex items-start gap-3 transition-colors text-left border-b border-stone-100 relative group"
-                [ngClass]="activeConversationId() === conv.id ? 'bg-stone-50' : 'hover:bg-stone-50/50'">
+                [ngClass]="chatService.activeConversationId() === conv.id ? 'bg-stone-50' : 'hover:bg-stone-50/50'">
           
-          @if (activeConversationId() === conv.id) {
+          @if (chatService.activeConversationId() === conv.id) {
             <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-[#173124]"></div>
           }
           
           <div class="relative shrink-0 mt-0.5">
-            <img [src]="conv.guestAvatar" class="w-11 h-11 rounded-full object-cover border border-stone-200">
+            <img [src]="conv.targetAvatar || 'https://ui-avatars.com/api/?name=Guest'" class="w-11 h-11 rounded-full object-cover border border-stone-200 bg-white">
             @if (conv.unreadCount > 0) {
               <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white"></div>
             }
@@ -50,39 +50,44 @@
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-baseline mb-0.5">
               <h5 class="text-[14px] font-bold truncate pr-2" [ngClass]="conv.unreadCount > 0 ? 'text-stone-900' : 'text-stone-800'">
-                {{ conv.guestName }}
+                {{ conv.targetName }}
               </h5>
               <span class="text-[11px] font-medium shrink-0" [ngClass]="conv.unreadCount > 0 ? 'text-emerald-600 font-bold' : 'text-stone-500'">
                 {{ conv.lastMessageTime }}
               </span>
             </div>
             
-            <p class="text-[12px] text-stone-500 mb-1.5">
-              {{ conv.booking.property }}
+            <p class="text-[12px] text-stone-500 mb-1.5 truncate">
+              {{ conv.propertyName || 'Khách vãng lai' }}
             </p>
             
             <p class="text-[13px] truncate" [ngClass]="conv.unreadCount > 0 ? 'text-stone-900 font-medium' : 'text-stone-500'">
-              {{ conv.lastMessage }}
+              {{ conv.lastMessage || 'Bắt đầu cuộc trò chuyện' }}
             </p>
           </div>
         </button>
       }
+      
+      @if (filteredConversations().length === 0) {
+         <div class="p-8 text-center text-stone-400 text-sm">Không tìm thấy cuộc hội thoại nào.</div>
+      }
     </div>
   </div>
 
+
   <div class="flex-1 flex flex-col bg-white relative border-r border-stone-200 min-w-0">
     
-    @if (activeConv(); as active) {
+    @if (activeConvSummary(); as active) {
       <header class="h-[70px] px-6 border-b border-stone-200 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-3">
           <div>
-            <h3 class="text-[16px] font-bold text-stone-900 tracking-tight">{{ active.guestName }}</h3>
+            <h3 class="text-[16px] font-bold text-stone-900 tracking-tight">{{ active.targetName }}</h3>
             <div class="flex items-center gap-2 mt-0.5 text-[12px] text-stone-500">
               <span class="inline-flex items-center gap-1 text-emerald-600 font-medium">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Trực tuyến
               </span>
               <span>·</span>
-              <span>Giờ địa phương: 14:30</span>
+              <span>Khách thuê</span>
             </div>
           </div>
         </div>
@@ -98,33 +103,33 @@
       </header>
 
       <main class="flex-1 overflow-y-auto p-6 bg-stone-50/50 chat-scroll">
-        <div class="flex justify-center mb-8">
-          <div class="px-4 py-2 bg-stone-200/50 rounded-lg text-center">
-            <p class="text-[11px] font-medium text-stone-500 uppercase tracking-wider mb-1">Hôm nay</p>
-            <p class="text-[12px] text-stone-600">Đơn đặt phòng đã được xác nhận. <a href="#" class="text-[#173124] font-semibold hover:underline">Xem chi tiết</a></p>
+        
+        @if (chatService.isLoadingMessages()) {
+          <div class="flex justify-center mb-4">
+            <div class="w-6 h-6 border-2 border-[#173124] border-t-transparent rounded-full animate-spin"></div>
           </div>
-        </div>
+        }
 
         <div class="flex flex-col gap-4">
-          @for (msg of active.messages; track msg.id) {
-            <div class="flex flex-col" [class.items-end]="msg.isMine" [class.items-start]="!msg.isMine">
+          @for (msg of chatService.activeMessages(); track msg.id) {
+            <div class="flex flex-col" [class.items-end]="msg.mine" [class.items-start]="!msg.mine">
               
-              <div class="flex items-end gap-2 max-w-[75%]" [class.flex-row-reverse]="msg.isMine">
-                @if (!msg.isMine) {
-                  <img [src]="active.guestAvatar" class="w-7 h-7 rounded-full object-cover shrink-0">
+              <div class="flex items-end gap-2 max-w-[75%]" [class.flex-row-reverse]="msg.mine">
+                @if (!msg.mine) {
+                  <img [src]="active.targetAvatar || 'https://ui-avatars.com/api/?name=Guest'" class="w-7 h-7 rounded-full object-cover shrink-0 border border-stone-200">
                 }
                 
                 <div class="px-4 py-2.5 text-[14px] leading-relaxed shadow-sm"
-                     [ngClass]="msg.isMine
+                     [ngClass]="msg.mine
                        ? 'bg-[#173124] text-white rounded-2xl rounded-br-sm'
                        : 'bg-white border border-stone-200 text-stone-800 rounded-2xl rounded-bl-sm'">
-                  <p class="whitespace-pre-line">{{ msg.text }}</p>
+                  <p class="whitespace-pre-line">{{ msg.content }}</p>
                 </div>
               </div>
               
-              <div class="mt-1 px-1 text-[11px] font-medium text-stone-400 flex items-center gap-1" [ngClass]="msg.isMine ? 'mr-0' : 'ml-9'">
+              <div class="mt-1 px-1 text-[11px] font-medium text-stone-400 flex items-center gap-1" [ngClass]="msg.mine ? 'mr-0' : 'ml-9'">
                 {{ msg.time }}
-                @if (msg.isMine) { <span class="material-symbols-outlined text-[14px] text-emerald-600">done_all</span> }
+                @if (msg.mine) { <span class="material-symbols-outlined text-[14px] text-emerald-600">done_all</span> }
               </div>
             </div>
           }
@@ -152,81 +157,99 @@
           </button>
         </form>
       </footer>
+    } @else {
+      <div class="flex-1 flex flex-col items-center justify-center text-stone-400 gap-3 bg-stone-50/50">
+        <span class="material-symbols-outlined text-[48px] opacity-20">forum</span>
+        <p class="text-[14px] font-medium">Chọn một cuộc hội thoại để bắt đầu</p>
+      </div>
     }
   </div>
 
-  @if (activeConv(); as active) {
-    <div class="hidden lg:flex w-[320px] xl:w-[350px] flex-col bg-stone-50 overflow-y-auto no-scrollbar shrink-0">
+
+  @if (chatService.activeConversationId()) {
+    <div class="hidden lg:flex w-[320px] xl:w-[350px] flex-col bg-stone-50 overflow-y-auto no-scrollbar shrink-0 border-l border-stone-200">
       
-      <div class="p-5 border-b border-stone-200 bg-white">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-[16px] font-bold text-stone-900">Chi tiết đặt phòng</h3>
-          <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-1 rounded-md"
-                [ngClass]="{
-                  'bg-blue-50 text-blue-700': active.status === 'PRE_ARRIVAL',
-                  'bg-emerald-50 text-emerald-700': active.status === 'IN_HOUSE',
-                  'bg-stone-100 text-stone-600': active.status === 'POST_DEPARTURE',
-                  'bg-rose-50 text-rose-700': active.status === 'CANCELLED'
-                }">
-            {{ active.status === 'PRE_ARRIVAL' ? 'Sắp đến' : active.status === 'IN_HOUSE' ? 'Đang lưu trú' : active.status === 'POST_DEPARTURE' ? 'Đã rời đi' : 'Đã hủy' }}
-          </span>
-        </div>
-
-        <div class="flex items-start gap-3">
-          <img [src]="active.booking.propertyImage" class="w-14 h-14 rounded-lg object-cover border border-stone-200 shrink-0">
-          <div>
-            <h4 class="text-[14px] font-semibold text-stone-900 leading-tight mb-1">{{ active.booking.property }}</h4>
-            <p class="text-[12px] text-stone-500 font-mono">{{ active.booking.code }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="p-5 border-b border-stone-200 bg-white">
-        <h4 class="text-[12px] font-bold text-stone-900 uppercase tracking-wider mb-4">Thời gian lưu trú</h4>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="border-l-2 border-emerald-500 pl-3">
-            <p class="text-[11px] text-stone-500 font-medium mb-1">NHẬN PHÒNG</p>
-            <p class="text-[14px] font-semibold text-stone-900">{{ active.booking.checkIn }}</p>
-            <p class="text-[12px] text-stone-500">14:00</p>
-          </div>
-          <div class="border-l-2 border-rose-500 pl-3">
-            <p class="text-[11px] text-stone-500 font-medium mb-1">TRẢ PHÒNG</p>
-            <p class="text-[14px] font-semibold text-stone-900">{{ active.booking.checkOut }}</p>
-            <p class="text-[12px] text-stone-500">12:00</p>
-          </div>
-        </div>
+      @if (chatService.activeBooking(); as booking) {
         
-        <div class="mt-5 flex items-center gap-2 text-[13px] text-stone-700 font-medium bg-stone-50 p-3 rounded-lg border border-stone-100">
-          <span class="material-symbols-outlined text-[18px] text-stone-400">group</span>
-          <span>{{ active.booking.guests }} Khách</span>
-        </div>
-      </div>
-
-      <div class="p-5 bg-white">
-        <h4 class="text-[12px] font-bold text-stone-900 uppercase tracking-wider mb-4">Thanh toán</h4>
-        
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-[13px] text-stone-600">Tổng tiền thu về</span>
-          <span class="text-[16px] font-bold text-emerald-700">{{ active.booking.totalPrice | number:'1.0-0' }} ₫</span>
-        </div>
-        
-        <div class="flex items-center justify-between mb-5">
-          <span class="text-[13px] text-stone-600">Trạng thái</span>
-          @if (active.booking.paymentStatus === 'PAID') {
-            <span class="text-[12px] font-semibold text-emerald-600 flex items-center gap-1">
-              <span class="material-symbols-outlined text-[16px]">check_circle</span> Đã thanh toán
+        <div class="p-5 border-b border-stone-200 bg-white">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-[16px] font-bold text-stone-900">Chi tiết đặt phòng</h3>
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">
+              {{ booking.status }}
             </span>
-          } @else {
-            <span class="text-[12px] font-semibold text-amber-600 flex items-center gap-1">
-              <span class="material-symbols-outlined text-[16px]">schedule</span> Chờ thanh toán
-            </span>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <div class="w-14 h-14 rounded-lg bg-stone-100 border border-stone-200 shrink-0 flex items-center justify-center text-stone-400">
+               <span class="material-symbols-outlined">real_estate_agent</span>
+            </div>
+            <div>
+              <h4 class="text-[14px] font-semibold text-stone-900 leading-tight mb-1">{{ booking.homestayName }}</h4>
+              <p class="text-[12px] text-stone-500 font-mono flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">tag</span>
+                {{ booking.bookingCode }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-5 border-b border-stone-200 bg-white">
+          <h4 class="text-[12px] font-bold text-stone-900 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-stone-400">calendar_month</span> Thời gian
+          </h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="border-l-2 border-emerald-500 pl-3">
+              <p class="text-[11px] text-stone-500 font-medium mb-1">NHẬN PHÒNG</p>
+              <p class="text-[14px] font-semibold text-stone-900">{{ booking.checkIn }}</p>
+            </div>
+            <div class="border-l-2 border-rose-500 pl-3">
+              <p class="text-[11px] text-stone-500 font-medium mb-1">TRẢ PHÒNG</p>
+              <p class="text-[14px] font-semibold text-stone-900">{{ booking.checkOut }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-5 bg-white flex-1">
+          <h4 class="text-[12px] font-bold text-stone-900 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-stone-400">payments</span> Thanh toán
+          </h4>
+          
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[13px] text-stone-600">Tổng tiền</span>
+            <span class="text-[16px] font-bold text-emerald-700">{{ booking.totalPrice | number:'1.0-0' }} ₫</span>
+          </div>
+
+          @if (booking.bookedTours && booking.bookedTours.length > 0) {
+            <div class="mt-4 pt-3 border-t border-dashed border-stone-200">
+              <p class="text-[11px] font-semibold text-stone-500 mb-2">DỊCH VỤ KÈM THEO</p>
+              <div class="flex flex-col gap-2">
+                @for (tour of booking.bookedTours; track tour.tourName) {
+                  <div class="flex justify-between items-start">
+                    <span class="text-[12px] text-stone-700 flex items-start gap-1">
+                      <span class="material-symbols-outlined text-[14px] text-emerald-600 mt-0.5">explore</span>
+                      {{ tour.tourName }}
+                    </span>
+                    <span class="text-[12px] font-medium text-stone-900 ml-2 whitespace-nowrap">{{ tour.price | number }} ₫</span>
+                  </div>
+                }
+              </div>
+            </div>
           }
+
+          <button class="w-full mt-6 py-2.5 bg-white border border-stone-300 rounded-lg text-[13px] font-semibold text-stone-700 hover:bg-stone-50 hover:text-stone-900 transition-colors shadow-sm">
+            Xem chi tiết đơn hàng
+          </button>
         </div>
 
-        <button class="w-full py-2.5 bg-white border border-stone-300 rounded-lg text-[13px] font-semibold text-stone-700 hover:bg-stone-50 hover:text-stone-900 transition-colors">
-          Xem chi tiết đơn hàng
-        </button>
-      </div>
+      } @else {
+        <div class="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white">
+          <div class="w-16 h-16 bg-stone-50 rounded-full flex items-center justify-center mb-4">
+            <span class="material-symbols-outlined text-[32px] text-stone-300">luggage</span>
+          </div>
+          <h4 class="text-[14px] font-bold text-stone-900 mb-1">Chưa có giao dịch</h4>
+          <p class="text-[12px] text-stone-500 leading-relaxed">Khách hàng này hiện chưa có đơn đặt phòng nào trên hệ thống.</p>
+        </div>
+      }
 
     </div>
   }

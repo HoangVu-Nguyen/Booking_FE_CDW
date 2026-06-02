@@ -7,6 +7,7 @@ export interface ConversationSummaryResponse {
   // Thông tin người chat cùng
   targetName: string;      // Thay vì dùng 'name' và 'targetName' lẫn lộn
   targetAvatar: string;    // Thay vì dùng 'avatar' và 'targetAvatar' lẫn lộn
+  targetUserId:number;
   
   // Tin nhắn xem trước
   lastMessage: string | null;

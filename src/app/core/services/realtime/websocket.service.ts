@@ -17,7 +17,8 @@ export class WebsocketService implements OnDestroy {
   public globalNotification$ = this.globalNotificationSource.asObservable();
   private currentChatSubscription?: StompSubscription;
   private activeChatSource = new Subject<any>();
-
+public inboxNotification$ = new Subject<any>();
+  public listenInboxStatus() { return this.inboxNotification$.asObservable(); }
   constructor(private oauthService: OAuthService) {
     this.establishConnection();
   }
@@ -100,7 +101,20 @@ export class WebsocketService implements OnDestroy {
       const payload = JSON.parse(message.body);
       this.globalNotificationSource.next(payload);
     });
-    
+    // Ném dòng này vào trong hàm subscribeToPrivateChannels() của WebsocketService bên Angular nhé:
+this.stompClient.subscribe('/user/queue/inbox', (message: Message) => {
+  if (message.body) {
+    try {
+      const payload = JSON.parse(message.body);
+      console.log('📬 [REALTIME INBOX]:', payload);
+      
+      // Đẩy data ra ngoài qua RxJS Subject để ChatService tiêu thụ
+      this.inboxNotification$.next(payload.data ? payload.data : payload);
+    } catch (error) {
+      console.error('Lỗi parse gói tin Inbox:', error);
+    }
+  }
+});
 
   }
 

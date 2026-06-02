@@ -33,5 +33,16 @@ export interface ChatInitResponse {
   conversationId: number;
   name: string;
   avatar: string;
+ 
   booking: BookingContextInfo | null; // Có thể null nếu user chưa có giao dịch nào với host
+}
+export interface InboxSummary {
+  id: number;           // Conversation ID
+  targetUserId: number; // Guest ID
+  guestName: string;
+  guestAvatar: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
+  status: string;       // Trạng thái đơn hàng (để hiện màu chữ/icon)
 }
