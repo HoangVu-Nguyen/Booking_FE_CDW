@@ -7,7 +7,7 @@ pipeline {
         IMAGE_TAG       = "${BUILD_NUMBER}"
         DOCKER_HUB_CRED = "docker-hub-credentials"
         
-        // CẤU HÌNH CHO EC2 FRONTEND MỚI (Đã điền đúng ID thật của bạn)
+        // CẤU HÌNH CHO EC2 FRONTEND MỚI
         TARGET_HOST     = "i-0b0f57367fe1bbcd8" 
         TARGET_CRED_ID  = "ec2-new-fe-key"       
     }
@@ -22,7 +22,6 @@ pipeline {
         stage('2. Build Docker Image') {
             steps {
                 script {
-                    // Ép Docker luôn build mới từ đầu, tránh kẹt cache bản lỗi cũ
                     sh "docker build --no-cache -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
@@ -42,10 +41,24 @@ pipeline {
         stage('4. Deploy FE sang EC2 Mới Qua Ống Ngầm') {
             steps {
                 script {
-                    // Sử dụng khóa private key để xác thực danh tính với Ubuntu
+                    // Tự động tải và cài đặt AWS CLI chính chủ trực tiếp bên trong vùng an toàn của Jenkins
+                    sh """
+                    mkdir -p /var/jenkins_home/aws-cli-bin
+                    if [ ! -f /var/jenkins_home/aws-cli-bin/aws ]; then
+                        echo "=== Tiến hành cấu hình bộ cài AWS CLI riêng cho Jenkins ==="
+                        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                        unzip -q awscliv2.zip || true
+                        ./aws/install --install-dir /var/jenkins_home/aws-cli-src --bin-dir /var/jenkins_home/aws-cli-bin --update || true
+                        rm -rf awscliv2.zip aws
+                    fi
+                    """
+
+                    // Gọi SSH Agent để lấy chìa khóa .pem xác thực với Ubuntu
                     sshagent([ "${TARGET_CRED_ID}" ]) {
-                        // Bổ sung ProxyCommand để ép lệnh SSH chui qua ống ngầm AWS SSM, bỏ qua việc tìm Port 22 truyền thống
+                        // Khai báo PATH dẫn thẳng tới thư mục chứa lệnh aws của riêng Jenkins
                         sh """
+                        export PATH=/var/jenkins_home/aws-cli-bin:\$PATH
+                        
                         ssh -o StrictHostKeyChecking=no \
                             -o ProxyCommand="aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p" \
                             ubuntu@${TARGET_HOST} '
@@ -73,7 +86,6 @@ pipeline {
         stage('5. Dọn dẹp máy Jenkins') {
             steps {
                 script {
-                    // Xóa bớt các image trung gian trên con EC2 cũ (máy chạy Jenkins) để giải phóng không gian
                     sh "docker image prune -f"
                 }
             }
