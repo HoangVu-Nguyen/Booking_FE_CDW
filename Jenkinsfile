@@ -7,7 +7,6 @@ pipeline {
         IMAGE_NAME      = "booking-fe"
         IMAGE_TAG       = "${BUILD_NUMBER}"
         
-        // ID credentials bạn vừa tạo ở Bước 1
         DOCKER_HUB_CRED = "docker-hub-credentials"
     }
 
@@ -21,7 +20,6 @@ pipeline {
         stage('2. Build Docker Image') {
             steps {
                 script {
-                    // Build định dạng tên chuẩn Docker Hub: user/image_name:tag
                     sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
