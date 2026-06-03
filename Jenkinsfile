@@ -8,8 +8,8 @@ pipeline {
         DOCKER_HUB_CRED = "docker-hub-credentials"
         
         // CẤU HÌNH CHO EC2 FRONTEND MỚI
-        TARGET_HOST     = "i-xxxxxxxxxxxxxxxxx" // ⚠️ Thay bằng Instance ID thật của EC2 Frontend mới (ví dụ: i-0abcd1234efgh5678)
-        TARGET_CRED_ID  = "ec2-new-fe-key"       // ⚠️ Tên SSH Credentials (chứa file .pem) bạn đã tạo ở Bước 2 trên Jenkins Web
+        TARGET_HOST     = "i-0b0f57367fe1bbcd8" 
+        TARGET_CRED_ID  = "ec2-new-fe-key"       
     }
 
     stages {
