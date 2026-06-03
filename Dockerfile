@@ -12,5 +12,5 @@ RUN npm run build
 # Stage 2: Cấu hình chạy Nginx
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build-step /app/dist/clyvasync-booking /usr/share/nginx/html
+COPY --from=build-step /app/dist/clyvasync-booking/browser /usr/share/nginx/html
 EXPOSE 80
