@@ -3,7 +3,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 
 export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
   // Chỉ đính kèm cho request tới Backend của bạn
-  if (req.url.includes('localhost:8443')) {
+  if (req.url.includes('vunguyen.tokyo')) {
     req = req.clone({
       withCredentials: true
     });
