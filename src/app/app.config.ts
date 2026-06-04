@@ -9,7 +9,7 @@ import { registerLocaleData } from '@angular/common';
 import localeVi from '@angular/common/locales/vi';
 registerLocaleData(localeVi);
 export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
-  if (req.url.includes(':8443')) {
+  if (req.url.includes('vunguyen.tokyo')) {
     req = req.clone({
       withCredentials: true
     });

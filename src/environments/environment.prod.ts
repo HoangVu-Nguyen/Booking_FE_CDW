@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://vcebook.io.vn'
+  apiBaseUrl: 'https://vunguyen.tokyo'
 };
