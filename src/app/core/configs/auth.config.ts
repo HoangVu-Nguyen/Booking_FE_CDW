@@ -25,8 +25,9 @@ export const authCodeFlowConfig: AuthConfig & { useIdTokenHintForLogout?: boolea
   disablePKCE: false,
   requireHttps: true, // Vì bạn đang dùng https://localhost:8443 nên hãy để true
 
-  // 3. Thêm cấu hình này để thư viện tự lấy ID Token từ storage
-  useIdTokenHintForLogout: true, 
+  // 3. Thêm cấu hình này để thư viện tự ấy ID Token từ storage
+  useIdTokenHintForLogout: false, 
+  clockSkewInSec: 3600,
 
   showDebugInformation: true,  
 };
