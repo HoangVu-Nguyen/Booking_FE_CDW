@@ -1,13 +1,13 @@
-import { 
-  Component, 
-  computed, 
-  inject, 
-  OnInit, 
-  signal, 
-  effect, 
-  ViewChild, 
-  ElementRef, 
-  AfterViewChecked 
+import {
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  effect,
+  ViewChild,
+  ElementRef,
+  AfterViewChecked
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,10 +15,12 @@ import { WebsocketService } from '../../../../core/services/realtime/websocket.s
 import { ChatService } from '../../../../core/services/chat/chat.service';
 import { ChatInput } from '../../../../shared/components/chat-input/chat-input';
 import { ChatSendPayload } from '../../../../core/models/file/file.model';
+import { FileService } from '../../../../core/services/file/file.service';
+import { ImageType } from '../../../../core/enum/image-type.enum';
 @Component({
   selector: 'app-inbox',
   standalone: true,
-  imports: [CommonModule, FormsModule,ChatInput],
+  imports: [CommonModule, FormsModule, ChatInput],
   templateUrl: './inbox.html',
   styleUrls: ['./inbox.css'],
 })
@@ -29,10 +31,11 @@ export class Inbox implements OnInit, AfterViewChecked {
 
   private websocketService = inject(WebsocketService);
   public chatService = inject(ChatService);
+  public fileService = inject(FileService);
 
   // --- BỘ MÁY SCROLL ---
   @ViewChild('chatScroll') private chatScrollContainer?: ElementRef<HTMLElement>;
-  
+
   private lastConversationKey: number | null = null;
   private lastMessageCount = 0;
   private shouldStickToBottom = true;
@@ -48,13 +51,13 @@ export class Inbox implements OnInit, AfterViewChecked {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   filteredConversations = computed(() => {
     return this.chatService.conversations();
   });
 
-  activeConvSummary = computed(() => 
+  activeConvSummary = computed(() =>
     this.chatService.conversations().find(c => c.id === this.chatService.activeConversationId())
   );
 
@@ -87,7 +90,7 @@ export class Inbox implements OnInit, AfterViewChecked {
     if (messageCount !== this.lastMessageCount) {
       const oldCount = this.lastMessageCount;
       this.lastMessageCount = messageCount;
-      
+
       if (messageCount > oldCount && this.shouldStickToBottom) {
         this.scrollToBottom(true);
       }
@@ -113,7 +116,7 @@ export class Inbox implements OnInit, AfterViewChecked {
 
     const id = this.chatService.activeConversationId();
     const cursor = this.chatService.nextCursor();
-    
+
     if (id !== null && cursor) {
       this.chatService.loadChatHistory(id, cursor);
     }
@@ -123,7 +126,7 @@ export class Inbox implements OnInit, AfterViewChecked {
         const newScrollHeight = element.scrollHeight;
         this.isProgrammaticScroll = true;
         element.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
-        
+
         requestAnimationFrame(() => {
           this.isProgrammaticScroll = false;
           this.isPrependingOldMessages = false;
@@ -164,37 +167,58 @@ export class Inbox implements OnInit, AfterViewChecked {
   selectConversation(convId: number, targetUserId: number) {
     this.chatService.activeConversationId.set(convId);
     this.websocketService.subscribeToChatRoom(convId);
-    
+
     // Đánh dấu lại để khi load xong nó tự cuộn xuống đáy
-    this.shouldStickToBottom = true; 
+    this.shouldStickToBottom = true;
 
     this.chatService.initHostConversation(targetUserId);
 
-    this.chatService.conversations.update(list => list.map(c => 
+    this.chatService.conversations.update(list => list.map(c =>
       c.id === convId ? { ...c, unreadCount: 0 } : c
     ));
   }
 
-  handleSendMessage(payload: ChatSendPayload) {
+
+  async handleSendMessage(payload: ChatSendPayload) {
     const currentId = this.chatService.activeConversationId();
     if (!currentId) return;
 
-    // Nếu sau này có files, ông gọi API upload ảnh trước, lấy URL rồi mới ném vào request
+    // KỊCH BẢN 1: CÓ ĐÍNH KÈM FILE/HÌNH ẢNH
+    if (payload.files && payload.files.length > 0) {
+      try {
+        // 1. Kích hoạt cỗ máy xử lý ngầm S3 bên trên, đợi nó trả về kết quả mảng objectKey
+        const s3Results = await this.fileService.uploadBatchFiles(payload.files,ImageType.CHAT);
 
-    this.chatService.sendMessage(currentId, {
-      content: payload.content,
-      type: 'TEXT',
-      attachments: [] // Xử lý payload.files ở đây sau này
-    });
-    this.newMessage.set('');
+        // 2. Map trúng mảng objectKey vào đúng cấu trúc DTO gửi tin nhắn của ông
+        const attachmentPayload = s3Results.map((s3, index) => ({
+          fileUrl: s3.objectKey, // Đút objectKey vào cột fileUrl dưới DB để sau này dễ dọn rác
+          fileType: payload.files![index].type
+        }));
 
-    // Ép hệ thống nhớ là phải bám đáy sau khi gửi
+        // 3. Tiến hành gọi hàm COMMIT gửi tin nhắn chốt hạ lên Backend
+        this.chatService.sendMessage(currentId, {
+          content: payload.content || 'Đã gửi tập tin đính kèm',
+          type: 'IMAGE', // Hoặc logic phân loại FILE dựa trên type của ông
+          attachments: attachmentPayload
+        });
+
+      } catch (error) {
+        console.error('❌ Lỗi quy trình upload S3 hoặc gửi tin:', error);
+        alert('Không thể gửi tệp tin, vui lòng kiểm tra lại!');
+      }
+
+    } else {
+      // KỊCH BẢN 2: TIN NHẮN CHỮ THƯỜNG KHÔNG CÓ FILE
+      this.chatService.sendMessage(currentId, {
+        content: payload.content,
+        type: 'TEXT',
+        attachments: []
+      });
+    }
     this.shouldStickToBottom = true;
 
     // Gọi ép cuộn mượt luôn (dự phòng trường hợp socket về chậm)
     setTimeout(() => this.scrollToBottom(true), 50);
-    // Ép cuộn xuống đáy ngay lập tức (Nếu ở file ChatWidget hoặc có viewChild)
-    // this.shouldStickToBottom = true;
-    // setTimeout(() => this.scrollToBottom(true), 50);
   }
+
 }
