@@ -17,6 +17,7 @@ import { ConversationSummaryResponse } from '../../../core/models/response/chat.
 import { WebsocketService } from '../../../core/services/realtime/websocket.service';
 import { ChatInput } from '../chat-input/chat-input';
 import { ChatSendPayload } from '../../../core/models/file/file.model';
+import { FileService } from '../../../core/services/file/file.service';
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
@@ -41,6 +42,7 @@ export class ChatWidget implements AfterViewChecked {
   private isPrependingOldMessages = false;
   private isProgrammaticScroll = false;
   private scrollTimeout: any; // Dùng để chặn sự kiện onScroll khi đang cuộn mượt
+  public fileService = inject(FileService);
 
   isBookingExpanded = signal<boolean>(false);
 
