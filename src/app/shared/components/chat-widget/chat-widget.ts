@@ -5,9 +5,7 @@ import {
   ViewChild,
   ElementRef,
   AfterViewChecked,
-  signal,
-  OnChanges,
-  SimpleChanges
+  signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +13,7 @@ import { Router } from '@angular/router';
 
 import { ChatContext, ChatStateService } from '../../../core/services/chat/chat-state.service';
 import { ChatService } from '../../../core/services/chat/chat.service';
-import { ConversationSummaryResponse, SendMessageRequest } from '../../../core/models/response/chat.response';
+import { ConversationSummaryResponse } from '../../../core/models/response/chat.response';
 import { WebsocketService } from '../../../core/services/realtime/websocket.service';
 
 @Component({
@@ -25,10 +23,7 @@ import { WebsocketService } from '../../../core/services/realtime/websocket.serv
   templateUrl: './chat-widget.html',
   styleUrls: ['./chat-widget.css']
 })
-export class ChatWidget implements AfterViewChecked,OnChanges {
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(this.chatService.activeMessages())
-  }
+export class ChatWidget implements AfterViewChecked {
   public chatState = inject(ChatStateService);
   public chatService = inject(ChatService);
   private router = inject(Router);
@@ -44,43 +39,35 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
   private shouldStickToBottom = true;
   private isPrependingOldMessages = false;
   private isProgrammaticScroll = false;
-  // Trạng thái đóng/mở của thẻ Booking
+  private scrollTimeout: any; // Dùng để chặn sự kiện onScroll khi đang cuộn mượt
+
   isBookingExpanded = signal<boolean>(false);
 
-  // Hàm toggle
   toggleBookingDetails(): void {
     this.isBookingExpanded.set(!this.isBookingExpanded());
   }
 
-  // Lấy dữ liệu từ CHAT SERVICE
   currentConversation = computed(() => {
     const context = this.chatState.activeContext();
     const id = this.chatService.activeConversationId();
-    const auto = this.chatState.autoTargetHost(); // Lấy dữ liệu tạm từ trang Homestay
+    const auto = this.chatState.autoTargetHost();
 
-    // Ưu tiên 1: Lấy từ danh sách đã load được từ API (Dữ liệu THẬT)
     const realConv = this.chatService.conversations().find(c => c.id === id);
-    if (realConv) {
-      return realConv;
-    }
-    console.log(realConv)
+    if (realConv) return realConv;
 
-    // Ưu tiên 2: Nếu API đang quay (chưa có Data thật), thì lấy dữ liệu tạm ra làm "Bình phong"
     if (context === 'HOST' && auto) {
       return {
-        id: -1, // ID ảo vì chưa biết ID phòng thực sự
+        id: -1,
         type: 'HOST',
-        targetName: auto.name,      // Map vào đúng trường của Interface
-        targetAvatar: auto.avatar,  // Map vào đúng trường của Interface
+        targetName: auto.name,      
+        targetAvatar: auto.avatar,  
         lastMessage: null,
         lastMessageTime: null,
         unreadCount: 0,
         bookingStatus: null,
         propertyName: null
-      } as ConversationSummaryResponse; // Ép kiểu cho chuẩn
+      } as ConversationSummaryResponse; 
     }
-
-    // Nếu không có gì thì trả về null
     return null;
   });
 
@@ -92,15 +79,15 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
     const conversation = this.currentConversation();
     const conversationKey = `${context}-${conversation?.id ?? 'none'}`;
 
-    // LẤY DỮ LIỆU TỪ CHAT SERVICE
     const messages = this.chatService.activeMessages();
     const messageCount = messages.length;
 
+    // 1. KHI ĐỔI PHÒNG CHAT: Cuộn xuống đáy ngay lập tức (Không mượt)
     if (conversationKey !== this.lastConversationKey) {
       this.lastConversationKey = conversationKey;
       this.lastMessageCount = messageCount;
       this.shouldStickToBottom = true;
-      this.scrollToBottomAfterRender();
+      this.scrollToBottom(false); 
       return;
     }
 
@@ -109,29 +96,25 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
       return;
     }
 
+    // 2. KHI CÓ TIN NHẮN MỚI (Nhận hoặc Gửi): Cuộn mượt mà (Smooth)
     if (messageCount !== this.lastMessageCount) {
       const oldCount = this.lastMessageCount;
       this.lastMessageCount = messageCount;
+      
       if (messageCount > oldCount && this.shouldStickToBottom) {
-        this.scrollToBottomAfterRender();
+        this.scrollToBottom(true); // Tham số true để bật Smooth scroll
       }
     }
   }
 
   onScroll(event: Event): void {
-    const element = event.target as HTMLElement;
-    if (this.isProgrammaticScroll) return;
+    if (this.isProgrammaticScroll) return; // Bỏ qua nếu hệ thống đang tự cuộn
 
+    const element = event.target as HTMLElement;
     this.shouldStickToBottom = this.isNearBottom(element);
     const isAtTop = element.scrollTop <= 2;
 
-    // LẤY TRẠNG THÁI TỪ CHAT SERVICE
-    if (
-      isAtTop &&
-      this.chatService.hasNextMessages() &&
-      // Giả sử bạn thêm signal này vào ChatService
-      !this.isPrependingOldMessages
-    ) {
+    if (isAtTop && this.chatService.hasNextMessages() && !this.isPrependingOldMessages) {
       this.loadOlderMessagesAndKeepPosition(element);
     }
   }
@@ -141,13 +124,11 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
     const oldScrollHeight = element.scrollHeight;
     const oldScrollTop = element.scrollTop;
 
-    // Gọi load từ ChatService
     const id = this.chatService.activeConversationId();
     const cursor = this.chatService.nextCursor();
+    
     if (id !== null && cursor) {
       this.chatService.loadChatHistory(id, cursor);
-      //this.wsService.subscribeToChatRoom(id);
-
     }
 
     requestAnimationFrame(() => {
@@ -155,6 +136,7 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
         const newScrollHeight = element.scrollHeight;
         this.isProgrammaticScroll = true;
         element.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
+        
         requestAnimationFrame(() => {
           this.isProgrammaticScroll = false;
           this.isPrependingOldMessages = false;
@@ -164,19 +146,32 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
     });
   }
 
-  private scrollToBottomAfterRender(): void {
-    requestAnimationFrame(() => requestAnimationFrame(() => this.scrollToBottom()));
-  }
-
-  private scrollToBottom(): void {
+  /**
+   * HÀM CUỘN CHUẨN XỊN: Hỗ trợ 2 chế độ Smooth và Instant
+   */
+  private scrollToBottom(smooth = false): void {
     const element = this.getScrollElement();
     if (!element) return;
+
     this.isProgrammaticScroll = true;
-    element.scrollTop = element.scrollHeight;
-    requestAnimationFrame(() => this.isProgrammaticScroll = false);
+
+    // Dọn dẹp timeout cũ nếu đang cuộn lở dở
+    if (this.scrollTimeout) clearTimeout(this.scrollTimeout);
+
+    // Lệnh cuộn chuẩn của trình duyệt
+    element.scrollTo({
+      top: element.scrollHeight,
+      behavior: smooth ? 'smooth' : 'auto'
+    });
+
+    // Khoá sự kiện người dùng cuộn tay (onScroll) trong lúc đang chạy animation mượt
+    this.scrollTimeout = setTimeout(() => {
+      this.isProgrammaticScroll = false;
+    }, smooth ? 300 : 50); // Mượt thì đợi 300ms, Thường thì đợi 50ms
   }
 
   private isNearBottom(element: HTMLElement): boolean {
+    // Nếu cách đáy dưới 160px thì hệ thống hiểu là đang ở đáy
     return (element.scrollHeight - element.scrollTop - element.clientHeight) < 160;
   }
 
@@ -189,7 +184,6 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
     this.shouldStickToBottom = true;
     this.lastConversationKey = null;
     this.lastMessageCount = 0;
-
     this.chatService.activeConversationId.set(null);
   }
 
@@ -205,11 +199,17 @@ export class ChatWidget implements AfterViewChecked,OnChanges {
       type: 'TEXT',
       attachments: []
     });
+    
     this.newMessage.set('');
-    this.shouldStickToBottom = true;
+    
+    // Ép hệ thống nhớ là phải bám đáy sau khi gửi
+    this.shouldStickToBottom = true; 
+    
+    // Gọi ép cuộn mượt luôn (dự phòng trường hợp socket về chậm)
+    setTimeout(() => this.scrollToBottom(true), 50);
   }
 
   viewBookingDetail(): void {
-
+    // Logic của ông
   }
 }
