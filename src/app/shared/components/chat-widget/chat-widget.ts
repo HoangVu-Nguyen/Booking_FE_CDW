@@ -15,11 +15,12 @@ import { ChatContext, ChatStateService } from '../../../core/services/chat/chat-
 import { ChatService } from '../../../core/services/chat/chat.service';
 import { ConversationSummaryResponse } from '../../../core/models/response/chat.response';
 import { WebsocketService } from '../../../core/services/realtime/websocket.service';
-
+import { ChatInput } from '../chat-input/chat-input';
+import { ChatSendPayload } from '../../../core/models/file/file.model';
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ChatInput],
   templateUrl: './chat-widget.html',
   styleUrls: ['./chat-widget.css']
 })
@@ -59,14 +60,14 @@ export class ChatWidget implements AfterViewChecked {
       return {
         id: -1,
         type: 'HOST',
-        targetName: auto.name,      
-        targetAvatar: auto.avatar,  
+        targetName: auto.name,
+        targetAvatar: auto.avatar,
         lastMessage: null,
         lastMessageTime: null,
         unreadCount: 0,
         bookingStatus: null,
         propertyName: null
-      } as ConversationSummaryResponse; 
+      } as ConversationSummaryResponse;
     }
     return null;
   });
@@ -87,7 +88,7 @@ export class ChatWidget implements AfterViewChecked {
       this.lastConversationKey = conversationKey;
       this.lastMessageCount = messageCount;
       this.shouldStickToBottom = true;
-      this.scrollToBottom(false); 
+      this.scrollToBottom(false);
       return;
     }
 
@@ -100,7 +101,7 @@ export class ChatWidget implements AfterViewChecked {
     if (messageCount !== this.lastMessageCount) {
       const oldCount = this.lastMessageCount;
       this.lastMessageCount = messageCount;
-      
+
       if (messageCount > oldCount && this.shouldStickToBottom) {
         this.scrollToBottom(true); // Tham số true để bật Smooth scroll
       }
@@ -126,7 +127,7 @@ export class ChatWidget implements AfterViewChecked {
 
     const id = this.chatService.activeConversationId();
     const cursor = this.chatService.nextCursor();
-    
+
     if (id !== null && cursor) {
       this.chatService.loadChatHistory(id, cursor);
     }
@@ -136,7 +137,7 @@ export class ChatWidget implements AfterViewChecked {
         const newScrollHeight = element.scrollHeight;
         this.isProgrammaticScroll = true;
         element.scrollTop = newScrollHeight - oldScrollHeight + oldScrollTop;
-        
+
         requestAnimationFrame(() => {
           this.isProgrammaticScroll = false;
           this.isPrependingOldMessages = false;
@@ -187,28 +188,29 @@ export class ChatWidget implements AfterViewChecked {
     this.chatService.activeConversationId.set(null);
   }
 
-  sendMessage(): void {
-    const text = this.newMessage().trim();
-    if (!text) return;
 
-    const id = this.chatService.activeConversationId();
-    if (!id) return;
+  handleSendMessage(payload: ChatSendPayload) {
+    const currentId = this.chatService.activeConversationId();
+    if (!currentId) return;
 
-    this.chatService.sendMessage(id, {
-      content: text,
+    // Nếu sau này có files, ông gọi API upload ảnh trước, lấy URL rồi mới ném vào request
+
+    this.chatService.sendMessage(currentId, {
+      content: payload.content,
       type: 'TEXT',
-      attachments: []
+      attachments: [] // Xử lý payload.files ở đây sau này
     });
-    
     this.newMessage.set('');
-    
+
     // Ép hệ thống nhớ là phải bám đáy sau khi gửi
-    this.shouldStickToBottom = true; 
-    
+    this.shouldStickToBottom = true;
+
     // Gọi ép cuộn mượt luôn (dự phòng trường hợp socket về chậm)
     setTimeout(() => this.scrollToBottom(true), 50);
+    // Ép cuộn xuống đáy ngay lập tức (Nếu ở file ChatWidget hoặc có viewChild)
+    // this.shouldStickToBottom = true;
+    // setTimeout(() => this.scrollToBottom(true), 50);
   }
-
   viewBookingDetail(): void {
     // Logic của ông
   }

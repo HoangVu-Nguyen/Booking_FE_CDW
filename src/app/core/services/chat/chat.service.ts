@@ -137,7 +137,9 @@ export class ChatService {
     this.apiService.get<ApiResponse<PageResponse<ConversationSummaryResponse>>>('/api/v1/chat/conversations', params)
       .subscribe({
         next: (res) => {
+
           if (res.data) this.conversations.set(res.data.content);
+          console.log(res.data)
         },
         error: (err) => console.error('Lỗi tải danh sách chat:', err)
       });

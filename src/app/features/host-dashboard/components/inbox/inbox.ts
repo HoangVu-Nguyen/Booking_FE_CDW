@@ -13,11 +13,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WebsocketService } from '../../../../core/services/realtime/websocket.service';
 import { ChatService } from '../../../../core/services/chat/chat.service';
-
+import { ChatInput } from '../../../../shared/components/chat-input/chat-input';
+import { ChatSendPayload } from '../../../../core/models/file/file.model';
 @Component({
   selector: 'app-inbox',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,ChatInput],
   templateUrl: './inbox.html',
   styleUrls: ['./inbox.css'],
 })
@@ -174,17 +175,26 @@ export class Inbox implements OnInit, AfterViewChecked {
     ));
   }
 
-  sendMessage() {
-    const text = this.newMessage().trim();
+  handleSendMessage(payload: ChatSendPayload) {
     const currentId = this.chatService.activeConversationId();
-    
-    if (!text || !currentId) return;
+    if (!currentId) return;
 
-    this.chatService.sendMessage(currentId, { content: text, type: 'TEXT' });
+    // Nếu sau này có files, ông gọi API upload ảnh trước, lấy URL rồi mới ném vào request
+
+    this.chatService.sendMessage(currentId, {
+      content: payload.content,
+      type: 'TEXT',
+      attachments: [] // Xử lý payload.files ở đây sau này
+    });
     this.newMessage.set('');
-    
-    // Gửi xong ép cuộn xuống đáy mượt mà
+
+    // Ép hệ thống nhớ là phải bám đáy sau khi gửi
     this.shouldStickToBottom = true;
+
+    // Gọi ép cuộn mượt luôn (dự phòng trường hợp socket về chậm)
     setTimeout(() => this.scrollToBottom(true), 50);
+    // Ép cuộn xuống đáy ngay lập tức (Nếu ở file ChatWidget hoặc có viewChild)
+    // this.shouldStickToBottom = true;
+    // setTimeout(() => this.scrollToBottom(true), 50);
   }
 }
