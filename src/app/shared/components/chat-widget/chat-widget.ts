@@ -18,6 +18,7 @@ import { WebsocketService } from '../../../core/services/realtime/websocket.serv
 import { ChatInput } from '../chat-input/chat-input';
 import { ChatSendPayload } from '../../../core/models/file/file.model';
 import { FileService } from '../../../core/services/file/file.service';
+import { ImageType } from '../../../core/enum/image-type.enum';
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
@@ -191,27 +192,46 @@ export class ChatWidget implements AfterViewChecked {
   }
 
 
-  handleSendMessage(payload: ChatSendPayload) {
+  async handleSendMessage(payload: ChatSendPayload) {
     const currentId = this.chatService.activeConversationId();
     if (!currentId) return;
 
-    // Nếu sau này có files, ông gọi API upload ảnh trước, lấy URL rồi mới ném vào request
+    // KỊCH BẢN 1: CÓ ĐÍNH KÈM FILE/HÌNH ẢNH
+    if (payload.files && payload.files.length > 0) {
+      try {
+        // 1. Kích hoạt cỗ máy xử lý ngầm S3 bên trên, đợi nó trả về kết quả mảng objectKey
+        const s3Results = await this.fileService.uploadBatchFiles(payload.files,ImageType.CHAT);
 
-    this.chatService.sendMessage(currentId, {
-      content: payload.content,
-      type: 'TEXT',
-      attachments: [] // Xử lý payload.files ở đây sau này
-    });
-    this.newMessage.set('');
+        // 2. Map trúng mảng objectKey vào đúng cấu trúc DTO gửi tin nhắn của ông
+        const attachmentPayload = s3Results.map((s3, index) => ({
+          fileUrl: s3.objectKey, // Đút objectKey vào cột fileUrl dưới DB để sau này dễ dọn rác
+          fileType: payload.files![index].type
+        }));
 
-    // Ép hệ thống nhớ là phải bám đáy sau khi gửi
+        // 3. Tiến hành gọi hàm COMMIT gửi tin nhắn chốt hạ lên Backend
+        this.chatService.sendMessage(currentId, {
+          content: payload.content || 'Đã gửi tập tin đính kèm',
+          type: 'IMAGE', // Hoặc logic phân loại FILE dựa trên type của ông
+          attachments: attachmentPayload
+        });
+
+      } catch (error) {
+        console.error('❌ Lỗi quy trình upload S3 hoặc gửi tin:', error);
+        alert('Không thể gửi tệp tin, vui lòng kiểm tra lại!');
+      }
+
+    } else {
+      // KỊCH BẢN 2: TIN NHẮN CHỮ THƯỜNG KHÔNG CÓ FILE
+      this.chatService.sendMessage(currentId, {
+        content: payload.content,
+        type: 'TEXT',
+        attachments: []
+      });
+    }
     this.shouldStickToBottom = true;
 
     // Gọi ép cuộn mượt luôn (dự phòng trường hợp socket về chậm)
     setTimeout(() => this.scrollToBottom(true), 50);
-    // Ép cuộn xuống đáy ngay lập tức (Nếu ở file ChatWidget hoặc có viewChild)
-    // this.shouldStickToBottom = true;
-    // setTimeout(() => this.scrollToBottom(true), 50);
   }
   viewBookingDetail(): void {
     // Logic của ông

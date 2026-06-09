@@ -4,9 +4,10 @@ import { CheckoutPolicies } from './components/checkout-policies/checkout-polici
 import { CheckoutPayment } from './components/checkout-payment/checkout-payment';
 import { CheckoutSummary } from './components/checkout-summary/checkout-summary';
 import { BookingService } from '../../core/services/booking/booking.service';
-import { ActivatedRoute, Router } from '@angular/router'; // ĐÃ IMPORT ROUTER
+import { PaymentService } from '../../core/services/payment/payment.service'; // <<< 1. INJECT THÊM SERVICE THANH TOÁN
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { switchMap } from 'rxjs/operators'; 
+import { switchMap } from 'rxjs/operators';
 import { ToastService } from '../../core/services/toast/toast.service';
 
 @Component({
@@ -18,10 +19,11 @@ import { ToastService } from '../../core/services/toast/toast.service';
 })
 export class Checkout implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router); // INJECT ROUTER
+  private router = inject(Router);
   private bookingService = inject(BookingService);
+  private paymentService = inject(PaymentService); // <<< 2. KHAI BÁO INJECT
   private toast = inject(ToastService);
-  
+
   public checkoutData = this.bookingService.checkoutData;
   public isProcessing = signal(false);
   public selectedPaymentMethod = signal<string>('VNPAY');
@@ -37,7 +39,6 @@ export class Checkout implements OnInit {
 
   private fetchCheckoutDetails(code: string): void {
     console.log('Đang đồng bộ dữ liệu đơn hàng từ DB cho mã:', code);
-
     this.bookingService.getBookingDetails(code).subscribe({
       next: (response) => {
         if (response.success && response.data) {
@@ -54,12 +55,12 @@ export class Checkout implements OnInit {
   }
 
   onConfirmAndPay(): void {
-    const contact = this.bookingService.contactInfo(); 
+    const contact = this.bookingService.contactInfo();
     if (!contact.guestName || !contact.guestPhone || !contact.guestEmail) {
       this.toast.error('Lỗi', 'Vui lòng nhập đầy đủ thông tin người lưu trú!');
       return;
     }
-    
+
     const data = this.checkoutData();
     const method = this.selectedPaymentMethod();
 
@@ -73,54 +74,81 @@ export class Checkout implements OnInit {
       specialRequests: contact.specialRequests
     };
 
-    // --- ĐIỀU KIỆN CHUẨN ĐỂ XÁC ĐỊNH LUỒNG ---
-    // Chỉ "Gửi yêu cầu" khi: Phòng KHÔNG đặt tức thì VÀ Đơn hàng ĐANG LÀ PENDING (lần đầu)
     const isRequestMode = this.isRequestMode;
 
     if (!isRequestMode) {
-      // LUỒNG THANH TOÁN (Áp dụng cho đơn đã duyệt AWAITING_PAYMENT hoặc phòng Instant)
-      if (method === 'TRANSFER') {
-        this.toast.error('Lỗi', 'Tính năng chuyển khoản đang bảo trì!');
-        this.isProcessing.set(false);
-        return;
-      }
+      // =================================================================
+      // 🚀 LUỒNG THANH TOÁN MỚI (Xử lý đa phương thức chuẩn chỉnh)
+      // =================================================================
 
+      // Đã tháo xích tính năng TRANSFER vì Backend nhà mình đã viết hàm xử lý PENDING ngon lành!
       this.bookingService.updateContactInfo(data.bookingCode, updatePayload).pipe(
-        switchMap(() => this.bookingService.getPaymentUrl(data.bookingCode, method))
+        // Gọi qua hàm confirmCheckout của PaymentService để hứng Object phân loại từ Backend
+        switchMap(() => this.paymentService.confirmCheckout({
+          bookingCode: data.bookingCode, // Bốc lấy ID vật lý (BIGINT) của Booking trong DB
+          paymentMethod: method
+        }))
       ).subscribe({
-        next: (paymentUrl: string) => { window.location.href = paymentUrl; },
-        error: (err) => { this.isProcessing.set(false); this.toast.error('Lỗi', 'Không thể khởi tạo thanh toán. Vui lòng thử lại!'); }
+        next: (response: any) => {
+          this.isProcessing.set(false);
+          const result = response.data; // Hứng cục PaymentConfirmResponse từ BE nhả về
+
+          switch (result.status) {
+
+            case 'SUCCEEDED':
+              this.toast.success('Thành công', result.message || 'Thanh toán hoàn tất!');
+
+              // ĐÃ SỬA: Truyền phẳng mã code vào Route để tạo ra URL dạng /payment-result/MÃ_CỦA_ÔNG
+              this.router.navigate(['/payment-result', data.bookingCode]);
+              break;
+
+            case 'REDIRECT':
+              // Chọn VNPAY / MOMO -> Bung lụa chuyển hướng trình duyệt sang cổng quét mã QR
+              window.location.href = result.redirectUrl;
+              break;
+
+            case 'PENDING':
+              // Chọn chuyển khoản thủ công -> Đá sang trang hiển thị số tài khoản kèm cú pháp chuyển khoản
+              this.toast.info('Đơn hàng chờ xử lý', result.message);
+              this.router.navigate(['/checkout/transfer-instructions'], { queryParams: { code: data.bookingCode } });
+              break;
+
+            default:
+              this.toast.error('Lỗi', 'Trạng thái xử lý thanh toán không hợp lệ.');
+          }
+        },
+        error: (err) => {
+          this.isProcessing.set(false);
+          this.toast.error('Lỗi', err.error?.message || 'Không thể xử lý thanh toán. Vui lòng thử lại!');
+        }
       });
 
     } else {
-      // LUỒNG GỬI YÊU CẦU (Chỉ chạy lần đầu)
+      // LUỒNG GỬI YÊU CẦU ĐẶT PHÒNG TRƯỚC (Giữ nguyên logic chuẩn của bác)
       this.bookingService.updateContactInfo(data.bookingCode, updatePayload).subscribe({
         next: () => {
           this.isProcessing.set(false);
           this.toast.success('Yêu cầu đã gửi', 'Vui lòng chờ Chủ nhà xác nhận!');
-          this.router.navigate(['/']); 
+          this.router.navigate(['/']);
         },
-        error: (err) => { this.isProcessing.set(false); this.toast.error('Lỗi', 'Không thể gửi yêu cầu. Vui lòng thử lại!'); }
+        error: (err) => {
+          this.isProcessing.set(false);
+          this.toast.error('Lỗi', 'Không thể gửi yêu cầu. Vui lòng thử lại!');
+        }
       });
     }
   }
+
   onPaymentMethodChange(method: string) {
     this.selectedPaymentMethod.set(method);
   }
-  // Thêm hàm này vào class Checkout
-// Trong class Checkout
-get isRequestMode(): boolean {
-  const data = this.checkoutData();
-  if (!data) return false;
 
-  // CÁCH FIX DỨT ĐIỂM:
-  // Nếu đã từng được duyệt (isApproved == true) thì DÙ STATUS LÀ GÌ
-  // cũng KHÔNG ĐƯỢC PHÉP vào luồng "Gửi yêu cầu" nữa.
-  if (data.approved === true) {
-      return false; 
+  get isRequestMode(): boolean {
+    const data = this.checkoutData();
+    if (!data) return false;
+    if (data.approved === true) {
+      return false;
+    }
+    return data.isInstantBook === false;
   }
-
-  // Nếu chưa từng được duyệt, mới check status PENDING để hiện nút Gửi yêu cầu
-  return data.isInstantBook === false;
-}
 }

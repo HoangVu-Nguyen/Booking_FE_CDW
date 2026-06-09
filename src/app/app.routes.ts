@@ -72,7 +72,7 @@ export const routes: Routes = [
         component: Checkout
       },
       {
-        path: 'payment-result',
+        path: 'payment-result/:code',
         component: PaymentResult
       },
       {

@@ -1,0 +1,75 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/40 backdrop-blur-md transition-all">
+  
+  <div class="bg-white p-8 rounded-[32px] border border-stone-100 max-w-md w-full shadow-[0_24px_60px_-15px_rgba(0,0,0,0.12)] transform transition-all flex flex-col gap-6">
+    
+    <div class="flex flex-col items-start gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-[#173124] flex items-center justify-center border border-emerald-100/50 shadow-sm">
+        <span class="material-symbols-outlined text-[22px]">shield_person</span>
+      </div>
+      <div>
+        <h3 class="font-headline text-xl font-bold text-stone-900 tracking-tight">Liên kết thẻ quốc tế</h3>
+        <p class="text-[13px] text-stone-500 mt-1 leading-relaxed">
+          Thông tin thẻ được mã hóa đầu cuối bởi <strong class="font-semibold text-stone-700">Stripe</strong>. Hệ thống hoàn toàn không lưu số thẻ của bạn.
+        </p>
+      </div>
+    </div>
+
+    <form (submit)="handleSubmit($event)" class="flex flex-col gap-5">
+      
+      <div class="flex flex-col gap-2">
+        <label class="block text-xs font-bold uppercase tracking-wider text-stone-600">
+          Tên in trên thẻ
+        </label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-4 text-stone-400 text-[18px] pointer-events-none">
+            person
+          </span>
+          <input type="text" [(ngModel)]="holderName" name="holderName" placeholder="NGUYEN VAN A" required
+            class="w-full h-11 border border-stone-200 rounded-xl pl-11 pr-4 text-sm font-semibold text-stone-800 bg-stone-50/40 outline-none transition-all duration-200 placeholder-stone-400 focus:bg-white focus:border-[#173124] focus:ring-4 focus:ring-[#173124]/5">
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label class="block text-xs font-bold uppercase tracking-wider text-stone-600">
+          Thông tin thẻ tín dụng
+        </label>
+        
+        <div class="relative flex flex-col justify-center min-h-11 border border-stone-200 rounded-xl px-4 py-3 bg-stone-50/40 transition-all duration-200 focus-within:bg-white focus-within:border-[#173124] focus-within:ring-4 focus-within:ring-[#173124]/5">
+          <div id="card-element" class="w-full"></div>
+        </div>
+        
+        @if (isProcessing() || true) {
+          <div id="card-errors" class="text-xs text-rose-500 font-semibold flex items-center gap-1.5 min-h-4 empty:hidden" role="alert">
+            </div>
+        }
+      </div>
+
+      <div class="text-[11.5px] text-stone-400 leading-normal bg-stone-50 p-3.5 rounded-xl border border-stone-100 flex items-start gap-2.5">
+        <span class="material-symbols-outlined text-[16px] text-stone-400 mt-0.5 shrink-0">lock</span>
+        <span>Bằng việc liên kết thẻ, bạn cho phép Clyvasync lưu trữ mã token an toàn để thực hiện các giao dịch thanh toán nhanh hoặc gia hạn tự động cho các dịch vụ tiếp theo.</span>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="close.emit()" [disabled]="isProcessing()"
+          class="flex-1 h-11 border border-stone-200 text-stone-600 font-bold text-xs rounded-xl hover:bg-stone-50 hover:text-stone-800 transition-all active:scale-[0.98] disabled:opacity-50">
+          Hủy bỏ
+        </button>
+        
+        <button type="submit" [disabled]="isProcessing()"
+          class="flex-1 h-11 bg-[#173124] text-white font-bold text-xs rounded-xl hover:bg-[#10261b] transition-all shadow-sm flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-70">
+          @if (isProcessing()) { 
+            <span class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span> 
+          }
+          <span>Liên kết thẻ</span>
+        </button>
+      </div>
+
+    </form>
+
+    <div class="flex items-center justify-center gap-1.5 text-[10px] font-bold text-stone-400 tracking-wider uppercase border-t border-stone-100 pt-4">
+      <span class="material-symbols-outlined text-[14px]">verified_user</span>
+      <span>Stripe Certified · PCI-DSS Compliant</span>
+    </div>
+
+  </div>
+</div>

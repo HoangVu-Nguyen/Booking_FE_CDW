@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { combineLatest } from 'rxjs'; // <<< IMPORT THẰNG NÀY ĐỂ GỘP LUỒNG
 import { PaymentHeader } from './components/payment-header/payment-header';
 import { JourneyOverview } from './components/journey-overview/journey-overview';
 import { EcoImpact } from './components/eco-impact/eco-impact';
@@ -17,47 +18,72 @@ import { PaymentService } from '../../../../core/services/payment/payment.servic
 })
 export class PaymentResult implements OnInit {
   private route = inject(ActivatedRoute);
-  private paymentService = inject(PaymentService); // Inject service gọi API bọc ApiService của bác
+  private paymentService = inject(PaymentService);
 
-  // Quản lý trạng thái màn hình tổng
   public status = signal<'loading' | 'success' | 'failed'>('loading');
-  
-  // Tín hiệu chứa toàn bộ dữ liệu phòng/tour sạch từ Backend trả về
   public bookingData = signal<any>(null);
 
   ngOnInit() {
-    // Lắng nghe URL trả về từ cổng thanh toán
-    this.route.queryParams.subscribe(params => {
-      let gateway = '';
+    // KÍCH HOẠT ĐI DÂY KÉP: Đọc song song cả Route param và Query param
+    combineLatest([this.route.params, this.route.queryParams]).subscribe({
+      next: ([params, queryParams]) => {
+        
+        // 1. Lấy mã đơn hàng từ trên khúc xương đường dẫn (:code)
+        const bookingCode = params['code']; 
+        
+        // 2. Nhận diện xem có phải là cú hích callback từ cổng ngoài không
+        let gateway = '';
+        if (queryParams['vnp_ResponseCode']) {
+          gateway = 'vnpay';
+        } else if (queryParams['resultCode']) {
+          gateway = 'momo';
+        }
 
-      // Tự động phân loại cổng dựa trên tham số đặc trưng của VNPAY hoặc MoMo
-      if (params['vnp_ResponseCode']) {
-        gateway = 'vnpay';
-      } else if (params['resultCode']) {
-        gateway = 'momo';
-      }
-
-      // Nếu nhận diện được cổng hợp lệ, kích hoạt luồng kiểm tra chữ ký số chống hack
-      if (gateway) {
-        this.paymentService.verifyPayment(gateway, params).subscribe({
-          next: (response) => {
-            // Check đúng cấu trúc ApiResponse thành công (đơn hợp lệ và đã PAID)
-            if (response && response.data) {
-              console.log(response)
-              this.bookingData.set(response.data); // Cục data gồm: bookingCode, totalPrice, roomName, tours...
-              this.status.set('success');
-            } else {
+        // =================================================================
+        // LUỒNG 1: NẾU CÓ DẤU VẾT CỦA VNPAY / MOMO CALLBACK
+        // =================================================================
+        if (gateway) {
+          // Bắn nguyên cục queryParams chứa mã băm chữ ký số về cho Backend kiểm tra chống hack
+          this.paymentService.verifyPayment(gateway, queryParams).subscribe({
+            next: (response) => {
+              if (response && response.data) {
+                this.bookingData.set(response.data); 
+                this.status.set('success');
+              } else {
+                this.status.set('failed');
+              }
+            },
+            error: (err) => {
+              console.error('Xác thực chữ ký số thất bại:', err);
               this.status.set('failed');
             }
-          },
-          error: (err) => {
-            // Sai chữ ký bảo mật hoặc giao dịch gốc bị lỗi/hủy, Backend quăng Exception lỗi
-            console.error('[PAYMENT ERROR] Lỗi xác thực giao dịch từ hệ thống:', err);
-            this.status.set('failed');
-          }
-        });
-      } else {
-        // Trường hợp URL bậy bạ, không chứa tham số kết quả thanh toán
+          });
+        } 
+        // =================================================================
+        // LUỒNG 2: NẾU LÀ STRIPE QUICK PAY ĐI QUA (Không có query, chỉ có code trên route)
+        // =================================================================
+        else if (bookingCode) {
+          this.paymentService.getPaymentSuccessDetails(bookingCode).subscribe({
+            next: (response) => {
+              if (response && response.data) {
+                this.bookingData.set(response.data);
+                this.status.set('success');
+              } else {
+                this.status.set('failed');
+              }
+            },
+            error: (err) => {
+              console.error('Lỗi kéo thông tin đơn thẻ Stripe:', err);
+              this.status.set('failed');
+            }
+          });
+        } 
+        // LUỒNG 3: URL TRỐNG KHÔNG HOẶC SAI ĐỊNH DẠNG
+        else {
+          this.status.set('failed');
+        }
+      },
+      error: (err) => {
         this.status.set('failed');
       }
     });

@@ -152,6 +152,7 @@ export class ChatService {
     this.apiService.get<ApiResponse<number>>('/api/v1/chat/unread-count')
       .subscribe({
         next: (res) => {
+          
           if (res.data !== undefined) this.totalUnreadCount.set(res.data);
         }
       });
