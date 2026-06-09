@@ -29,7 +29,7 @@ public inboxNotification$ = new Subject<any>();
   private establishConnection(): void {
     // ĐỔI SANG WSS NATIVE: Bỏ hoàn toàn SockJS, trỏ đúng endpoint /ws của Backend
     // Lưu ý: Đổi thành 'ws://' nếu môi trường dev của bác chạy HTTP thường
-    const brokerUrl = 'wss://vunguyen.tokyo/ws';
+    const brokerUrl = 'wss://localhost:8443/ws';
 
     this.stompClient = new Client({
       brokerURL: brokerUrl,
@@ -184,4 +184,5 @@ this.stompClient.subscribe('/user/queue/inbox', (message: Message) => {
       console.log('Đã thoát phòng chat.');
     }
   }
+  
 }

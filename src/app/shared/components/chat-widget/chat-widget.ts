@@ -5,7 +5,9 @@ import {
   ViewChild,
   ElementRef,
   AfterViewChecked,
-  signal
+  signal,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +16,7 @@ import { Router } from '@angular/router';
 import { ChatContext, ChatStateService } from '../../../core/services/chat/chat-state.service';
 import { ChatService } from '../../../core/services/chat/chat.service';
 import { ConversationSummaryResponse, SendMessageRequest } from '../../../core/models/response/chat.response';
+import { WebsocketService } from '../../../core/services/realtime/websocket.service';
 
 @Component({
   selector: 'app-chat-widget',
@@ -22,10 +25,14 @@ import { ConversationSummaryResponse, SendMessageRequest } from '../../../core/m
   templateUrl: './chat-widget.html',
   styleUrls: ['./chat-widget.css']
 })
-export class ChatWidget implements AfterViewChecked {
+export class ChatWidget implements AfterViewChecked,OnChanges {
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(this.chatService.activeMessages())
+  }
   public chatState = inject(ChatStateService);
   public chatService = inject(ChatService);
   private router = inject(Router);
+  private wsService = inject(WebsocketService);
 
   @ViewChild('chatScroll') private chatScrollContainer?: ElementRef<HTMLElement>;
 
@@ -39,14 +46,14 @@ export class ChatWidget implements AfterViewChecked {
   private isProgrammaticScroll = false;
   // Trạng thái đóng/mở của thẻ Booking
   isBookingExpanded = signal<boolean>(false);
-  
+
   // Hàm toggle
   toggleBookingDetails(): void {
     this.isBookingExpanded.set(!this.isBookingExpanded());
   }
 
   // Lấy dữ liệu từ CHAT SERVICE
-currentConversation = computed(() => {
+  currentConversation = computed(() => {
     const context = this.chatState.activeContext();
     const id = this.chatService.activeConversationId();
     const auto = this.chatState.autoTargetHost(); // Lấy dữ liệu tạm từ trang Homestay
@@ -56,6 +63,7 @@ currentConversation = computed(() => {
     if (realConv) {
       return realConv;
     }
+    console.log(realConv)
 
     // Ưu tiên 2: Nếu API đang quay (chưa có Data thật), thì lấy dữ liệu tạm ra làm "Bình phong"
     if (context === 'HOST' && auto) {
@@ -138,6 +146,8 @@ currentConversation = computed(() => {
     const cursor = this.chatService.nextCursor();
     if (id !== null && cursor) {
       this.chatService.loadChatHistory(id, cursor);
+      //this.wsService.subscribeToChatRoom(id);
+
     }
 
     requestAnimationFrame(() => {
@@ -179,7 +189,7 @@ currentConversation = computed(() => {
     this.shouldStickToBottom = true;
     this.lastConversationKey = null;
     this.lastMessageCount = 0;
-    
+
     this.chatService.activeConversationId.set(null);
   }
 
@@ -195,12 +205,11 @@ currentConversation = computed(() => {
       type: 'TEXT',
       attachments: []
     });
-
     this.newMessage.set('');
     this.shouldStickToBottom = true;
   }
 
   viewBookingDetail(): void {
-    
+
   }
 }

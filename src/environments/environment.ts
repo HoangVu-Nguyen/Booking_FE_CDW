@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  // apiBaseUrl: 'https://localhost:8443'
-   apiBaseUrl: 'https://vunguyen.tokyo'
+   apiBaseUrl: 'https://localhost:8443'
+  // apiBaseUrl: 'https://vunguyen.tokyo'
 };

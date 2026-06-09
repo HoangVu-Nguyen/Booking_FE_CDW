@@ -110,30 +110,71 @@
           </div>
         }
 
-        <div class="flex flex-col gap-4">
-          @for (msg of chatService.activeMessages(); track msg.id) {
-            <div class="flex flex-col" [class.items-end]="msg.mine" [class.items-start]="!msg.mine">
-              
-              <div class="flex items-end gap-2 max-w-[75%]" [class.flex-row-reverse]="msg.mine">
-                @if (!msg.mine) {
-                  <img [src]="active.targetAvatar || 'https://ui-avatars.com/api/?name=Guest'" class="w-7 h-7 rounded-full object-cover shrink-0 border border-stone-200">
+        <div class="flex flex-col gap-5 w-full">
+      @for (msg of chatService.activeMessages(); track msg.id) {
+
+      <div class="flex flex-col w-full" [ngClass]="msg.mine ? 'items-end' : 'items-start'">
+
+        @if (!msg.mine) {
+        <span class="text-[11px] text-stone-500 font-semibold mb-1 ml-11">
+          {{ msg.senderName }}
+        </span>
+        }
+
+        <div class="flex items-end gap-2 max-w-[85%]" [ngClass]="msg.mine ? 'flex-row-reverse' : 'flex-row'">
+
+          @if (!msg.mine) {
+          <div
+            class="w-9 h-9 rounded-full object-cover shrink-0 border-2 border-white shadow-sm bg-stone-200 flex items-center justify-center overflow-hidden">
+            
+            <img [src]="msg.senderAvatar || 'https://ui-avatars.com/api/?name=User'" class="w-full h-full object-cover">
+            
+          </div>
+          }
+
+          <div class="shadow-sm p-1.5" [ngClass]="msg.mine
+                  ? 'bg-gradient-to-br from-[#173124] to-[#1e402f] text-white rounded-[20px] rounded-br-sm border border-[#173124]/50 text-left'
+                  : 'bg-white text-stone-800 border border-[#173124]/10 rounded-[20px] rounded-bl-sm text-left'">
+
+            <div class="flex flex-col gap-1.5">
+              @if (msg.attachments && msg.attachments.length > 0) {
+              <div class="flex flex-wrap gap-1">
+                @for (att of msg.attachments; track att.id) {
+                @if (att.fileType === 'IMAGE') {
+                <img [src]="att.fileUrl"
+                  class="rounded-xl object-cover max-h-48 max-w-[240px] sm:max-w-[260px] cursor-pointer hover:opacity-95 transition-opacity border"
+                  [ngClass]="msg.mine ? 'border-white/10' : 'border-black/5'">
+                } @else {
+                <a [href]="att.fileUrl" target="_blank"
+                  class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-medium transition-colors"
+                  [ngClass]="msg.mine ? 'bg-white/10 hover:bg-white/20' : 'bg-stone-100 hover:bg-stone-200'">
+                  <span class="material-symbols-outlined text-[18px]">description</span> Tệp đính kèm
+                </a>
                 }
-                
-                <div class="px-4 py-2.5 text-[14px] leading-relaxed shadow-sm"
-                     [ngClass]="msg.mine
-                       ? 'bg-[#173124] text-white rounded-2xl rounded-br-sm'
-                       : 'bg-white border border-stone-200 text-stone-800 rounded-2xl rounded-bl-sm'">
-                  <p class="whitespace-pre-line">{{ msg.content }}</p>
-                </div>
+                }
               </div>
-              
-              <div class="mt-1 px-1 text-[11px] font-medium text-stone-400 flex items-center gap-1" [ngClass]="msg.mine ? 'mr-0' : 'ml-9'">
-                {{ msg.time }}
-                @if (msg.mine) { <span class="material-symbols-outlined text-[14px] text-emerald-600">done_all</span> }
-              </div>
+              }
+
+              @if (msg.content) {
+              <p class="whitespace-pre-line text-[14px] leading-relaxed px-2.5 py-1">
+                {{ msg.content }}
+              </p>
+              }
             </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 mt-1.5 px-1 text-[10px] font-medium text-stone-400"
+          [ngClass]="msg.mine ? 'mr-1' : 'ml-11'">
+          <span>{{ msg.time }}</span>
+          @if (msg.mine) {
+          <span class="material-symbols-outlined text-[14px] text-emerald-600">done_all</span>
           }
         </div>
+
+      </div>
+      }
+    </div>
       </main>
 
       <footer class="bg-white border-t border-stone-200 p-4 shrink-0">

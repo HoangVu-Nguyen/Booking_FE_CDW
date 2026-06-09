@@ -28,27 +28,30 @@ export class ChatService {
     // =========================================================================
     // KÊNH 1: Nhận tin nhắn Realtime trong phòng đang mở để hiển thị ra Khung Giữa
     // =========================================================================
-    this.wsService.listenActiveChatMessages().subscribe((newMsg: MessageResponse) => {
+    this.wsService.listenActiveChatMessages().subscribe((newMsg: any) => {
       if (newMsg && this.activeConversationId()) {
         
+        // 1. Kiểm tra xem tin nhắn đã có trên màn hình chưa để tránh trùng lặp
         const isExist = this.activeMessages().some(m => m.id === newMsg.id);
         
+        // 2. Lấy ID của chính mình (người đang ngồi trước màn hình) từ Token
+        const myCurrentUserId = this.getCurrentUserId(); 
+        console.log(newMsg)
+        console.log(myCurrentUserId)
 
-        const myCurrentUserId =  this.getCurrentUserId();
+        if (!isExist) {
+          // 3. ĐÃ FIX TRIỆT ĐỂ: Ghi đè lại thuộc tính mine/isMine dựa theo ID thực tế
+          // Nếu senderId của tin nhắn trùng với ID của mình thì mine = true, ngược lại là false
+          const formattedMsg = {
+            ...newMsg,
+            mine: newMsg.senderId === myCurrentUserId,   // Ăn theo biến 'mine' ở HTML của ông
+            isMine: newMsg.senderId === myCurrentUserId // Dự phòng nếu giao diện dùng 'isMine'
+          };
 
-      
-        const isNotMine = newMsg.senderId != myCurrentUserId; 
-
-        console.log(isNotMine)
-
-          console.log(this.activeMessages())
-          console.log(newMsg)
-        if (isNotMine) {
-          newMsg.mine = false;
-          if (!isExist) {
-            this.activeMessages.update(msgs => [...msgs, newMsg]);
-            console.log('✔ Đã nhận và hiển thị tin nhắn realtime thành công!');
-          }
+          // 4. Cập nhật mảng hiển thị bằng cục dữ liệu đã được nắn chuẩn
+          this.activeMessages.update(msgs => [...msgs, formattedMsg]);
+          
+          console.log(`[SOCKET] Đã nhận tin nhắn từ User ${newMsg.senderId}. Thực tế mine = ${formattedMsg.mine}`);
         }
       }
     });
@@ -59,6 +62,15 @@ export class ChatService {
     if (this.wsService.inboxNotification$) {
       this.wsService.inboxNotification$.subscribe((newMsg: any) => {
         if (newMsg) {
+            const myCurrentUserId = this.getCurrentUserId(); 
+
+          console.log(newMsg)
+           const formattedMsg = {
+            ...newMsg,
+            mine: newMsg.senderId === myCurrentUserId,   // Ăn theo biến 'mine' ở HTML của ông
+            isMine: newMsg.senderId === myCurrentUserId // Dự phòng nếu giao diện dùng 'isMine'
+          };
+          
           this.handleRealtimeIncomingMessage(newMsg, newMsg.conversationId);
         }
       });
@@ -174,18 +186,17 @@ export class ChatService {
   /**
    * Gửi tin nhắn và cập nhật Optimistic UI cục bộ ngay tắp lự
    */
+  /**
+   * Gửi tin nhắn lên Server (Để WebSocket tự lo việc hiển thị, không tự append ở đây)
+   */
   sendMessage(conversationId: number, request: SendMessageRequest) {
     this.apiService.post<ApiResponse<MessageResponse>>(`/api/v1/chat/conversations/${conversationId}/messages`, request)
       .subscribe({
         next: (res) => {
-          if (res.data) {
-            // 1. Đẩy ngay tin nhắn vừa tạo vào màn hình chat giữa
-            this.activeMessages.update(msgs => [...msgs, res.data]);
-
-            // 2. Cập nhật dòng preview chữ nhỏ ở Cột trái lên đầu trang mà không cần reload
-            this.updateConversationSummaryLocal(conversationId, res.data);
-          }
-        }
+          // Chỉ để LOG kiểm tra, TUYỆT ĐỐI không dùng lệnh update mảng tin nhắn ở đây nữa!
+          console.log('✈ Tin nhắn đã gửi lên server thành công, chờ WebSocket phản hồi để vẽ...');
+        },
+        error: (err) => console.error('Lỗi gửi tin nhắn:', err)
       });
   }
 
@@ -233,6 +244,9 @@ export class ChatService {
   /**
    * Hàm vạn năng kích hoạt từ trang Chi tiết Homestay hoặc trang Inbox khi click chuột chọn phòng
    */
+  /**
+   * Hàm vạn năng kích hoạt chọn phòng chat
+   */
   initHostConversation(targetUserId: number, shouldReloadList: boolean = false) {
     this.apiService.post<ApiResponse<ChatInitResponse>>(`/api/v1/chat/conversations/init?targetUserId=${targetUserId}`, {})
       .subscribe({
@@ -240,9 +254,15 @@ export class ChatService {
           if (res.data && res.data.conversationId) {
             const { conversationId, name, avatar, booking } = res.data;
 
+
+            // 1. Set ID và Booking cho giao diện
             this.activeConversationId.set(conversationId);
             this.activeBooking.set(booking || null);
 
+            // 2. >>> ĐÃ THÊM: KÍCH HOẠT BỘ ĐÀM WEBSOCKET CHO PHÒNG CHAT NÀY NGAY LẬP TỨC <<<
+            this.wsService.subscribeToChatRoom(conversationId);
+
+            // 3. Cập nhật danh sách Cột 1
             this.conversations.update(list => {
               const exists = list.find(c => c.id === conversationId);
               if (!exists) {
@@ -263,6 +283,7 @@ export class ChatService {
               return list; 
             });
 
+            // 4. Tải lịch sử tin nhắn cũ
             this.loadChatHistory(conversationId, null);
 
             if (shouldReloadList) {
@@ -288,10 +309,11 @@ export class ChatService {
       // Giải mã Base64 sang chuỗi JSON chu đáo (có xử lý ký tự đặc biệt của JWT)
       const payloadJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
       const payload = JSON.parse(payloadJson);
+      console.log(payload)
 
       // LƯU Ý: Bạn hãy check xem Backend của bạn cấu hình lưu ID ở trường nào nhé.
       // Thường Spring Security sẽ lưu ở trường 'id', 'userId' hoặc mặc định là 'sub'
-      return payload.id || payload.userId || payload.sub || 0;
+      return payload.user_id ;
     } catch (error) {
       console.error('Lỗi khi giải mã Access Token:', error);
       return 0;
