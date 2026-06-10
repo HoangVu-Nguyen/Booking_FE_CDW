@@ -1,3 +1,60 @@
+<style>
+    /* Hiệu ứng Metallic Gradient cho thẻ Visa (Emerald Green) */
+    .card-metallic-emerald {
+        background: linear-gradient(135deg, #173124 0%, #2d4739 50%, #173124 100%);
+        box-shadow: 0 4px 15px rgba(23, 49, 36, 0.2);
+    }
+
+    /* Hiệu ứng Metallic Gradient cho thẻ Mastercard (Obsidian Black) */
+    .card-metallic-obsidian {
+        background: linear-gradient(135deg, #1c1c19 0%, #31302d 50%, #1c1c19 100%);
+        box-shadow: 0 4px 15px rgba(28, 28, 25, 0.2);
+    }
+
+    /* Hiệu ứng Metallic Gradient cho các loại thẻ khác (Silver Gold lì xì) */
+    .card-metallic-silver {
+        background: linear-gradient(135deg, #a8a29e 0%, #d6d3d1 50%, #a8a29e 100%);
+        box-shadow: 0 4px 15px rgba(168, 162, 158, 0.2);
+        color: #1c1c19 !important;
+        /* Chữ tối trên nền sáng */
+    }
+
+    .card-metallic-silver .opacity-70,
+    .card-metallic-silver .opacity-40,
+    .card-metallic-silver .opacity-90,
+    .card-metallic-silver .material-symbols-outlined {
+        color: #1c1c19 !important;
+    }
+
+    .card-metallic-silver .material-symbols-outlined {
+        opacity: 0.5;
+    }
+
+    /* Hiệu ứng lấp lánh metallic nền */
+    .bg-shimmer-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3 Crown pattern custom SVG %3E%3C/svg%3E");
+        background-size: 100px 100px;
+    }
+
+    /* Tinh chỉnh thanh scrollbar */
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: #f5f5f4;
+        border-radius: 10px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: #d6d3d1;
+        border-radius: 10px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background: #a8a29e;
+    }
+</style>
 <div class="space-y-8 animate-fade-in pb-16 font-sans">
 
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-200 pb-5">
@@ -8,17 +65,20 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <button class="px-4 py-2 bg-white border border-stone-300 text-stone-700 text-sm font-semibold rounded-lg hover:bg-stone-50 transition-colors flex items-center gap-2 shadow-sm">
+            <button
+                class="px-4 py-2 bg-white border border-stone-300 text-stone-700 text-sm font-semibold rounded-lg hover:bg-stone-50 transition-colors flex items-center gap-2 shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">filter_list</span> Bộ lọc
             </button>
-            <button class="px-4 py-2 bg-[#173124] text-white text-sm font-semibold rounded-lg hover:bg-[#0a1610] transition-colors flex items-center gap-2 shadow-sm">
+            <button
+                class="px-4 py-2 bg-[#173124] text-white text-sm font-semibold rounded-lg hover:bg-[#0a1610] transition-colors flex items-center gap-2 shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">file_download</span> Xuất báo cáo
             </button>
         </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="bg-[#173124] p-6 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-[160px]">
+        <div
+            class="bg-[#173124] p-6 rounded-2xl shadow-sm relative overflow-hidden flex flex-col justify-between h-[160px]">
             <div class="absolute right-0 top-0 opacity-10 pointer-events-none">
                 <svg width="120" height="120" viewBox="0 0 100 100">
                     <path d="M0 100 L100 0 L100 100 Z" fill="white" />
@@ -30,7 +90,8 @@
             </div>
             <div class="relative z-10">
                 <div class="flex items-end gap-1.5">
-                    <h3 class="text-3xl font-bold text-white tracking-tight tabular-nums">{{ walletInfo.availableBalance | number:'1.0-0' }}</h3>
+                    <h3 class="text-3xl font-bold text-white tracking-tight tabular-nums">{{ walletInfo.availableBalance
+                        | number:'1.0-0' }}</h3>
                     <span class="text-lg font-medium text-emerald-200 mb-1">₫</span>
                 </div>
             </div>
@@ -39,11 +100,13 @@
         <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm flex flex-col justify-between h-[160px]">
             <div class="flex justify-between items-start">
                 <p class="text-sm text-stone-500 font-medium">Ký quỹ chờ giải ngân</p>
-                <span class="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded text-xs font-semibold">T+1</span>
+                <span
+                    class="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded text-xs font-semibold">T+1</span>
             </div>
             <div>
                 <div class="flex items-end gap-1.5 mb-1">
-                    <h3 class="text-2xl font-bold text-stone-900 tracking-tight tabular-nums">{{ walletInfo.pendingBalance | number:'1.0-0' }}</h3>
+                    <h3 class="text-2xl font-bold text-stone-900 tracking-tight tabular-nums">{{
+                        walletInfo.pendingBalance | number:'1.0-0' }}</h3>
                     <span class="text-base font-medium text-stone-500 mb-0.5">₫</span>
                 </div>
                 <p class="text-xs text-stone-500">Sẽ cộng vào khả dụng sau 24h</p>
@@ -57,7 +120,8 @@
             </div>
             <div>
                 <div class="flex items-end gap-1.5 mb-1">
-                    <h3 class="text-2xl font-bold text-stone-900 tracking-tight tabular-nums">{{ walletInfo.totalWithdrawn | number:'1.0-0' }}</h3>
+                    <h3 class="text-2xl font-bold text-stone-900 tracking-tight tabular-nums">{{
+                        walletInfo.totalWithdrawn | number:'1.0-0' }}</h3>
                     <span class="text-base font-medium text-stone-500 mb-0.5">₫</span>
                 </div>
                 <div class="flex items-center gap-1.5 text-xs font-medium text-emerald-600">
@@ -78,32 +142,104 @@
 
                 <form (ngSubmit)="submitWithdraw()" class="p-6 space-y-5">
                     <div>
-                        <label class="block text-sm font-semibold text-stone-700 mb-1.5">Số tiền (VNĐ)</label>
-                        <div class="relative flex items-center border border-stone-300 rounded-lg overflow-hidden focus-within:border-[#173124] focus-within:ring-1 focus-within:ring-[#173124] transition-all bg-white">
-                            <span class="pl-4 pr-2 text-stone-500 font-medium">₫</span>
-                            <input type="number" [(ngModel)]="withdrawAmount" name="amount" class="w-full py-3 pr-2 bg-transparent text-stone-900 text-lg font-bold placeholder:font-normal placeholder:text-stone-300 focus:outline-none" placeholder="0" required>
-                            <button type="button" (click)="withdrawAmount = walletInfo.availableBalance" class="px-3 py-1.5 mr-1.5 text-xs font-bold text-[#173124] bg-stone-100 hover:bg-stone-200 rounded flex-shrink-0 transition-colors">MAX</button>
+                        <label class="block text-sm font-semibold text-stone-700 mb-1.5">Số tiền muốn rút (VNĐ)</label>
+                        <div
+                            class="relative flex items-center border border-stone-300 rounded-xl overflow-hidden focus-within:border-[#173124] focus-within:ring-2 focus-within:ring-[#173124]/10 transition-all bg-white shadow-inner-sm">
+                            <span class="pl-4 pr-2 text-stone-400 font-headline text-lg">₫</span>
+                            <input type="number" [(ngModel)]="withdrawAmount" name="amount"
+                                class="w-full py-3.5 pr-2 bg-transparent text-stone-950 text-xl font-headline font-extrabold placeholder:font-normal placeholder:text-stone-300 focus:outline-none"
+                                placeholder="0" required>
+                            <button type="button" (click)="withdrawAmount = walletInfo.availableBalance"
+                                class="px-3.5 py-2 mr-2 text-xs font-black text-[#173124] bg-emerald-50 hover:bg-emerald-100 rounded-lg flex-shrink-0 transition-colors uppercase tracking-wider">Tối
+                                đa</button>
                         </div>
-                        <p class="text-xs text-stone-500 mt-1.5">Tối thiểu: 50,000 ₫</p>
+                        <div class="flex justify-between items-center mt-2 px-1">
+                            <p class="text-xs text-stone-500">Tối thiểu: 50,000 ₫</p>
+                            <p class="text-xs text-stone-600 font-medium">Khả dụng: {{ walletInfo.availableBalance |
+                                number:'1.0-0' }} ₫</p>
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-stone-700 mb-1.5">Ngân hàng thụ hưởng</label>
-                        <div class="border border-stone-300 rounded-lg p-3 flex items-center justify-between cursor-pointer hover:border-stone-400 bg-white group">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded border border-stone-200 flex items-center justify-center bg-stone-50 text-[9px] font-bold text-green-700">VCB</div>
-                                <div><p class="text-sm font-semibold text-stone-900">Vietcombank</p></div>
+                        <div class="flex items-center justify-between mb-2.5 px-1">
+                            <label class="block text-sm font-semibold text-stone-700">Ngân hàng giải ngân</label>
+                            <a routerLink="/host/settings/banks"
+                                class="text-xs font-bold text-[#173124] hover:text-[#0a1610] flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[15px]">add_card</span>
+                                Thêm ngân hàng
+                            </a>
+                        </div>
+
+                        @if (savedBanks.length > 0) {
+                        <div class="space-y-3 max-h-[300px] overflow-y-auto pr-2 py-1 scrollbar-thin">
+                            @for (bank of savedBanks; track bank.id) {
+
+                            <div (click)="selectedBank = bank"
+                                class="relative h-32 rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 border-2 text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 overflow-hidden group"
+                                [ngClass]="{
+                         'border-[#173124] ring-4 ring-[#173124]/15 shadow-xl': selectedBank?.id === bank.id,
+                         'border-transparent': selectedBank?.id !== bank.id,
+                         'card-metallic-emerald': bank.bankCode === 'VCB',
+                         'card-metallic-obsidian': bank.bankCode === 'TCB',
+                         'card-metallic-silver': bank.bankCode !== 'VCB' && bank.bankCode !== 'TCB'
+                     }">
+
+                                <div
+                                    class="absolute inset-0 bg-shimmer-pattern opacity-10 group-hover:opacity-20 transition-opacity">
+                                </div>
+
+                                <div class="relative flex items-center justify-between z-10">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[9px] font-black uppercase tracking-[0.2em] opacity-70">Beneficiary
+                                            Account</span>
+                                        <span
+                                            class="font-headline text-base {{ bank.bankCode === 'VCB' ? 'font-extrabold text-emerald-300' : 'font-bold' }} uppercase tracking-tight">
+                                            {{ bank.bankName }}
+                                        </span>
+                                    </div>
+                                    <span
+                                        class="text-[11px] font-black bg-white/10 px-2 py-0.5 rounded-md backdrop-blur-sm tracking-widest">{{
+                                        bank.bankCode }}</span>
+                                </div>
+
+                                <div class="relative flex items-end justify-between z-10">
+                                    <div class="flex flex-col gap-0.5">
+                                        <p class="font-headline text-lg font-bold tracking-[0.05em] text-white">
+                                            {{ bank.accountNumber }}
+                                        </p>
+                                        <p
+                                            class="text-xs font-semibold uppercase tracking-wide opacity-90 truncate max-w-[200px]">
+                                            {{ bank.accountHolderName }}
+                                        </p>
+                                    </div>
+
+                                    <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all shadow-inner"
+                                        [ngClass]="selectedBank?.id === bank.id ? 'border-white bg-white' : 'border-white/50 bg-transparent'">
+                                        @if (selectedBank?.id === bank.id) {
+                                        <span
+                                            class="material-symbols-outlined text-[#173124] text-[18px] font-bold">check</span>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                            <span class="material-symbols-outlined text-stone-400 group-hover:text-stone-600">expand_more</span>
-                        </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-sm font-semibold text-stone-700 mb-1.5">Số tài khoản</label>
-                        <input type="text" [(ngModel)]="bankAccountInfo" name="bankInfo" class="w-full px-4 py-3 border border-stone-300 rounded-lg text-stone-900 text-sm font-medium focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] transition-all" placeholder="Nhập số tài khoản" required>
-                        <div class="mt-2 p-2 bg-emerald-50 border border-emerald-100 rounded text-xs text-emerald-800 font-semibold flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[14px]">check_circle</span> NGUYEN VAN A
+                            }
                         </div>
+                        } @else {
+                        <div
+                            class="p-6 border-2 border-dashed border-stone-200 rounded-2xl text-center bg-stone-50/50 flex flex-col items-center justify-center gap-2.5">
+                            <div
+                                class="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center border border-stone-200">
+                                <span class="material-symbols-outlined text-stone-400 text-3xl">account_balance</span>
+                            </div>
+                            <p class="text-xs font-semibold text-stone-600">Chưa cấu hình tài khoản nhận tiền.</p>
+                            <a routerLink="/host/settings/banks"
+                                class="mt-1 px-4 py-2 bg-[#173124] text-xs font-black text-white hover:bg-[#0a1610] rounded-xl transition-all cursor-pointer shadow-sm uppercase tracking-wider">
+                                Thêm ngay
+                            </a>
+                        </div>
+                        }
                     </div>
 
                     <div class="pt-4 border-t border-stone-200 space-y-2">
@@ -113,11 +249,13 @@
                         </div>
                         <div class="flex justify-between text-sm text-stone-600">
                             <span>Số tiền thực nhận</span>
-                            <span class="font-bold text-[#173124] text-base">{{ (withdrawAmount ? withdrawAmount > 5500 ? withdrawAmount - 5500 : 0 : 0) | number:'1.0-0' }} ₫</span>
+                            <span class="font-bold text-[#173124] text-base">{{ (withdrawAmount ? withdrawAmount > 5500
+                                ? withdrawAmount - 5500 : 0 : 0) | number:'1.0-0' }} ₫</span>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full py-3.5 rounded-lg bg-[#173124] text-white text-sm font-bold shadow-sm hover:bg-[#0a1610] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2">
+                    <button type="submit"
+                        class="w-full py-3.5 rounded-lg bg-[#173124] text-white text-sm font-bold shadow-sm hover:bg-[#0a1610] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2">
                         Xác nhận rút tiền
                     </button>
                 </form>
@@ -125,14 +263,21 @@
         </div>
 
         <div class="flex-1 min-w-0 bg-white border border-stone-200 shadow-sm rounded-2xl">
-            <div class="px-6 py-4 border-b border-stone-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div
+                class="px-6 py-4 border-b border-stone-200 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <h4 class="text-base font-bold text-stone-900">Lịch sử giao dịch</h4>
-                
+
                 <div class="flex border border-stone-200 rounded-lg overflow-hidden">
                     <button class="px-4 py-1.5 bg-stone-100 text-stone-800 text-xs font-semibold">Tất cả</button>
-                    <button class="px-4 py-1.5 bg-white text-stone-500 hover:bg-stone-50 text-xs font-medium border-l border-stone-200">Tiền vào</button>
-                    <button class="px-4 py-1.5 bg-white text-stone-500 hover:bg-stone-50 text-xs font-medium border-l border-stone-200">Tiền ra</button>
-                    <button class="px-4 py-1.5 bg-white text-stone-500 hover:bg-stone-50 text-xs font-medium border-l border-stone-200">Hoàn tiền</button>
+                    <button
+                        class="px-4 py-1.5 bg-white text-stone-500 hover:bg-stone-50 text-xs font-medium border-l border-stone-200">Tiền
+                        vào</button>
+                    <button
+                        class="px-4 py-1.5 bg-white text-stone-500 hover:bg-stone-50 text-xs font-medium border-l border-stone-200">Tiền
+                        ra</button>
+                    <button
+                        class="px-4 py-1.5 bg-white text-stone-500 hover:bg-stone-50 text-xs font-medium border-l border-stone-200">Hoàn
+                        tiền</button>
                 </div>
             </div>
 
@@ -152,37 +297,41 @@
                             <td class="px-6 py-4 font-mono text-xs text-stone-500">
                                 #TRX-{{ tx.id }}
                             </td>
-                            
+
                             <td class="px-6 py-4">
                                 <div class="text-stone-900 font-medium">{{ tx.createdAt | date:'dd/MM/yyyy' }}</div>
                                 <div class="text-stone-500 text-xs">{{ tx.createdAt | date:'HH:mm:ss' }}</div>
                             </td>
-                            
+
                             <td class="px-6 py-4">
                                 <div class="text-stone-900 font-semibold">
-                                    {{ tx.transactionType === 'WITHDRAWAL' ? 'Rút tiền' : 
-                                       tx.transactionType === 'BOOKING_REVENUE' ? 'Doanh thu' :
-                                       tx.transactionType === 'CANCELLATION_FEE_REVENUE' ? 'Thu nhập phí phạt' :
-                                       tx.transactionType === 'REFUND_DEDUCTION' ? 'Khấu trừ hoàn tiền' : 'Khác' }}
+                                    {{ tx.transactionType === 'WITHDRAWAL' ? 'Rút tiền' :
+                                    tx.transactionType === 'BOOKING_REVENUE' ? 'Doanh thu' :
+                                    tx.transactionType === 'CANCELLATION_FEE_REVENUE' ? 'Thu nhập phí phạt' :
+                                    tx.transactionType === 'REFUND_DEDUCTION' ? 'Khấu trừ hoàn tiền' : 'Khác' }}
                                 </div>
-                                <div class="text-stone-500 text-xs truncate max-w-[200px]" [title]="tx.description">{{ tx.description }}</div>
+                                <div class="text-stone-500 text-xs truncate max-w-[200px]" [title]="tx.description">{{
+                                    tx.description }}</div>
                             </td>
-                            
+
                             <td class="px-6 py-4 text-right">
                                 <span class="font-bold tabular-nums" [ngClass]="getTxColor(tx.transactionType)">
-                                    {{ tx.amount < 0 ? '-' : '+' }}{{ (tx.amount < 0 ? -tx.amount : tx.amount) | number:'1.0-0' }} ₫
-                                </span>
+                                    {{ tx.amount < 0 ? '-' : '+' }}{{ (tx.amount < 0 ? -tx.amount : tx.amount) |
+                                        number:'1.0-0' }} ₫ </span>
                             </td>
-                            
+
                             <td class="px-6 py-4">
                                 <div class="flex justify-center">
-                                    <span *ngIf="tx.status === 'PENDING'" class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
+                                    <span *ngIf="tx.status === 'PENDING'"
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
                                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Đang xử lý
                                     </span>
-                                    <span *ngIf="tx.status === 'COMPLETED'" class="inline-flex items-center gap-1.5 text-xs font-medium text-stone-700 bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200">
+                                    <span *ngIf="tx.status === 'COMPLETED'"
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium text-stone-700 bg-stone-100 px-2.5 py-1 rounded-md border border-stone-200">
                                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Thành công
                                     </span>
-                                    <span *ngIf="tx.status === 'FAILED'" class="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 bg-red-50 px-2.5 py-1 rounded-md border border-red-200">
+                                    <span *ngIf="tx.status === 'FAILED'"
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 bg-red-50 px-2.5 py-1 rounded-md border border-red-200">
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Bị từ chối
                                     </span>
                                 </div>
