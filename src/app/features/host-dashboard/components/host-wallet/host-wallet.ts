@@ -1,12 +1,14 @@
 import { ChangeDetectorRef, Component, OnInit, NgZone, OnDestroy, inject } from '@angular/core'; // <-- Nhớ import thêm NgZone ở đâyimport { DecimalPipe } from '@angular/common';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HostWalletInfo, WalletTransaction } from '../../../../core/models/response/wallet.response';
+import { HostWalletInfo, WalletTransaction, WithdrawRequest } from '../../../../core/models/response/wallet.response';
 import { WalletService } from '../../../../core/services/wallet/wallet.service';
 import { ApiResponse } from '../../../../core/models/response/api.response';
 import { WebsocketService } from '../../../../core/services/realtime/websocket.service';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast/toast.service';
+import { PaymentService } from '../../../../core/services/payment/payment.service';
+import { HostBankAccount, UserPaymentMethod } from '../../../../core/models/payment/user-payment-method.model';
 
 
 @Component({
@@ -36,8 +38,14 @@ export class HostWallet implements OnInit {
   totalElements: number = 0;
   private toastService = inject(ToastService);
   private walletSocketSub!: Subscription;
+  private paymentService = inject(PaymentService);
+  // Bên trong class HostWallet
+  savedBanks: HostBankAccount[] = []; // Đổi từ savedCards sang savedBanks
+  selectedBank: HostBankAccount | null = null;
 
-  constructor(private walletService: WalletService, private cdr: ChangeDetectorRef, private websocketService: WebsocketService, private zone: NgZone) { }
+  constructor(private walletService: WalletService, private cdr: ChangeDetectorRef, private websocketService: WebsocketService, private zone: NgZone) {
+    this.loadHostBankAccounts();
+  }
 
   ngOnInit(): void {
     this.loadWalletData();
@@ -48,7 +56,74 @@ export class HostWallet implements OnInit {
     this.initRealtimeListener();
 
   }
+  // 4. HÀM KÉO THẺ TỪ DB LÊN
+  loadHostBankAccounts() {
+    // Sau này ông đổi thành: this.walletService.getSavedBankAccounts().subscribe(...)
+    // Giờ tôi mock sẵn cấu trúc chuẩn để ông test UI ăn ngay:
+    this.savedBanks = [
+      {
+        id: 1,
+        bankName: 'Vietcombank',
+        bankCode: 'VCB',
+        accountNumber: '1023456789', // Số tài khoản full không che
+        accountHolderName: 'NGUYEN VAN A',
+        isDefault: true
+      },
+      {
+        id: 2,
+        bankName: 'Techcombank',
+        bankCode: 'TCB',
+        accountNumber: '19035489761023', // Số tài khoản full không che
+        accountHolderName: 'NGUYEN VAN A',
+        isDefault: false
+      }
+    ];
 
+    const defaultBank = this.savedBanks.find(b => b.isDefault);
+    this.selectedBank = defaultBank ? defaultBank : this.savedBanks[0];
+  }
+
+  submitWithdraw() {
+    if (!this.withdrawAmount || this.withdrawAmount < 50000) {
+      this.toastService.error('Lỗi', 'Số tiền rút phải lớn hơn hoặc bằng 50,000 VND.');
+      return;
+    }
+    if (this.withdrawAmount > this.walletInfo.availableBalance) {
+      this.toastService.error('Lỗi', 'Số tiền rút vượt quá số dư khả dụng của bạn.');
+      return;
+    }
+    if (!this.selectedBank) {
+      this.toastService.error('Lỗi', 'Vui lòng chọn ngân hàng nhận tiền.');
+      return;
+    }
+
+    this.isLoading = true;
+
+    // ĐÃ SỬA: Đóng gói payload rã trường sạch sẽ, ép kiểu theo Interface WithdrawRequest
+    const payload: WithdrawRequest = {
+      amount: this.withdrawAmount,
+      bankName: this.selectedBank.bankName,
+      accountNumber: this.selectedBank.accountNumber,
+      accountHolderName: this.selectedBank.accountHolderName
+    };
+
+    // Gọi API đẩy cục JSON sạch này xuống cho Spring Boot nuốt
+    this.walletService.requestWithdraw(payload).subscribe({
+      next: (res) => {
+        this.toastService.success('Thành công', 'Yêu cầu rút tiền của bạn đã được gửi đi và đang chờ xử lý bởi Admin.');
+        this.withdrawAmount = null;
+        this.loadWalletData();
+        this.loadTransactions();
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastService.error('Lỗi', err.error?.message || 'Có lỗi xảy ra khi tạo lệnh rút tiền.');
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
+  }
   loadWalletData() {
     this.walletService.getWalletInfo().subscribe({
       next: (res) => {
@@ -79,47 +154,7 @@ export class HostWallet implements OnInit {
     });
   }
 
-  submitWithdraw() {
-    if (!this.withdrawAmount || this.withdrawAmount < 50000) {
-      this.toastService.error('Lỗi', 'Số tiền rút phải lớn hơn hoặc bằng 50,000 VND.');
-      return;
-    }
-    if (this.withdrawAmount > this.walletInfo.availableBalance) {
-      this.toastService.error('Lỗi', 'Số tiền rút vượt quá số dư khả dụng của bạn.');
-      return;
-    }
-    if (!this.bankAccountInfo.trim()) {
-     this.toastService.error('Lỗi', 'Vui lòng cung cấp thông tin tài khoản ngân hàng để rút tiền.');
-      return;
-    }
 
-    this.isLoading = true;
-
-    const payload = {
-      amount: this.withdrawAmount,
-      bankAccountInfo: this.bankAccountInfo
-    };
-
-    this.walletService.requestWithdraw(payload).subscribe({
-      next: (res) => {
-        this.toastService.success('Thành công', 'Yêu cầu rút tiền của bạn đã được gửi đi và đang chờ xử lý bởi Admin.');
-        this.withdrawAmount = null;
-
-        // Cập nhật lại UI lập tức
-        this.loadWalletData();
-        this.loadTransactions();
-      },
-      error: (err) => {
-        console.error(err);
-        // Ưu tiên hiển thị message từ App Exception của Backend trả về
-       
-        this.toastService.error('Lỗi', err.error?.message || 'Có lỗi xảy ra khi tạo lệnh rút tiền.');
-      },
-      complete: () => {
-        this.isLoading = false;
-      }
-    });
-  }
   private initRealtimeListener() {
     this.walletSocketSub = this.websocketService.listenWalletStatus().subscribe({
       next: (notification) => {
@@ -188,12 +223,12 @@ export class HostWallet implements OnInit {
   }
   getTxColor(type: string): string {
     const map: Record<string, string> = {
-        'WITHDRAWAL': 'text-stone-900',
-        'REFUND_DEDUCTION': 'text-stone-900',
-        'BOOKING_REVENUE': 'text-emerald-600',
-        'CANCELLATION_FEE_REVENUE': 'text-emerald-600'
+      'WITHDRAWAL': 'text-stone-900',
+      'REFUND_DEDUCTION': 'text-stone-900',
+      'BOOKING_REVENUE': 'text-emerald-600',
+      'CANCELLATION_FEE_REVENUE': 'text-emerald-600'
     };
     return map[type] || 'text-stone-600';
-}// Thêm vào class Component
+  }// Thêm vào class Component
 
 }

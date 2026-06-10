@@ -11,9 +11,10 @@ export interface HostWalletInfo {
 
 export interface WithdrawRequest {
   amount: number;
-  bankAccountInfo: string;
+  bankName: string;          // Khớp với bankName dưới BE
+  accountNumber: string;     // Khớp với accountNumber dưới BE
+  accountHolderName: string; // Khớp với accountHolderName dưới BE
 }
-
 export type TransactionType = 'BOOKING_REVENUE' | 'ESCROW_RELEASE' | 'WITHDRAWAL' | 'REFUND_DEDUCTION' | 'CANCELLATION_FEE_REVENUE';
 export type TransactionStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 
