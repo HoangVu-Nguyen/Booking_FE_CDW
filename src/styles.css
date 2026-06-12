@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
 @import "leaflet/dist/leaflet.css";
+@import "leaflet/dist/leaflet.css";
 /* 1. KHAI BÁO BẢNG MÀU HỆ THỐNG (THE CURATOR EDITION) */
 :root {
   /* Màu chủ đạo: Xanh rừng sâu & Trắng ngà */
