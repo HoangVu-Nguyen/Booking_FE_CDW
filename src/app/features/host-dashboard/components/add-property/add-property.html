@@ -1,0 +1,32 @@
+<form [formGroup]="propertyForm" class="space-y-6">
+  @if(currentStep() === 1) {
+    <div class="space-y-4">
+      <input formControlName="name" placeholder="Tên Homestay" class="w-full h-12 px-4 rounded-xl border">
+      <textarea formControlName="description" placeholder="Mô tả" class="w-full h-24 p-4 rounded-xl border"></textarea>
+    </div>
+  }
+
+  @if(currentStep() === 2) {
+    <div formArrayName="rooms" class="space-y-4">
+      @for (room of rooms.controls; track $index) {
+        <div [formGroupName]="$index" class="p-5 border rounded-2xl bg-stone-50">
+          <input formControlName="name" placeholder="Tên phòng" class="w-full h-10 px-3 mb-2 rounded-lg border">
+          <div class="grid grid-cols-2 gap-2 mb-4">
+            <input formControlName="maxGuests" type="number" placeholder="Khách" class="h-10 px-3 rounded-lg border">
+            <input formControlName="quantity" type="number" placeholder="Số lượng" class="h-10 px-3 rounded-lg border">
+          </div>
+          
+          <div formArrayName="ratePlans" class="border-t pt-4">
+            @for (rate of getRatePlans(room).controls; track $index) {
+    <div [formGroupName]="$index" class="flex gap-2 mb-2">
+        <input formControlName="name" placeholder="Gói giá" class="w-2/3 h-9 px-2 rounded border text-xs">
+        <input formControlName="price" type="number" placeholder="Giá" class="w-1/3 h-9 px-2 rounded border text-xs">
+    </div>
+}
+          </div>
+        </div>
+      }
+      <button type="button" (click)="addRoom()" class="w-full py-3 border border-dashed rounded-xl font-bold text-sm">+ Thêm phòng</button>
+    </div>
+  }
+</form>

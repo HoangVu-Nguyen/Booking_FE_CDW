@@ -1,14 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PortfolioService } from '../../../../core/services/manager/portfolio.service';
 import { PropertySummaryResponse } from '../../../../core/models/response/property.response';
 // Chú ý: Cập nhật lại đường dẫn import cho đúng với cấu trúc thư mục của bạn
-
+import { AddProperty } from '../add-property/add-property';
 
 @Component({
   selector: 'app-host-portfolio',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,AddProperty],
   templateUrl: './portfolio.html'
 })
 export class Portfolio implements OnInit {
@@ -26,7 +26,12 @@ export class Portfolio implements OnInit {
   ngOnInit() {
     this.portfolioService.loadProperties().subscribe();
   }
+  isAddingProperty = signal(false);
 
+  // Hàm mở modal
+  openAddPropertyModal() {
+    this.isAddingProperty.set(true);
+  }
   getStatusConfig(status: string) {
     const configs: any = {
       'ACTIVE': { bg: 'bg-emerald-500/90', text: 'text-white', icon: 'check_circle', label: 'Đang hoạt động' },
@@ -34,6 +39,6 @@ export class Portfolio implements OnInit {
       'DRAFT': { bg: 'bg-stone-500/90', text: 'text-white', icon: 'edit_document', label: 'Bản nháp' },
       'CLOSED': { bg: 'bg-rose-500/90', text: 'text-white', icon: 'cancel', label: 'Đã đóng' } // Thêm trạng thái đóng
     };
-    return configs[status] || configs['DRAFT']; 
+    return configs[status] || configs['DRAFT'];
   }
 }

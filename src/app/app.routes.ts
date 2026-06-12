@@ -35,6 +35,7 @@ import { Portfolio } from './features/host-dashboard/components/portfolio/portfo
 import { CalendarPricing } from './features/host-dashboard/components/calendar-pricing/calendar-pricing';
 import { InvoiceHistory } from './features/profile/components/invoice-history/invoice-history';
 import { Inbox } from './features/host-dashboard/components/inbox/inbox';
+import { AddProperty } from './features/host-dashboard/components/add-property/add-property';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -158,6 +159,10 @@ export const routes: Routes = [
             path: 'inbox',
             component: Inbox,
             title: 'Hộp thư - Host Dashboard - Clyvasync'
+          },
+          {
+            path:'add-propety',
+            component:AddProperty
           }
         ]
       }
