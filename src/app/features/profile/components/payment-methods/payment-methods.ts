@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UserPaymentMethod } from '../../../../core/models/payment/user-payment-method.model';
 import { PaymentService } from '../../../../core/services/payment/payment.service';
 import { AddCardModal } from '../../../../shared/components/add-card-modal/add-card-modal';
-
+import { ConfirmationService } from '../../../../core/services/confirm/confirm.service';
 @Component({
   selector: 'app-payment-methods',
   standalone: true,
@@ -13,6 +13,7 @@ import { AddCardModal } from '../../../../shared/components/add-card-modal/add-c
 })
 export class PaymentMethods implements OnInit {
   private paymentService = inject(PaymentService);
+  private confirmService = inject(ConfirmationService);
 
   isAddingNew = signal(false);
   
@@ -41,25 +42,40 @@ export class PaymentMethods implements OnInit {
   }
 
   // Kích hoạt đổi thẻ mặc định và reload lại danh sách để đồng bộ DB
-  async setAsDefault(id: number) {
-    try {
-      await this.paymentService.setPrimaryCard(id);
-      await this.loadCards(); // Tải lại để nhận diện chuẩn dấu tích Primary từ BE
-    } catch (error) {
-      console.error('Lỗi cấu hình thẻ mặc định:', error);
-    }
+async setAsDefault(id: number) {
+    // Gọi hộp thoại xác nhận đàng hoàng trước khi nã API xuống DB
+    this.confirmService.confirm(
+      'Thay đổi thẻ mặc định',
+      'Bạn có chắc chắn muốn đặt thẻ này làm tài khoản thanh toán/nhận tiền chính không?',
+      async () => {
+        try {
+          await this.paymentService.setPrimaryCard(id);
+          await this.loadCards(); // Tải lại danh sách thẻ sạch bóng N+1 từ BE
+          this.confirmService.close(); // Đóng modal sau khi xử lý thành công
+        } catch (error) {
+          console.error('Lỗi cấu hình thẻ mặc định:', error);
+        }
+      }
+    );
   }
 
-  // Kích hoạt xóa thẻ khỏi hệ thống
   async removeMethod(id: number) {
-    if (!confirm('Bạn có chắc chắn muốn hủy liên kết phương thức thanh toán này?')) return;
-    try {
-      await this.paymentService.deleteCard(id);
-      // Cập nhật nhanh UI cho mượt trước khi reload
-      this.methods.update(list => list.filter(m => m.id !== id));
-    } catch (error) {
-      console.error('Lỗi xóa thẻ:', error);
-    }
+    this.confirmService.confirm(
+      'Xóa thẻ đã liên kết',
+      'Bạn có chắc chắn muốn xóa thẻ thanh toán này không? Nếu đây là thẻ mặc định, hệ thống sẽ tự động chọn một thẻ khác để thay thế.',
+      async () => {
+        try {
+          await this.paymentService.deleteCard(id);
+          
+          this.methods.update(list => list.filter(m => m.id !== id));
+
+
+          this.confirmService.close(); // Đóng modal xác nhận lại
+        } catch (error) {
+          console.error('Lỗi xóa thẻ:', error);
+        }
+      }
+    );
   }
 
   // ==========================================
