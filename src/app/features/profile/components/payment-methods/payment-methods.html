@@ -152,34 +152,61 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-stone-100">
+                        @for (tx of transactions(); track tx.bookingCode) {
                         <tr class="group hover:bg-stone-50/50 transition-colors">
-                            <td class="py-6 text-sm font-medium text-stone-500">09/06/2026</td>
+                            <td class="py-6 text-sm font-medium text-stone-500">{{ tx.date | date:'dd/MM/yyyy' }}</td>
                             <td class="py-6">
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-[#173124]">
-                                        <span class="material-symbols-outlined">apartment</span>
+                                        <span class="material-symbols-outlined">{{ tx.icon }}</span>
                                     </div>
                                     <div>
-                                        <p class="font-bold text-stone-800">The Obsidian Monolith</p>
-                                        <p class="text-[10px] text-stone-400 font-bold tracking-tight">Mã: #TT-4299</p>
+                                        <p class="font-bold text-stone-800">{{ tx.title }}</p>
+                                        <p class="text-[10px] text-stone-400 font-bold tracking-tight">Mã: {{
+                                            tx.bookingCode }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="py-6">
                                 <span
-                                    class="px-3 py-1 bg-stone-100 rounded-full text-[10px] font-bold text-stone-600 uppercase">Homestay</span>
+                                    class="px-3 py-1 bg-stone-100 rounded-full text-[10px] font-bold text-stone-600 uppercase">{{
+                                    tx.type }}</span>
                             </td>
                             <td class="py-6">
+                                @if (tx.status === 'SUCCESS') {
                                 <div class="flex items-center gap-1.5 text-emerald-600">
                                     <span class="material-symbols-outlined text-sm">check_circle</span>
                                     <span class="text-xs font-bold">Thành công</span>
                                 </div>
+                                } @else if (tx.status === 'PENDING') {
+                                <div class="flex items-center gap-1.5 text-amber-500">
+                                    <span class="material-symbols-outlined text-sm">schedule</span>
+                                    <span class="text-xs font-bold">Chờ xử lý</span>
+                                </div>
+                                } @else {
+                                <div class="flex items-center gap-1.5 text-rose-500">
+                                    <span class="material-symbols-outlined text-sm">cancel</span>
+                                    <span class="text-xs font-bold">Đã hủy</span>
+                                </div>
+                                }
                             </td>
-                            <td class="py-6 text-right font-headline font-extrabold text-stone-900 text-lg">$2,450.00
+                            <td class="py-6 text-right font-headline font-extrabold text-stone-900 text-lg">
+                                {{ tx.amount | number:'1.0-0' }} <span class="text-sm">đ</span>
                             </td>
                         </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="5" class="py-16 text-center text-stone-400">
+                                <span
+                                    class="material-symbols-outlined text-4xl opacity-40 mb-3 block">receipt_long</span>
+                                <p class="font-bold text-sm uppercase tracking-widest opacity-60">Chưa có giao dịch nào
+                                </p>
+                            </td>
+                        </tr>
+                        }
                     </tbody>
+                    
                 </table>
             </div>
         </section>
