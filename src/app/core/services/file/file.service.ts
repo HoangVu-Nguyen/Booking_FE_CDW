@@ -6,8 +6,10 @@ import { ApiService } from '../api/api.service';
 import { ApiResponse } from '../../models/response/api.response';
 
 export interface PresignedUrlResponse {
-  uploadUrl: string; // URL chứa token của AWS để PUT file lên
-  objectKey: string; // Đường dẫn nháp lưu trong DB (VD: chat/user_1/abc.png)
+    roomId: number;
+    fileName: string;
+    objectKey: string;
+    uploadUrl: string;
 }
 
 @Injectable({ providedIn: 'root' })

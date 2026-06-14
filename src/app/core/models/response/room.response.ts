@@ -48,3 +48,14 @@ export interface RoomDrawerData {
   status: RoomCalendarStatus; // AVAILABLE, BLOCKED, MAINTENANCE
   ratePlans: DrawerRatePlanEdit[]; // 👉 Danh sách các gói giá để edit
 }
+export interface RoomDisplayResponse {
+  id: number;
+  name: string;
+  type?: string;
+  description?: string;
+  maxGuests?: number;
+  area?: number | null;
+  hasPrivateBathroom?: boolean;
+  beds?: BedResponse[];
+  images?: RoomImageResponse[];
+}

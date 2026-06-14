@@ -1,3 +1,5 @@
+import { UploadRequest } from "./upload.request";
+
 interface Bed {
   id?: number;
   type: string;
@@ -19,9 +21,25 @@ interface Room {
   type: string;
   description: string;
   maxGuests: number;
-  areaM2: number | null;
+  area: number | null;
   hasPrivateBathroom: boolean;
   beds: Bed[];
   images: RoomImage[];
   isExpanded: boolean;
+}
+
+export interface RoomBatchUpdateRequest {
+    homestayId: number;
+    rooms: RoomUpdateRequest[];
+}
+export interface RoomImageBatch {
+    roomId: number;
+    items: UploadRequest[];
+}
+
+export interface MultiRoomBatchUploadRequest {
+    rooms: RoomImageBatch[];
+}
+export interface RoomUpdateRequest{
+
 }

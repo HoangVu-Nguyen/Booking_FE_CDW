@@ -46,6 +46,7 @@ export interface RoomImageResponse {
   id: number;
   url: string;
   isCover: boolean;
+   displayOrder?: number;
 }
 
 export interface BedResponse {

@@ -8,7 +8,7 @@ import { BookingAvailabilityResponse, HomestayResponse } from "../../models/resp
 import { PageResponse } from "../../models/response/page.response";
 import { ReviewResponse } from "../../models/response/review.response";
 import { HttpParams } from "@angular/common/http";
-import { RoomResponse } from "../../models/response/room.response";
+import { RoomDisplayResponse, RoomResponse } from "../../models/response/room.response";
 
 @Injectable({ providedIn: 'root' })
 export class HomestayService {
@@ -103,4 +103,8 @@ export class HomestayService {
             payload
         );
     }
+    getRoomsByHomestayId(homestayId: number | string): Observable<ApiResponse<RoomDisplayResponse[]>> {
+    const endpoint = `/api/v1/homestays/${homestayId}/rooms`;
+    return this.apiService.get<ApiResponse<RoomDisplayResponse[]>>(endpoint);
+  }
 }
