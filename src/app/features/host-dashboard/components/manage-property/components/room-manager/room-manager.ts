@@ -489,7 +489,6 @@ export class RoomManager implements OnInit {
             type: bed.type,
             quantity: bed.quantity
           })),
-          // 👉 GỘP CHUNG VÀO 1 MẢNG
           images: [...oldImages, ...newlyUploadedImages] 
         };
       })
