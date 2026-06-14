@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, inject } from '@angular/core';
+import { Component, computed, OnInit, inject, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -6,11 +6,13 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { HomestayService } from '../../../../../../core/services/homestay/homestay.service';
 import { BookingService } from '../../../../../../core/services/booking/booking.service';
 import { Router } from '@angular/router';
-
+import { RoomResponse } from '../../../../../../core/models/response/room.response';
+import { LightboxImage } from '../../../../../../core/models/image/image.model';
+import { SharedImageLightbox } from '../../../../../../shared/components/shared-image-lightbox/shared-image-lightbox';
 @Component({
   selector: 'app-homestay-booking-widget',
   standalone: true,
-  imports: [CommonModule, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, MatDatepickerModule, MatNativeDateModule, SharedImageLightbox],
   templateUrl: './homestay-booking-widget.html',
   styleUrl: './homestay-booking-widget.css',
 })
@@ -21,6 +23,7 @@ export class HomestayBookingWidget implements OnInit {
 
   // 1. Dữ liệu Homestay (Signal-based)
   homestay = computed(() => this.homestayService.currentHomestay());
+  @ViewChild('lightbox') lightbox!: SharedImageLightbox;
 
   // 2. State Lịch trình & Số lượng
   checkInDate = this.bookingService.checkInDate;
@@ -51,7 +54,7 @@ export class HomestayBookingWidget implements OnInit {
     const tours = this.selectedTours();
     const numGuests = this.guests();
     if (!tours || tours.length === 0) return 0;
-    
+
     // Tính tổng tích lũy của tất cả tour khách đã chọn
     return tours.reduce((sum, tour) => sum + ((tour.pricePerPerson || 0) * numGuests), 0);
   });
@@ -59,7 +62,7 @@ export class HomestayBookingWidget implements OnInit {
   // Thuế & Phí dịch vụ (Tính 10% trên tổng giá trị - khớp với Backend)
   serviceFee = computed(() => {
     const baseTotal = this.roomSubtotal() + this.tourSubtotal();
-    return baseTotal * 0.1; 
+    return baseTotal * 0.1;
   });
 
   // Tổng thanh toán cuối cùng
@@ -67,7 +70,7 @@ export class HomestayBookingWidget implements OnInit {
     return this.roomSubtotal() + this.tourSubtotal() + this.serviceFee();
   });
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   // ----------------------------------------------------
   // 5. ACTIONS
@@ -96,8 +99,8 @@ export class HomestayBookingWidget implements OnInit {
 
     // Validate cứng trước khi gọi API
     if (!currentHomestay || !room || !plan || !checkIn || !checkOut) {
-        alert('Vui lòng hoàn tất chọn phòng và ngày lưu trú!');
-        return;
+      alert('Vui lòng hoàn tất chọn phòng và ngày lưu trú!');
+      return;
     }
 
     // Helper: Định dạng Date sang string ISO "YYYY-MM-DD" gửi cho Java
@@ -108,11 +111,11 @@ export class HomestayBookingWidget implements OnInit {
 
     // MAP DANH SÁCH TOURS THEO FORMAT LIST<TOURBOOKINGITEM> CỦA BÁC VŨ
     const toursPayload = this.selectedTours().map(t => ({
-        tourId: t.id,
-        // Bác nhớ đảm bảo object tour trong service có trường availabilityId nhé
-        availabilityId: (t as any).availabilityId || 1, 
-        tourDate: formatDateISO(checkIn), // Mặc định lấy ngày check-in, bác có thể đổi tùy UI
-        participantCount: this.guests()
+      tourId: t.id,
+      // Bác nhớ đảm bảo object tour trong service có trường availabilityId nhé
+      availabilityId: (t as any).availabilityId || 1,
+      tourDate: formatDateISO(checkIn), // Mặc định lấy ngày check-in, bác có thể đổi tùy UI
+      participantCount: this.guests()
     }));
 
     // PAYLOAD CUỐI CÙNG (KHÍT VỚI BOOKINGINITREQUEST TRONG JAVA)
@@ -124,12 +127,12 @@ export class HomestayBookingWidget implements OnInit {
       checkOutDate: formatDateISO(checkOut),
       roomQuantity: this.roomCount(),
       guestCount: this.guests(),
-      
+
       // Gửi danh sách Tour (Dù rỗng hay có thì Backend cũng nhận được List)
-      tours: toursPayload, 
+      tours: toursPayload,
 
       // Các thông tin liên hệ (Lấy từ User profile hoặc cho khách nhập)
-      guestName: null, 
+      guestName: null,
       email: null,
       phone: null,
       specialRequests: null
@@ -142,7 +145,7 @@ export class HomestayBookingWidget implements OnInit {
         // Response format bác trả về: { success: boolean, data: { bookingCode, id } }
         if (response.data?.bookingCode) {
           console.log('✅ Đã khóa phòng thành công:', response.data.bookingCode);
-          
+
           // Điều hướng sang trang thanh toán kèm theo mã code
           this.router.navigate(['/checkout', response.data.bookingCode]);
         }
@@ -154,5 +157,23 @@ export class HomestayBookingWidget implements OnInit {
         alert(errorMsg);
       }
     });
+  }
+  getCoverImage(room: RoomResponse): string {
+    if (!room.images || room.images.length === 0) {
+      return 'assets/images/default-room.jpg'; // Ảnh dự phòng
+    }
+    const cover = room.images.find(img => img.isCover);
+    return cover ? cover.url : room.images[0].url;
+  }
+  openRoomGallery(room: RoomResponse) {
+    if (!room.images || room.images.length === 0) return;
+
+    const lightboxData: LightboxImage[] = room.images.map(img => ({
+      url: img.url,
+      isCover: img.isCover,
+      caption: `Ảnh ${room.name}`
+    }));
+
+    this.lightbox.open(lightboxData, 0);
   }
 }

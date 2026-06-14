@@ -1,9 +1,6 @@
 import { HomestayStatus } from "../../enum/homestay-status";
 import { OwnerResponse } from "./homestay.response";
 
-// =====================================
-// ENUMS
-// =====================================
 export enum RoomCalendarStatus {
   AVAILABLE = 'AVAILABLE',
   BOOKED = 'BOOKED',
@@ -11,27 +8,40 @@ export enum RoomCalendarStatus {
   BLOCKED = 'BLOCKED'
 }
 
-// =====================================
-// GÓI CƠ BẢN & CHI TIẾT
-// =====================================
 export interface BookingSimpleInfo {
   bookingCode: string;
   guestName: string;
   quantity: number;
 }
 
-export interface CalendarInventoryResponse {
-  date: string;
-  priceOverride: number | null;
-  availableQuantity: number;
-  status: RoomCalendarStatus;
-  bookingCode?: string;
-  guestName?: string;
-  totalBookedInDay: number;
-  bookings: BookingSimpleInfo[];
+export interface RatePlanPriceResponse {
+  ratePlanId: number;
+  name: string;
+  price: number | null;
+  basePrice: number | null;
+  hasOverride?: boolean;
 }
 
-// 👉 ĐÂY LÀ 2 INTERFACE MỚI THÊM VÀO THEO BACKEND
+export interface CalendarInventoryResponse {
+  date: string;
+
+  // Backend mới
+  displayPrice: number | null;
+  priceOverride: number | null;
+  hasPriceOverride: boolean;
+
+  availableQuantity: number;
+  status: RoomCalendarStatus;
+
+  bookingCode?: string;
+  guestName?: string;
+
+  totalBookedInDay: number;
+  bookings: BookingSimpleInfo[];
+
+  ratePlanPrices: RatePlanPriceResponse[];
+}
+
 export interface RoomImageResponse {
   id: number;
   url: string;
@@ -44,25 +54,21 @@ export interface BedResponse {
   quantity: number;
 }
 
-// =====================================
-// INTERFACE CẤP PHÒNG (ĐÃ CẬP NHẬT)
-// =====================================
 export interface CalendarRoomResponse {
   id: number;
   name: string;
-  tag: string;
-  basePrice: number;
+  tag?: string;
 
-  // Xóa imageUrl cũ, thay bằng 2 mảng mới
+  // Có thể BE vẫn trả basePrice, nhưng không nên bắt buộc vì giá chính nằm trong ratePlans/displayPrice
+  basePrice?: number | null;
+
   images: RoomImageResponse[];
   beds: BedResponse[];
 
   inventory: CalendarInventoryResponse[];
+  ratePlans: RatePlanPriceResponse[];
 }
 
-// =====================================
-// INTERFACE CẤP CAO NHẤT (ROOT)
-// =====================================
 export interface HomestayCalendarResponse {
   roomCode: string;
   status: HomestayStatus;

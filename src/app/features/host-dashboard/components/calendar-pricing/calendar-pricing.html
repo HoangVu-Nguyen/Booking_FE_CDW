@@ -1,310 +1,459 @@
-<div class="min-h-screen bg-[#f8f9fa] font-sans flex flex-col relative">
+<div class="relative flex min-h-screen flex-col bg-[#f8f9fa] font-sans">
 
-    <header class="h-16 bg-white border-b border-stone-200 px-6 flex items-center justify-between sticky top-0 z-40">
-        <div class="flex items-center gap-4">
-            <button (click)="goBack()"
-                class="w-10 h-10 rounded-full hover:bg-stone-100 flex items-center justify-center text-stone-600 transition-colors">
-                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
-            </button>
-            <div class="w-px h-6 bg-stone-200"></div>
-            <div>
-                <h1 class="text-[15px] font-black text-stone-900 leading-tight">{{homeCalendarDetail.homestayName}}</h1>
-                <p
-                    class="text-[10px] font-bold text-stone-500 uppercase tracking-[0.15em] flex items-center gap-1.5 mt-0.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {{homeCalendarDetail.status}} •
-                    {{homeCalendarDetail.roomCode}} - {{homeCalendarDetail.homestayId}}
-                </p>
-            </div>
-        </div>
+  <header class="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-stone-200 bg-white px-6">
+    <div class="flex items-center gap-4">
+      <button
+        (click)="goBack()"
+        class="flex h-10 w-10 items-center justify-center rounded-full text-stone-600 transition-colors hover:bg-stone-100"
+      >
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </button>
 
-        <div class="flex items-center gap-3">
-            <button
-                class="h-9 px-4 bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-colors shadow-sm flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px]">sync</span> iCal
-            </button>
-            <button
-                class="h-9 px-5 bg-stone-900 text-white hover:bg-[#173124] text-[11px] font-bold uppercase tracking-widest rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-2">
-                <span class="material-symbols-outlined text-[16px]">tune</span> Tùy chỉnh hàng loạt
-            </button>
-        </div>
-    </header>
+      <div class="h-6 w-px bg-stone-200"></div>
 
-    <div class="flex-1 p-6 lg:p-8 flex flex-col max-w-[1800px] mx-auto w-full">
+      <div>
+        <h1 class="text-[15px] font-black leading-tight text-stone-900">
+          {{ homeCalendarDetail?.homestayName || 'Đang tải lịch phòng...' }}
+        </h1>
 
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-black text-stone-900 tracking-tight">Tháng 5, 2026</h2>
-
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-4 bg-white px-4 py-2 rounded-xl border border-stone-200 shadow-sm">
-                    <div class="flex items-center gap-1.5"><span
-                            class="w-3 h-3 rounded bg-white border border-stone-200"></span><span
-                            class="text-[11px] font-bold text-stone-600">Trống</span></div>
-                    <div class="flex items-center gap-1.5"><span
-                            class="w-3 h-3 rounded bg-[#173124] shadow-sm"></span><span
-                            class="text-[11px] font-bold text-stone-600">Đã đặt</span></div>
-                    <div class="flex items-center gap-1.5"><span
-                            class="w-3 h-3 rounded bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_4px,#ffe4e6_4px,#ffe4e6_8px)] border border-rose-100"></span><span
-                            class="text-[11px] font-bold text-stone-600">Bảo trì</span></div>
-                </div>
-
-                <div class="flex items-center gap-1 bg-white border border-stone-200 rounded-xl p-1 shadow-sm">
-                    <button (click)="goPreviousWeek()"
-                        class="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
-                    </button>
-                    <button (click)="goNextWeek()"
-                        class="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div
-            class="bg-white border border-stone-200/80 rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col flex-1 h-[65vh]">
-
-            <div class="flex-1 overflow-auto custom-scrollbar relative flex">
-
-                <div
-                    class="w-[300px] shrink-0 sticky left-0 z-30 bg-white border-r border-stone-200 shadow-[4px_0_24px_rgba(0,0,0,0.03)] flex flex-col">
-
-                    <div
-                        class="h-[96px] shrink-0 border-b border-stone-200 flex flex-col justify-end p-4 bg-stone-50/95 backdrop-blur-md relative z-20">
-                        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-1">Loại phòng /
-                            Listing</span>
-                        <div class="relative">
-                            <span
-                                class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-stone-400">search</span>
-                            <input type="text" placeholder="Tìm phòng..."
-                                class="w-full h-8 pl-9 pr-3 bg-white border border-stone-200 rounded-lg text-xs font-medium focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] transition-all placeholder:text-stone-300">
-                        </div>
-                    </div>
-
-                    <div *ngFor="let room of rooms"
-                        class="h-[100px] shrink-0 border-b border-stone-100 flex items-center px-4 hover:bg-stone-50/80 transition-colors group relative bg-white">
-
-                        <div
-                            class="absolute left-0 top-0 bottom-0 w-1 bg-stone-200 group-hover:bg-[#173124] transition-colors pointer-events-none">
-                        </div>
-
-                        <div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden border border-stone-100 bg-stone-100 mr-4 shadow-sm relative cursor-pointer group/img"
-                            (click)="openRoomGallery(room)">
-
-                            <img [src]="getCoverImage(room)" [alt]="room.name" class="w-full h-full object-cover">
-
-                            <div
-                                class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                                <span class="material-symbols-outlined text-white text-[20px]">zoom_in</span>
-                            </div>
-
-                            <div *ngIf="room.images?.length"
-                                class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm px-1 rounded text-[8px] font-bold text-white tracking-wider z-10">
-                                {{ room.images.length }} ẢNH
-                            </div>
-                        </div>
-
-                        <div class="flex-1 flex flex-col justify-center min-w-0">
-                            <p
-                                class="text-[13px] font-black text-stone-900 line-clamp-1 leading-tight group-hover:text-[#173124] transition-colors">
-                                {{ room.name }}
-                            </p>
-
-                            <div class="flex items-center justify-between mt-2">
-                                <div class="flex items-center gap-1.5 text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-1 rounded-md cursor-help"
-                                    [title]="getBedTooltip(room.beds)">
-                                    <span class="material-symbols-outlined text-[12px] text-[#173124]">bed</span>
-                                    <span>{{ getTotalBeds(room.beds) }} giường</span>
-                                </div>
-
-                                <p class="text-[11px] font-medium text-stone-400">
-                                    Gốc: <span class="text-[#173124] font-black tabular-nums">{{ room.basePrice / 1000
-                                        }}K</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col min-w-max relative z-10">
-
-                    <div
-                        class="h-[96px] shrink-0 sticky top-0 z-20 flex flex-col bg-stone-50/95 backdrop-blur-md border-b border-stone-200">
-                        <div class="flex flex-1">
-                            <div *ngFor="let header of dateHeaders"
-                                class="w-[128px] shrink-0 flex flex-col items-center justify-center border-r border-stone-200 relative overflow-hidden"
-                                [ngClass]="header.isWeekend ? 'bg-stone-100/50' : 'bg-transparent'">
-                                <div *ngIf="header.isToday" class="absolute top-0 left-0 right-0 h-1 bg-emerald-500">
-                                </div>
-                                <p class="text-[10px] font-black uppercase tracking-[0.2em] mb-1"
-                                    [ngClass]="header.isToday ? 'text-emerald-600' : 'text-stone-400'">
-                                    {{ header.date | date:'EEE' }}
-                                </p>
-                                <div class="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
-                                    [ngClass]="header.isToday ? 'bg-emerald-500 text-white shadow-md' : 'text-stone-900 group-hover:bg-stone-200'">
-                                    <span class="text-[15px] font-black">{{ header.date | date:'dd' }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="h-6 flex bg-stone-100 border-t border-stone-200/50">
-                            <div *ngFor="let header of dateHeaders; let i = index"
-                                class="w-[128px] shrink-0 border-r border-stone-200/50 flex items-center justify-center">
-                                <div class="w-[80%] h-1.5 rounded-full overflow-hidden bg-stone-200"
-                                    title="Công suất lấp đầy">
-                                    <div class="h-full rounded-full"
-                                        [ngClass]="i % 3 === 0 ? 'bg-emerald-500 w-[100%]' : (i % 2 === 0 ? 'bg-amber-400 w-[50%]' : 'w-0')">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div *ngFor="let room of rooms"
-                        class="flex h-[100px] shrink-0 border-b border-stone-100 relative group/row"
-                        (mouseup)="onMouseUp()" (mouseleave)="onMouseUp()">
-                        <div
-                            class="absolute inset-0 bg-stone-50/30 opacity-0 group-hover/row:opacity-100 pointer-events-none transition-opacity">
-                        </div>
-
-                        <div *ngFor="let header of dateHeaders"
-                            class="w-[128px] shrink-0 border-r border-stone-100 relative group/cell p-1.5">
-                            <div class="w-full h-full relative rounded-xl transition-all"
-                                (mousedown)="onMouseDown(room.id, header.date)"
-                                (mouseenter)="onMouseEnter(room.id, header.date)"
-                                [class.ring-4]="isInRange(room.id, header.date)"
-                                [class.ring-[#173124]]="isInRange(room.id, header.date)"
-                                [class.ring-opacity-30]="isInRange(room.id, header.date)">
-
-                                <ng-container
-                                    *ngIf="getCalendarCell(room.id, formatDateStr(header.date)) as cellData; else emptyCell">
-
-                                    <div *ngIf="cellData.status === Status.BOOKED"
-                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
-                                        class="w-full h-full bg-[#173124] rounded-xl p-2 flex flex-col justify-center items-center text-white cursor-pointer group/booked shadow-md hover:bg-[#1f4231] transition-all relative">
-
-                                        <div class="text-[13px] font-black leading-none">{{ cellData.totalBookedInDay }}
-                                            Đơn</div>
-                                        <div class="text-[9px] font-bold uppercase tracking-widest opacity-70 mt-0.5">
-                                            Đặt phòng</div>
-
-                                        <div
-                                            class="absolute top-[calc(100%+10px)] left-0 z-[100] hidden group-hover/booked:block w-[320px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-stone-100 overflow-hidden">
-                                            <div
-                                                class="bg-stone-50 px-4 py-3 border-b border-stone-100 flex justify-between items-center">
-                                                <span class="text-[10px] font-black uppercase text-stone-500">Chi tiết
-                                                    đặt phòng</span>
-                                                <span
-                                                    class="text-[9px] font-bold bg-[#173124] text-white px-2 py-0.5 rounded-full">{{
-                                                    cellData.totalBookedInDay }} Đơn</span>
-                                            </div>
-
-                                            <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
-                                                <div *ngFor="let b of cellData.bookings"
-                                                    class="p-4 border-b border-stone-50 hover:bg-stone-50 transition-colors">
-                                                    <div class="flex items-start gap-3">
-                                                        <img src="https://ui-avatars.com/api/?name={{b.guestName}}&background=random&color=fff"
-                                                            class="w-9 h-9 rounded-full shadow-sm">
-                                                        <div class="flex-1">
-                                                            <div class="text-[13px] font-black text-stone-900">{{
-                                                                b.guestName }}</div>
-                                                            <div class="text-[11px] text-stone-500 font-medium mb-1">{{
-                                                                b.bookingCode }}</div>
-                                                            <div class="flex gap-2">
-                                                                <span
-                                                                    class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded">{{
-                                                                    b.quantity }} Phòng</span>
-                                                                <span
-                                                                    class="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded">Đã
-                                                                    xác nhận</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div *ngIf="cellData.status === 'MAINTENANCE'"
-                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
-                                        class="w-full h-full bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] rounded-xl p-2 flex flex-col justify-center items-center border border-rose-100 cursor-pointer group/lock">
-                                        <div
-                                            class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-500 mb-1 group-hover/lock:scale-110 transition-transform">
-                                            <span class="material-symbols-outlined text-[14px]">lock</span>
-                                        </div>
-                                        <span
-                                            class="text-[9px] font-black text-rose-600 uppercase tracking-[0.1em] bg-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">Bảo
-                                            trì</span>
-                                    </div>
-
-                                    <div *ngIf="cellData.status === 'BLOCKED'"
-                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
-                                        class="w-full h-full bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] rounded-xl p-2 flex flex-col justify-center items-center border border-rose-100 cursor-pointer group/lock">
-                                        <div
-                                            class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-rose-500 mb-1 group-hover/lock:scale-110 transition-transform">
-                                            <span class="material-symbols-outlined text-[14px]">lock</span>
-                                        </div>
-                                        <span
-                                            class="text-[9px] font-black text-rose-600 uppercase tracking-[0.1em] bg-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">Bị
-                                            khoá</span>
-                                    </div>
-
-                                    <div *ngIf="cellData.status === 'AVAILABLE'"
-                                        (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
-                                        class="w-full h-full bg-amber-50/50 rounded-xl p-2.5 flex flex-col justify-between border-2 border-amber-200/60 hover:border-amber-400 cursor-pointer transition-colors relative">
-                                        <div class="flex justify-between items-start">
-                                            <span
-                                                class="text-[10px] font-black text-amber-600 px-1.5 py-0.5 bg-amber-100 rounded-md">{{
-                                                cellData.availableQuantity }} trống</span>
-                                            <span
-                                                class="material-symbols-outlined text-[14px] text-amber-500">edit_note</span>
-                                        </div>
-                                        <div class="flex items-end justify-between mt-auto">
-                                            <p class="text-sm font-black text-stone-900 tabular-nums leading-none">{{
-                                                (cellData.priceOverride || room.basePrice) / 1000 }}K</p>
-                                            <span class="text-[8px] font-black text-stone-400 uppercase tracking-widest"
-                                                title="Tối thiểu 2 đêm">Min 2</span>
-                                        </div>
-                                    </div>
-
-                                </ng-container>
-
-                                <ng-template #emptyCell>
-                                    <div (click)="openEditDrawer(room.id, formatDateStr(header.date), formatDateStr(header.date))"
-                                        class="w-full h-full bg-white rounded-xl p-2.5 flex flex-col justify-between border-2 border-transparent hover:border-stone-200 hover:shadow-sm cursor-pointer transition-all group/empty relative">
-                                        <div
-                                            class="absolute top-2 right-2 opacity-0 group-hover/empty:opacity-100 text-stone-300 transition-opacity">
-                                            <span class="material-symbols-outlined text-[14px]">add</span>
-                                        </div>
-                                        <div class="mt-auto">
-                                            <p
-                                                class="text-xs font-black text-stone-400 tabular-nums leading-none group-hover/empty:text-stone-900 transition-colors">
-                                                {{ room.basePrice / 1000 }}K</p>
-                                        </div>
-                                    </div>
-                                </ng-template>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="h-8 border-t border-stone-200 bg-stone-50 flex items-center justify-between px-4">
-                <p class="text-[10px] font-bold text-stone-500 flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Đồng bộ lần cuối:
-                    Vừa xong
-                </p>
-                <p class="text-[10px] font-medium text-stone-400">
-                    Mẹo: Kéo thả chuột để chọn nhiều ngày
-                </p>
-            </div>
-
-        </div>
+        <p class="mt-0.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-stone-500">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+          {{ homeCalendarDetail?.status || 'LOADING' }} •
+          {{ homeCalendarDetail?.roomCode || '---' }} -
+          {{ homeCalendarDetail?.homestayId || homestayId }}
+        </p>
+      </div>
     </div>
 
-    <app-room-action-drawer *ngIf="showDrawer" [selectedRoomId]="activeRoomId" [dateRange]="activeRange"
-        [initialData]="drawerData" (close)="closeDrawer()" (save)="handleCalendarUpdate($event)">
-    </app-room-action-drawer>
+    <div class="flex items-center gap-3">
+      <button
+        class="flex h-9 items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 text-[11px] font-bold uppercase tracking-widest text-stone-700 shadow-sm transition-colors hover:bg-stone-50"
+      >
+        <span class="material-symbols-outlined text-[16px]">sync</span>
+        iCal
+      </button>
 
+      <button
+        class="flex h-9 items-center gap-2 rounded-xl bg-stone-900 px-5 text-[11px] font-bold uppercase tracking-widest text-white shadow-md transition-all hover:bg-[#173124] active:scale-95"
+      >
+        <span class="material-symbols-outlined text-[16px]">tune</span>
+        Tùy chỉnh hàng loạt
+      </button>
+    </div>
+  </header>
+
+  <div class="mx-auto flex w-full max-w-[1800px] flex-1 flex-col p-6 lg:p-8">
+
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-2xl font-black tracking-tight text-stone-900">
+        {{ getDisplayMonthTitle() }}
+      </h2>
+
+      <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4 rounded-xl border border-stone-200 bg-white px-4 py-2 shadow-sm">
+          <div class="flex items-center gap-1.5">
+            <span class="h-3 w-3 rounded border border-stone-200 bg-white"></span>
+            <span class="text-[11px] font-bold text-stone-600">Trống</span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="h-3 w-3 rounded bg-[#173124] shadow-sm"></span>
+            <span class="text-[11px] font-bold text-stone-600">Đã đặt</span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span
+              class="h-3 w-3 rounded border border-rose-100 bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_4px,#ffe4e6_4px,#ffe4e6_8px)]"
+            ></span>
+            <span class="text-[11px] font-bold text-stone-600">Bảo trì</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 rounded-xl border border-stone-200 bg-white p-1 shadow-sm">
+          <button
+            (click)="goPreviousWeek()"
+            class="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-stone-100"
+          >
+            <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+          </button>
+
+          <button
+            (click)="goNextWeek()"
+            class="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-stone-100"
+          >
+            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="flex h-[65vh] flex-1 flex-col overflow-hidden rounded-[24px] border border-stone-200/80 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
+    >
+      <div class="custom-scrollbar relative flex flex-1 overflow-auto">
+
+        <!-- LEFT ROOMS -->
+        <div
+          class="sticky left-0 z-30 flex w-[300px] shrink-0 flex-col border-r border-stone-200 bg-white shadow-[4px_0_24px_rgba(0,0,0,0.03)]"
+        >
+          <div
+            class="relative z-20 flex h-[96px] shrink-0 flex-col justify-end border-b border-stone-200 bg-stone-50/95 p-4 backdrop-blur-md"
+          >
+            <span class="mb-1 text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">
+              Loại phòng / Listing
+            </span>
+
+            <div class="relative">
+              <span
+                class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-stone-400"
+              >
+                search
+              </span>
+
+              <input
+                type="text"
+                placeholder="Tìm phòng..."
+                (input)="onSearch($event)"
+                class="h-8 w-full rounded-lg border border-stone-200 bg-white pl-9 pr-3 text-xs font-medium transition-all placeholder:text-stone-300 focus:border-[#173124] focus:outline-none focus:ring-1 focus:ring-[#173124]"
+              />
+            </div>
+          </div>
+
+          <div
+            *ngFor="let room of filteredRooms; trackBy: trackByRoomId"
+            class="group relative flex h-[100px] shrink-0 items-center border-b border-stone-100 bg-white px-4 transition-colors hover:bg-stone-50/80"
+          >
+            <div
+              class="pointer-events-none absolute bottom-0 left-0 top-0 w-1 bg-stone-200 transition-colors group-hover:bg-[#173124]"
+            ></div>
+
+            <div
+              class="group/img relative mr-4 h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-lg border border-stone-100 bg-stone-100 shadow-sm"
+              (click)="openRoomGallery(room)"
+            >
+              <img
+                [src]="getCoverImage(room)"
+                [alt]="room.name"
+                class="h-full w-full object-cover"
+              />
+
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover/img:opacity-100"
+              >
+                <span class="material-symbols-outlined text-[20px] text-white">zoom_in</span>
+              </div>
+
+              <div
+                *ngIf="room.images?.length"
+                class="absolute bottom-1 right-1 z-10 rounded bg-black/60 px-1 text-[8px] font-bold tracking-wider text-white backdrop-blur-sm"
+              >
+                {{ room.images.length }} ẢNH
+              </div>
+            </div>
+
+            <div class="flex min-w-0 flex-1 flex-col justify-center">
+              <p
+                class="line-clamp-1 text-[13px] font-black leading-tight text-stone-900 transition-colors group-hover:text-[#173124]"
+              >
+                {{ room.name }}
+              </p>
+
+              <div class="mt-2 flex items-center justify-between gap-2">
+                <div
+                  class="flex cursor-help items-center gap-1.5 rounded-md bg-stone-100 px-2 py-1 text-[10px] font-bold text-stone-500"
+                  [title]="getBedTooltip(room.beds || [])"
+                >
+                  <span class="material-symbols-outlined text-[12px] text-[#173124]">bed</span>
+                  <span>{{ getTotalBeds(room.beds || []) }} giường</span>
+                </div>
+
+                <div class="flex flex-col items-end">
+                  <span class="mb-0.5 text-[8px] font-bold uppercase leading-none tracking-widest text-stone-400">
+                    Từ
+                  </span>
+
+                  <p class="text-sm font-black leading-none tabular-nums text-stone-900">
+                    {{ formatShortPrice(getRoomPreviewPrice(room)) }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT CALENDAR -->
+        <div class="relative z-10 flex min-w-max flex-col">
+
+          <!-- DATE HEADER -->
+          <div
+            class="sticky top-0 z-20 flex h-[96px] shrink-0 flex-col border-b border-stone-200 bg-stone-50/95 backdrop-blur-md"
+          >
+            <div class="flex flex-1">
+              <div
+                *ngFor="let header of dateHeaders; trackBy: trackByDateStr"
+                class="relative flex w-[128px] shrink-0 flex-col items-center justify-center overflow-hidden border-r border-stone-200"
+                [ngClass]="header.isWeekend ? 'bg-stone-100/50' : 'bg-transparent'"
+              >
+                <div
+                  *ngIf="header.isToday"
+                  class="absolute left-0 right-0 top-0 h-1 bg-emerald-500"
+                ></div>
+
+                <p
+                  class="mb-1 text-[10px] font-black uppercase tracking-[0.2em]"
+                  [ngClass]="header.isToday ? 'text-emerald-600' : 'text-stone-400'"
+                >
+                  {{ header.date | date:'EEE' }}
+                </p>
+
+                <div
+                  class="flex h-8 w-8 items-center justify-center rounded-full transition-colors"
+                  [ngClass]="header.isToday ? 'bg-emerald-500 text-white shadow-md' : 'text-stone-900'"
+                >
+                  <span class="text-[15px] font-black">{{ header.date | date:'dd' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex h-6 border-t border-stone-200/50 bg-stone-100">
+              <div
+                *ngFor="let header of dateHeaders; let i = index; trackBy: trackByDateStr"
+                class="flex w-[128px] shrink-0 items-center justify-center border-r border-stone-200/50"
+              >
+                <div class="h-1.5 w-[80%] overflow-hidden rounded-full bg-stone-200" title="Công suất lấp đầy">
+                  <div
+                    class="h-full rounded-full"
+                    [ngClass]="i % 3 === 0 ? 'bg-emerald-500 w-[100%]' : (i % 2 === 0 ? 'bg-amber-400 w-[50%]' : 'w-0')"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROWS -->
+          <div
+            *ngFor="let room of filteredRooms; trackBy: trackByRoomId"
+            class="group/row relative flex h-[100px] shrink-0 border-b border-stone-100"
+            (mouseup)="onMouseUp()"
+            (mouseleave)="onMouseUp()"
+          >
+            <div
+              class="pointer-events-none absolute inset-0 bg-stone-50/30 opacity-0 transition-opacity group-hover/row:opacity-100"
+            ></div>
+
+            <div
+              *ngFor="let header of dateHeaders; trackBy: trackByDateStr"
+              class="group/cell relative w-[128px] shrink-0 border-r border-stone-100 p-1.5"
+            >
+              <div
+                class="relative h-full w-full rounded-xl transition-all"
+                (mousedown)="onMouseDown(room.id, header.date)"
+                (mouseenter)="onMouseEnter(room.id, header.date)"
+                [class.ring-4]="isInRange(room.id, header.date)"
+                [class.ring-[#173124]]="isInRange(room.id, header.date)"
+                [class.ring-opacity-30]="isInRange(room.id, header.date)"
+              >
+                <ng-container *ngIf="getCalendarCell(room.id, header.dateStr) as cellData; else emptyCell">
+
+                  <!-- BOOKED -->
+                  <div
+                    *ngIf="cellData.status === Status.BOOKED"
+                    (click)="openEditDrawer(room.id, header.dateStr, header.dateStr)"
+                    class="group/booked relative flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-xl bg-[#173124] p-2 text-white shadow-md transition-all hover:bg-[#1f4231]"
+                  >
+                    <div class="text-[13px] font-black leading-none">
+                      {{ cellData.totalBookedInDay || 0 }} Đơn
+                    </div>
+
+                    <div class="mt-0.5 text-[9px] font-bold uppercase tracking-widest opacity-70">
+                      Đặt phòng
+                    </div>
+
+                    <div
+                      class="absolute left-0 top-[calc(100%+10px)] z-[100] hidden w-[320px] overflow-hidden rounded-2xl border border-stone-100 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] group-hover/booked:block"
+                    >
+                      <div class="flex items-center justify-between border-b border-stone-100 bg-stone-50 px-4 py-3">
+                        <span class="text-[10px] font-black uppercase text-stone-500">
+                          Chi tiết đặt phòng
+                        </span>
+
+                        <span class="rounded-full bg-[#173124] px-2 py-0.5 text-[9px] font-bold text-white">
+                          {{ cellData.totalBookedInDay || 0 }} Đơn
+                        </span>
+                      </div>
+
+                      <div class="custom-scrollbar max-h-[300px] overflow-y-auto">
+                        <div
+                          *ngFor="let booking of (cellData.bookings || [])"
+                          class="border-b border-stone-50 p-4 transition-colors hover:bg-stone-50"
+                        >
+                          <div class="flex items-start gap-3">
+                            <img
+                              [src]="getGuestAvatarUrl(booking.guestName)"
+                              class="h-9 w-9 rounded-full shadow-sm"
+                              alt="Guest avatar"
+                            />
+
+                            <div class="flex-1">
+                              <div class="text-[13px] font-black text-stone-900">
+                                {{ booking.guestName }}
+                              </div>
+
+                              <div class="mb-1 text-[11px] font-medium text-stone-500">
+                                {{ booking.bookingCode }}
+                              </div>
+
+                              <div class="flex gap-2">
+                                <span class="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+                                  {{ booking.quantity }} Phòng
+                                </span>
+
+                                <span class="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                                  Đã xác nhận
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div
+                          *ngIf="!cellData.bookings?.length"
+                          class="p-4 text-center text-xs font-semibold text-stone-400"
+                        >
+                          Không có dữ liệu booking chi tiết.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- MAINTENANCE -->
+                  <div
+                    *ngIf="cellData.status === Status.MAINTENANCE"
+                    (click)="openEditDrawer(room.id, header.dateStr, header.dateStr)"
+                    class="group/lock flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-xl border border-rose-100 bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] p-2"
+                  >
+                    <div
+                      class="mb-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-rose-500 shadow-sm transition-transform group-hover/lock:scale-110"
+                    >
+                      <span class="material-symbols-outlined text-[14px]">lock</span>
+                    </div>
+
+                    <span
+                      class="rounded-full bg-white/80 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rose-600 backdrop-blur-sm"
+                    >
+                      Bảo trì
+                    </span>
+                  </div>
+
+                  <!-- BLOCKED -->
+                  <div
+                    *ngIf="cellData.status === Status.BLOCKED"
+                    (click)="openEditDrawer(room.id, header.dateStr, header.dateStr)"
+                    class="group/lock flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-xl border border-rose-100 bg-[repeating-linear-gradient(45deg,#fff1f2,#fff1f2_6px,#ffe4e6_6px,#ffe4e6_12px)] p-2"
+                  >
+                    <div
+                      class="mb-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-rose-500 shadow-sm transition-transform group-hover/lock:scale-110"
+                    >
+                      <span class="material-symbols-outlined text-[14px]">lock</span>
+                    </div>
+
+                    <span
+                      class="rounded-full bg-white/80 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] text-rose-600 backdrop-blur-sm"
+                    >
+                      Bị khoá
+                    </span>
+                  </div>
+
+                  <!-- AVAILABLE -->
+                  <div
+                    *ngIf="cellData.status === Status.AVAILABLE"
+                    (click)="openEditDrawer(room.id, header.dateStr, header.dateStr)"
+                    class="relative flex h-full w-full cursor-pointer flex-col justify-between rounded-xl border-2 border-amber-200/60 bg-amber-50/50 p-2.5 transition-colors hover:border-amber-400"
+                  >
+                    <div class="flex items-start justify-between">
+                      <span class="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-600">
+                        {{ cellData.availableQuantity || 0 }} trống
+                      </span>
+
+                      <span class="material-symbols-outlined text-[14px] text-amber-500">
+                        edit_note
+                      </span>
+                    </div>
+
+                    <div class="mt-auto flex items-end justify-between">
+                      <div>
+                        <p class="text-sm font-black leading-none tabular-nums text-stone-900">
+                          {{ formatShortPrice(getCellDisplayPrice(cellData, room)) }}
+                        </p>
+
+                        <span
+                          *ngIf="cellData.hasPriceOverride"
+                          class="mt-1 block text-[8px] font-black uppercase tracking-widest text-blue-600"
+                        >
+                          Custom
+                        </span>
+                      </div>
+
+                      <span
+                        class="text-[8px] font-black uppercase tracking-widest text-stone-400"
+                        title="Tối thiểu 2 đêm"
+                      >
+                        Min 2
+                      </span>
+                    </div>
+                  </div>
+
+                </ng-container>
+
+                <!-- EMPTY CELL -->
+                <ng-template #emptyCell>
+                  <div
+                    (click)="openEditDrawer(room.id, header.dateStr, header.dateStr)"
+                    class="group/empty relative flex h-full w-full cursor-pointer flex-col justify-between rounded-xl border-2 border-transparent bg-white p-2.5 transition-all hover:border-stone-200 hover:shadow-sm"
+                  >
+                    <div
+                      class="absolute right-2 top-2 text-stone-300 opacity-0 transition-opacity group-hover/empty:opacity-100"
+                    >
+                      <span class="material-symbols-outlined text-[14px]">add</span>
+                    </div>
+
+                    <div class="mt-auto">
+                      <p
+                        class="text-xs font-black leading-none tabular-nums text-stone-400 transition-colors group-hover/empty:text-stone-900"
+                      >
+                        {{ formatShortPrice(getRoomPreviewPrice(room)) }}
+                      </p>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex h-8 items-center justify-between border-t border-stone-200 bg-stone-50 px-4">
+        <p class="flex items-center gap-1.5 text-[10px] font-bold text-stone-500">
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+          Đồng bộ lần cuối: Vừa xong
+        </p>
+
+        <p class="text-[10px] font-medium text-stone-400">
+          Mẹo: Kéo thả chuột để chọn nhiều ngày
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <app-room-action-drawer
+    *ngIf="showDrawer"
+    [selectedRoomId]="activeRoomId"
+    [dateRange]="activeRange"
+    [initialData]="drawerData"
+    (close)="closeDrawer()"
+    (save)="handleCalendarUpdate($event)"
+  >
+  </app-room-action-drawer>
 </div>
+
 <app-shared-image-lightbox #lightbox></app-shared-image-lightbox>

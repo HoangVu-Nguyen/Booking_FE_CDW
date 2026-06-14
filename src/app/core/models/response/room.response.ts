@@ -1,3 +1,4 @@
+import { BedResponse, CalendarInventoryResponse, RoomCalendarStatus, RoomImageResponse } from "./calendar.response";
 import { AmenityResponse } from "./homestay.response";
 
 export interface RoomResponse {
@@ -11,15 +12,15 @@ export interface RoomResponse {
     checkInTime: string; // '14:00 PM'
     maxGuests: number;
     bedCount: number;
-    quantity: number;
-    imageUrl: string;
-    availableQuantity:number;
+    availableQuantity: number;
 
-    // 6 ô Icon nổi bật (Dữ liệu từ bảng room_amenity_highlights)
     highlights: AmenityHighlight[];
-
-    // Các gói giá (Dữ liệu từ bảng room_rate_plans)
     ratePlans: RatePlanResponse[];
+    
+    images: RoomImageResponse[];
+    basePrice: number;
+    beds: BedResponse[];
+    inventory: CalendarInventoryResponse[];
 }
 
 export interface AmenityHighlight {
@@ -34,4 +35,16 @@ export interface RatePlanResponse {
     price: number;            // Giá theo đêm (Backend trả về BigDecimal -> number)
     isNonRefundable: boolean;
     benefits: string[];       // Danh sách text tích xanh (đã được BE xử lý JOIN)
+}
+export interface DrawerRatePlanEdit {
+  ratePlanId: number;
+  name: string;
+  price: number; // Giá Host nhập vào cho ngày/giai đoạn này
+}
+
+export interface RoomDrawerData {
+  roomId: number;
+  availableQuantity: number;
+  status: RoomCalendarStatus; // AVAILABLE, BLOCKED, MAINTENANCE
+  ratePlans: DrawerRatePlanEdit[]; // 👉 Danh sách các gói giá để edit
 }

@@ -1,247 +1,605 @@
-<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#0f172a]/60 backdrop-blur-sm transition-opacity">
-    
-    <div class="absolute inset-0" (click)="onClose()"></div>
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-[#0f172a]/60 p-4 backdrop-blur-sm sm:p-6">
 
-    <div class="relative w-full max-w-[1050px] flex flex-col bg-white rounded-3xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] ring-1 ring-white/10 overflow-hidden animate-scaleIn">
-        
-        <div class="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-white z-10">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#173124] to-[#0a1610] flex items-center justify-center text-emerald-400 shadow-inner">
-                    <span class="material-symbols-outlined text-2xl">auto_graph</span>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2 mb-0.5">
-                        <h2 class="text-xl font-black text-gray-900 tracking-tight">Cập nhật Lịch & Giá</h2>
-                        <span class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-black uppercase tracking-widest">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Live Sync
-                        </span>
-                    </div>
-                    <div class="flex items-center gap-2 text-xs font-semibold text-gray-500">
-                        <span>Ocean Deluxe King</span>
-                        <span class="text-gray-300">•</span>
-                        <span class="text-[#173124] bg-[#173124]/5 px-1.5 rounded">{{ dateRange.start }} - {{ dateRange.end }}</span>
-                    </div>
-                </div>
-            </div>
-            
-            <button (click)="onClose()" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-colors">
-                <span class="material-symbols-outlined text-[20px]">close</span>
-            </button>
+  <div class="absolute inset-0" (click)="onClose()"></div>
+
+  <div
+    class="animate-scaleIn relative flex w-full max-w-[1050px] flex-col overflow-hidden rounded-3xl bg-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] ring-1 ring-white/10"
+  >
+
+    <!-- HEADER -->
+    <div class="z-10 flex items-center justify-between border-b border-gray-100 bg-white px-8 py-5">
+      <div class="flex items-center gap-4">
+        <div
+          class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#173124] to-[#0a1610] text-emerald-400 shadow-inner"
+        >
+          <span class="material-symbols-outlined text-2xl">auto_graph</span>
         </div>
 
-        <div class="flex-1 overflow-hidden flex flex-col md:flex-row bg-white">
-            
-            <div class="flex-1 p-8 overflow-y-auto custom-scrollbar flex flex-col">
-                
-                <div class="flex p-1 bg-slate-100 rounded-xl mb-8 w-full border border-slate-200/60 shadow-inner">
-                    <button (click)="activeTab = 'price'" 
-                        [ngClass]="activeTab === 'price' ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200/50' : 'text-slate-500 hover:text-slate-700'"
-                        class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all">
-                        <span class="material-symbols-outlined text-[16px]">payments</span> Giá & Ràng buộc
-                    </button>
-                    <button (click)="activeTab = 'inventory'" 
-                        [ngClass]="activeTab === 'inventory' ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200/50' : 'text-slate-500 hover:text-slate-700'"
-                        class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all">
-                        <span class="material-symbols-outlined text-[16px]">inventory_2</span> Tồn kho
-                    </button>
-                    <button (click)="activeTab = 'status'" 
-                        [ngClass]="activeTab === 'status' ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200/50' : 'text-slate-500 hover:text-slate-700'"
-                        class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all">
-                        <span class="material-symbols-outlined text-[16px]">tune</span> Quản lý Đóng/Mở
-                    </button>
-                </div>
+        <div>
+          <div class="mb-0.5 flex items-center gap-2">
+            <h2 class="text-xl font-black tracking-tight text-gray-900">
+              Cập nhật Lịch & Giá
+            </h2>
 
-                <form class="space-y-8 flex-1">
-                    
-                    <ng-container *ngIf="activeTab === 'price'">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="col-span-2">
-                                <label class="flex justify-between items-end mb-2">
-                                    <span class="text-xs font-black text-slate-800 uppercase tracking-widest">Giá mỗi đêm</span>
-                                    <span class="text-[10px] font-bold text-blue-600 flex items-center gap-1 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
-                                        <span class="material-symbols-outlined text-[12px]">auto_awesome</span> Đề xuất: {{ marketPrice | number:'1.0-0' }}đ
-                                    </span>
-                                </label>
-                                <div class="relative flex items-center">
-                                    <div class="absolute left-4 w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs border border-slate-200">₫</div>
-                                    <input type="number" [(ngModel)]="newPrice" name="price" 
-                                        class="block w-full pl-16 pr-4 py-4 bg-white border-2 border-slate-200 rounded-xl text-slate-900 text-2xl font-black focus:ring-0 focus:border-[#173124] outline-none transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]" 
-                                        placeholder="1200000">
-                                </div>
-                            </div>
-                            
-                            <div class="col-span-1">
-                                <label class="block text-xs font-bold text-slate-600 mb-2">Đêm tối thiểu (Min Nights)</label>
-                                <input type="number" [(ngModel)]="minNights" name="minNights" 
-                                    class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm font-bold focus:bg-white focus:border-[#173124] outline-none transition-all">
-                            </div>
+            <span
+              class="flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-700"
+            >
+              <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></span>
+              Live Sync
+            </span>
+          </div>
 
-                            <div class="col-span-1">
-                                <label class="block text-xs font-bold text-slate-600 mb-2">Phụ thu cuối tuần</label>
-                                <input type="number" [(ngModel)]="weekendFee" name="weekendFee" 
-                                    class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm font-bold focus:bg-white focus:border-[#173124] outline-none transition-all"
-                                    placeholder="+ 0 VND">
-                            </div>
-                        </div>
-
-                        <div class="mt-6">
-                            <label class="block text-xs font-bold text-slate-600 mb-2">Ghi chú điều chỉnh giá (Nội bộ)</label>
-                            <textarea [(ngModel)]="internalNote" name="internalNote" rows="2"
-                                class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-[#173124] outline-none transition-all resize-none"
-                                placeholder="VD: Tăng giá 15% do lễ hội âm nhạc gần nhà..."></textarea>
-                        </div>
-                    </ng-container>
-
-                    <ng-container *ngIf="activeTab === 'inventory'">
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-xs font-black text-slate-800 uppercase tracking-widest mb-3">Số lượng phòng mở bán</label>
-                                <div class="flex items-center gap-4">
-                                    <input type="number" [(ngModel)]="newInventory" name="inventory" 
-                                        class="block w-32 px-4 py-4 text-center bg-white border-2 border-slate-200 rounded-xl text-slate-900 text-3xl font-black focus:border-[#173124] outline-none transition-all shadow-sm" 
-                                        placeholder="8">
-                                    <div class="flex-1">
-                                        <div class="flex justify-between text-xs font-bold text-slate-500 mb-1.5">
-                                            <span>Đã phân bổ</span>
-                                            <span>{{ totalCapacity - (newInventory || 0) }} / {{ totalCapacity }} Phòng</span>
-                                        </div>
-                                        <div class="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                                            <div class="h-full rounded-full transition-all duration-500"
-                                                 [ngClass]="newInventory === 0 ? 'bg-rose-500' : 'bg-emerald-500'"
-                                                 [style.width.%]="((totalCapacity - (newInventory || 0)) / totalCapacity) * 100">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="p-4 border border-slate-200 rounded-xl">
-                                <label class="flex items-center justify-between cursor-pointer">
-                                    <div class="flex items-center gap-3">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/873/873133.png" class="w-6 h-6 grayscale opacity-60">
-                                        <div>
-                                            <p class="text-sm font-bold text-slate-800">Đồng bộ tự động OTA</p>
-                                            <p class="text-xs font-medium text-slate-500">Đẩy tồn kho mới lên Booking, Agoda</p>
-                                        </div>
-                                    </div>
-                                    <div class="relative">
-                                        <input type="checkbox" [(ngModel)]="syncOta" name="syncOta" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#173124]"></div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    </ng-container>
-
-                    <ng-container *ngIf="activeTab === 'status'">
-                        <div class="space-y-4">
-                            <label class="relative flex items-start p-5 border-2 rounded-xl cursor-pointer transition-all overflow-hidden"
-                                   [ngClass]="roomStatus === 'AVAILABLE' ? 'border-[#173124] bg-[#173124]/[0.02]' : 'border-slate-200 hover:border-slate-300 bg-white'">
-                                <div class="absolute top-0 left-0 w-1 h-full" [ngClass]="roomStatus === 'AVAILABLE' ? 'bg-[#173124]' : 'bg-transparent'"></div>
-                                <div class="flex items-center h-5 mt-0.5 ml-2">
-                                    <input type="radio" [(ngModel)]="roomStatus" value="AVAILABLE" name="status" class="w-5 h-5 text-[#173124] focus:ring-[#173124] border-gray-300">
-                                </div>
-                                <div class="ml-4 flex flex-col w-full">
-                                    <span class="text-sm font-bold text-slate-900 block">Mở bán (Available)</span>
-                                    <span class="text-xs font-medium text-slate-500 block mt-1">Phòng sẵn sàng đón khách.</span>
-                                </div>
-                            </label>
-
-                            <label class="relative flex items-start p-5 border-2 rounded-xl cursor-pointer transition-all overflow-hidden"
-                                   [ngClass]="roomStatus === 'BLOCKED' ? 'border-rose-500 bg-rose-50/10' : 'border-slate-200 hover:border-slate-300 bg-white'">
-                                <div class="absolute top-0 left-0 w-1 h-full" [ngClass]="roomStatus === 'BLOCKED' ? 'bg-rose-500' : 'bg-transparent'"></div>
-                                <div class="flex items-center h-5 mt-0.5 ml-2">
-                                    <input type="radio" [(ngModel)]="roomStatus" value="BLOCKED" name="status" class="w-5 h-5 text-rose-600 focus:ring-rose-600 border-gray-300">
-                                </div>
-                                <div class="ml-4 flex flex-col w-full">
-                                    <span class="text-sm font-bold text-rose-700 block">Khóa phòng (Out of Order / Blocked)</span>
-                                    <span class="text-xs font-medium text-rose-600/70 block mt-1 mb-4">Rút phòng khỏi quỹ bán. Cần cung cấp lý do để bàn giao ca.</span>
-                                    
-                                    <div class="pt-4 border-t border-rose-100 space-y-4" *ngIf="roomStatus === 'BLOCKED'">
-                                        
-                                        <div>
-                                            <label class="block text-[11px] font-black text-rose-800 uppercase tracking-widest mb-2">Phân loại sự cố <span class="text-rose-500">*</span></label>
-                                            <div class="grid grid-cols-2 gap-2">
-                                                <button type="button" (click)="blockReason = 'MAINTENANCE'" [ngClass]="blockReason === 'MAINTENANCE' ? 'bg-rose-500 text-white' : 'bg-white text-rose-700 border border-rose-200 hover:bg-rose-50'" class="px-3 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-[14px]">plumbing</span> Kỹ thuật
-                                                </button>
-                                                <button type="button" (click)="blockReason = 'CLEANING'" [ngClass]="blockReason === 'CLEANING' ? 'bg-rose-500 text-white' : 'bg-white text-rose-700 border border-rose-200 hover:bg-rose-50'" class="px-3 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-[14px]">cleaning_services</span> Buồng phòng
-                                                </button>
-                                                <button type="button" (click)="blockReason = 'ADMIN'" [ngClass]="blockReason === 'ADMIN' ? 'bg-rose-500 text-white' : 'bg-white text-rose-700 border border-rose-200 hover:bg-rose-50'" class="px-3 py-2 text-xs font-bold rounded-lg transition-colors flex items-center gap-2">
-                                                    <span class="material-symbols-outlined text-[14px]">admin_panel_settings</span> Quản trị
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-[11px] font-black text-rose-800 uppercase tracking-widest mb-2">Chi tiết bàn giao ca <span class="text-rose-500">*</span></label>
-                                            <textarea [(ngModel)]="internalNote" name="internalNote" rows="3"
-                                                class="block w-full px-4 py-3 bg-white border border-rose-200 rounded-xl text-slate-900 text-sm focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all resize-none shadow-sm"
-                                                placeholder="VD: Điều hòa chảy nước. Đã gọi thợ điện lạnh báo giá, 9h sáng mai thợ qua kiểm tra..."></textarea>
-                                        </div>
-
-                                        <label class="flex items-center gap-2 cursor-pointer mt-2">
-                                            <input type="checkbox" [(ngModel)]="notifyTeam" name="notifyTeam" class="w-4 h-4 rounded text-rose-500 focus:ring-rose-500 border-gray-300">
-                                            <span class="text-xs font-medium text-rose-800">Tạo task gửi sang bộ phận Kỹ thuật / Buồng phòng</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </ng-container>
-                </form>
-            </div>
-
-            <div class="w-full md:w-[360px] bg-slate-50 border-l border-slate-200 p-8 flex flex-col shrink-0 relative">
-                
-                <div class="flex-1">
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Xác nhận thao tác</h3>
-                    
-                    <div class="bg-white border border-slate-200/60 rounded-xl p-5 shadow-sm space-y-4">
-                        
-                        <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
-                            <img [src]="owner?.avatar" class="w-8 h-8 rounded-full">
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-tight">Người thực hiện</p>
-                                <p class="text-xs font-bold text-slate-900">{{ owner?.fullName }}</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Áp dụng cho</p>
-                            <p class="text-sm font-bold text-slate-800">{{ dateRange.start }} <span class="text-slate-300 mx-1">→</span> {{ dateRange.end }}</p>
-                        </div>
-
-                        <div class="pt-4 border-t border-slate-100" *ngIf="activeTab === 'price'">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Giá áp dụng</p>
-                            <p class="text-xl font-black text-[#173124]">{{ newPrice || 0 | number:'1.0-0' }} <span class="text-[10px] font-bold text-slate-500">VND</span></p>
-                        </div>
-
-                        <div class="pt-4 border-t border-slate-100" *ngIf="activeTab === 'status'">
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Trạng thái mới</p>
-                            <span class="px-2.5 py-1 rounded-md text-[10px] font-black tracking-widest uppercase"
-                                  [ngClass]="roomStatus === 'AVAILABLE' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'">
-                                {{ roomStatus === 'AVAILABLE' ? 'Đang mở bán' : 'Khóa (Out of Order)' }}
-                            </span>
-                        </div>
-
-                        <div class="pt-4 border-t border-slate-100 bg-amber-50/50 p-3 rounded-lg mt-4 border border-amber-100" *ngIf="internalNote">
-                            <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[12px]">sticky_note_2</span> Log bàn giao
-                            </p>
-                            <p class="text-xs text-amber-900 italic font-medium leading-relaxed">"{{ internalNote }}"</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-8 pt-6">
-                    <button (click)="applyChanges()" type="button" 
-                        class="w-full py-4 bg-[#173124] text-white rounded-xl font-bold text-sm transition-all shadow-[0_8px_20px_-4px_rgba(23,49,36,0.3)] hover:shadow-[0_12px_24px_-4px_rgba(23,49,36,0.4)] hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-                        Xác nhận & Lưu vết
-                    </button>
-                </div>
-            </div>
+          <div class="flex items-center gap-2 text-xs font-semibold text-gray-500">
+            <span>{{ drawerData?.roomName || 'Tên phòng' }}</span>
+            <span class="text-gray-300">•</span>
+            <span class="rounded bg-[#173124]/5 px-1.5 text-[#173124]">
+              {{ dateRange.start }} - {{ dateRange.end }}
+            </span>
+          </div>
         </div>
+      </div>
+
+      <button
+        (click)="onClose()"
+        class="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900"
+      >
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
     </div>
+
+    <div class="flex flex-1 flex-col overflow-hidden bg-white md:flex-row">
+
+      <!-- MAIN CONTENT -->
+      <div class="custom-scrollbar flex flex-1 flex-col overflow-y-auto p-8">
+
+        <!-- TABS -->
+        <div class="mb-8 flex w-full rounded-xl border border-slate-200/60 bg-slate-100 p-1 shadow-inner">
+          <button
+            type="button"
+            (click)="activeTab = 'price'"
+            [ngClass]="activeTab === 'price'
+              ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200/50'
+              : 'text-slate-500 hover:text-slate-700'"
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all"
+          >
+            <span class="material-symbols-outlined text-[16px]">payments</span>
+            Giá & Gói
+          </button>
+
+          <button
+            type="button"
+            (click)="activeTab = 'inventory'"
+            [ngClass]="activeTab === 'inventory'
+              ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200/50'
+              : 'text-slate-500 hover:text-slate-700'"
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all"
+          >
+            <span class="material-symbols-outlined text-[16px]">inventory_2</span>
+            Tồn kho
+          </button>
+
+          <button
+            type="button"
+            (click)="activeTab = 'status'"
+            [ngClass]="activeTab === 'status'
+              ? 'bg-white text-slate-900 shadow-sm ring-1 ring-slate-200/50'
+              : 'text-slate-500 hover:text-slate-700'"
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all"
+          >
+            <span class="material-symbols-outlined text-[16px]">tune</span>
+            Đóng/Mở phòng
+          </button>
+        </div>
+
+        <form class="flex-1 space-y-8">
+
+          <!-- PRICE TAB -->
+          <ng-container *ngIf="activeTab === 'price'">
+
+            <div>
+              <div class="mb-4 flex items-center justify-between">
+                <label class="block text-xs font-black uppercase tracking-widest text-slate-800">
+                  Giá từng gói
+                </label>
+
+                <span class="text-xs font-semibold text-slate-400">
+                  {{ drawerData.ratePlans.length }} gói giá
+                </span>
+              </div>
+
+              <div *ngIf="drawerData.ratePlans.length === 0" class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
+                <p class="text-sm font-bold text-slate-500">
+                  Phòng này chưa có gói giá.
+                </p>
+              </div>
+
+              <div class="space-y-4">
+                <div
+                  *ngFor="let plan of drawerData.ratePlans; trackBy: trackByPlanId"
+                  class="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-center"
+                >
+                  <div
+                    class="absolute bottom-0 left-0 top-0 w-1 transition-colors"
+                    [ngClass]="hasRatePlanChanged(plan) ? 'bg-amber-500' : 'bg-slate-200 group-focus-within:bg-[#173124]'"
+                  ></div>
+
+                  <div class="mb-3 ml-2 md:mb-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h4 class="text-sm font-bold text-slate-800">
+                        {{ plan.name }}
+                      </h4>
+
+                      <span
+                        *ngIf="plan.isNonRefundable"
+                        class="rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-rose-600"
+                      >
+                        Không hoàn tiền
+                      </span>
+
+                      <span
+                        *ngIf="plan.hasOverride"
+                        class="rounded-full bg-blue-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-blue-600"
+                      >
+                        Đang có custom
+                      </span>
+
+                      <span
+                        *ngIf="hasRatePlanChanged(plan)"
+                        class="rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-amber-700"
+                      >
+                        Đã sửa
+                      </span>
+                    </div>
+
+                    <p class="mt-1 text-[10px] text-slate-500">
+                      Giá gốc:
+                      <span class="font-black text-slate-700">
+                        {{ plan.basePrice | number:'1.0-0' }}đ
+                      </span>
+                    </p>
+
+                    <button
+                      type="button"
+                      (click)="resetPlanToBasePrice(plan)"
+                      class="mt-2 text-[11px] font-bold text-blue-600 hover:underline"
+                    >
+                      Đặt về giá gốc
+                    </button>
+                  </div>
+
+                  <div class="relative flex w-full items-center md:w-56">
+                    <div
+                      class="absolute left-3 flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-slate-200 text-xs font-bold text-slate-600"
+                    >
+                      ₫
+                    </div>
+
+                    <input
+                      type="number"
+                      [(ngModel)]="plan.editPrice"
+                      name="price_{{ plan.id }}"
+                      min="0"
+                      class="block w-full rounded-lg border-2 border-slate-200 bg-white py-3 pl-12 pr-4 text-lg font-black text-slate-900 shadow-[0_2px_10px_rgba(0,0,0,0.02)] outline-none transition-all focus:border-[#173124] focus:ring-0"
+                      placeholder="Nhập giá mới"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 border-t border-slate-100 pt-6">
+              <div class="col-span-1">
+                <label class="mb-2 block text-xs font-bold text-slate-600">
+                  Đêm tối thiểu
+                </label>
+
+                <input
+                  type="number"
+                  [(ngModel)]="minNights"
+                  name="minNights"
+                  min="1"
+                  class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-900 outline-none transition-all focus:border-[#173124] focus:bg-white"
+                />
+              </div>
+
+              <div class="col-span-1">
+                <label class="mb-2 block text-xs font-bold text-slate-600">
+                  Phụ thu cuối tuần
+                </label>
+
+                <input
+                  type="number"
+                  [(ngModel)]="weekendFee"
+                  name="weekendFee"
+                  min="0"
+                  class="block w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-900 outline-none transition-all focus:border-[#173124] focus:bg-white"
+                  placeholder="+ 0 VND"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-xs font-bold text-slate-600">
+                Ghi chú thay đổi
+              </label>
+
+              <textarea
+                [(ngModel)]="internalNote"
+                name="priceInternalNote"
+                rows="2"
+                class="block w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#173124] focus:bg-white"
+                placeholder="VD: Tăng giá do cuối tuần, lễ hội..."
+              ></textarea>
+            </div>
+          </ng-container>
+
+          <!-- INVENTORY TAB -->
+          <ng-container *ngIf="activeTab === 'inventory'">
+            <div class="space-y-6">
+              <div>
+                <label class="mb-3 block text-xs font-black uppercase tracking-widest text-slate-800">
+                  Số lượng phòng mở bán
+                </label>
+
+                <div class="flex items-center gap-4">
+                  <input
+                    type="number"
+                    [(ngModel)]="newInventory"
+                    name="inventory"
+                    min="0"
+                    [max]="totalCapacity"
+                    class="block w-32 rounded-xl border-2 border-slate-200 bg-white px-4 py-4 text-center text-3xl font-black text-slate-900 shadow-sm outline-none transition-all focus:border-[#173124]"
+                    placeholder="0"
+                  />
+
+                  <div class="flex-1">
+                    <div class="mb-1.5 flex justify-between text-xs font-bold text-slate-500">
+                      <span>Đã phân bổ</span>
+                      <span>{{ getAllocatedRooms() }} / {{ totalCapacity }} phòng</span>
+                    </div>
+
+                    <div class="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        class="h-full rounded-full transition-all duration-500"
+                        [ngClass]="newInventory === 0 ? 'bg-rose-500' : 'bg-emerald-500'"
+                        [style.width.%]="getAllocatedPercent()"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-slate-200 p-4">
+                <label class="flex cursor-pointer items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100">
+                      <span class="material-symbols-outlined text-[20px] text-slate-500">sync_alt</span>
+                    </div>
+
+                    <div>
+                      <p class="text-sm font-bold text-slate-800">
+                        Đồng bộ tự động OTA
+                      </p>
+                      <p class="text-xs font-medium text-slate-500">
+                        Đẩy tồn kho mới lên Booking, Agoda
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="relative">
+                    <input
+                      type="checkbox"
+                      [(ngModel)]="syncOta"
+                      name="syncOta"
+                      class="peer sr-only"
+                    />
+
+                    <div
+                      class="peer h-6 w-11 rounded-full bg-slate-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#173124] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"
+                    ></div>
+                  </div>
+                </label>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-xs font-bold text-slate-600">
+                  Ghi chú tồn kho
+                </label>
+
+                <textarea
+                  [(ngModel)]="internalNote"
+                  name="inventoryInternalNote"
+                  rows="3"
+                  class="block w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#173124] focus:bg-white"
+                  placeholder="VD: Giữ lại 2 phòng cho khách walk-in..."
+                ></textarea>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- STATUS TAB -->
+          <ng-container *ngIf="activeTab === 'status'">
+            <div class="space-y-4">
+              <label
+                class="relative flex cursor-pointer items-start overflow-hidden rounded-xl border-2 p-5 transition-all"
+                [ngClass]="roomStatus === 'AVAILABLE'
+                  ? 'border-[#173124] bg-[#173124]/[0.02]'
+                  : 'border-slate-200 bg-white hover:border-slate-300'"
+              >
+                <div
+                  class="absolute left-0 top-0 h-full w-1"
+                  [ngClass]="roomStatus === 'AVAILABLE' ? 'bg-[#173124]' : 'bg-transparent'"
+                ></div>
+
+                <div class="ml-2 mt-0.5 flex h-5 items-center">
+                  <input
+                    type="radio"
+                    [(ngModel)]="roomStatus"
+                    value="AVAILABLE"
+                    name="status"
+                    class="h-5 w-5 border-gray-300 text-[#173124] focus:ring-[#173124]"
+                  />
+                </div>
+
+                <div class="ml-4 flex w-full flex-col">
+                  <span class="block text-sm font-bold text-slate-900">
+                    Mở bán
+                  </span>
+                  <span class="mt-1 block text-xs font-medium text-slate-500">
+                    Phòng sẵn sàng đón khách.
+                  </span>
+                </div>
+              </label>
+
+              <label
+                class="relative flex cursor-pointer items-start overflow-hidden rounded-xl border-2 p-5 transition-all"
+                [ngClass]="roomStatus === 'MAINTENANCE'
+                  ? 'border-amber-500 bg-amber-50/30'
+                  : 'border-slate-200 bg-white hover:border-slate-300'"
+              >
+                <div
+                  class="absolute left-0 top-0 h-full w-1"
+                  [ngClass]="roomStatus === 'MAINTENANCE' ? 'bg-amber-500' : 'bg-transparent'"
+                ></div>
+
+                <div class="ml-2 mt-0.5 flex h-5 items-center">
+                  <input
+                    type="radio"
+                    [(ngModel)]="roomStatus"
+                    value="MAINTENANCE"
+                    name="status"
+                    class="h-5 w-5 border-gray-300 text-amber-600 focus:ring-amber-600"
+                  />
+                </div>
+
+                <div class="ml-4 flex w-full flex-col">
+                  <span class="block text-sm font-bold text-amber-700">
+                    Bảo trì
+                  </span>
+                  <span class="mt-1 block text-xs font-medium text-amber-700/70">
+                    Tạm ngưng bán do sửa chữa, vệ sinh hoặc kiểm tra.
+                  </span>
+                </div>
+              </label>
+
+              <label
+                class="relative flex cursor-pointer items-start overflow-hidden rounded-xl border-2 p-5 transition-all"
+                [ngClass]="roomStatus === 'BLOCKED'
+                  ? 'border-rose-500 bg-rose-50/10'
+                  : 'border-slate-200 bg-white hover:border-slate-300'"
+              >
+                <div
+                  class="absolute left-0 top-0 h-full w-1"
+                  [ngClass]="roomStatus === 'BLOCKED' ? 'bg-rose-500' : 'bg-transparent'"
+                ></div>
+
+                <div class="ml-2 mt-0.5 flex h-5 items-center">
+                  <input
+                    type="radio"
+                    [(ngModel)]="roomStatus"
+                    value="BLOCKED"
+                    name="status"
+                    class="h-5 w-5 border-gray-300 text-rose-600 focus:ring-rose-600"
+                  />
+                </div>
+
+                <div class="ml-4 flex w-full flex-col">
+                  <span class="block text-sm font-bold text-rose-700">
+                    Khoá phòng
+                  </span>
+                  <span class="mt-1 block text-xs font-medium text-rose-600/70">
+                    Rút phòng khỏi quỹ bán.
+                  </span>
+                </div>
+              </label>
+
+              <div *ngIf="roomStatus !== 'AVAILABLE'" class="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div>
+                  <label class="mb-2 block text-xs font-bold text-slate-600">
+                    Lý do đóng phòng
+                  </label>
+
+                  <select
+                    [(ngModel)]="blockReason"
+                    name="blockReason"
+                    class="block w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:border-[#173124]"
+                  >
+                    <option value="MAINTENANCE">Bảo trì</option>
+                    <option value="REPAIR">Sửa chữa</option>
+                    <option value="OWNER_BLOCK">Chủ nhà giữ phòng</option>
+                    <option value="OTHER">Khác</option>
+                  </select>
+                </div>
+
+                <label class="flex cursor-pointer items-center justify-between rounded-lg bg-white p-3">
+                  <div>
+                    <p class="text-sm font-bold text-slate-800">
+                      Tạo task cho đội kỹ thuật
+                    </p>
+                    <p class="text-xs text-slate-500">
+                      Dùng khi phòng cần kiểm tra/sửa chữa.
+                    </p>
+                  </div>
+
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="notifyTeam"
+                    name="notifyTeam"
+                    class="h-4 w-4 rounded border-slate-300 text-[#173124] focus:ring-[#173124]"
+                  />
+                </label>
+              </div>
+
+              <div>
+                <label class="mb-2 block text-xs font-bold text-slate-600">
+                  Ghi chú nội bộ
+                </label>
+
+                <textarea
+                  [(ngModel)]="internalNote"
+                  name="statusInternalNote"
+                  rows="3"
+                  class="block w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all focus:border-[#173124] focus:bg-white"
+                  placeholder="VD: Phòng bị hỏng máy lạnh, cần kiểm tra trước khi mở bán lại..."
+                ></textarea>
+              </div>
+            </div>
+          </ng-container>
+        </form>
+      </div>
+
+      <!-- RIGHT SUMMARY -->
+      <div class="relative flex w-full shrink-0 flex-col border-l border-slate-200 bg-slate-50 p-8 md:w-[360px]">
+
+        <div class="flex-1">
+          <h3 class="mb-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Xác nhận thao tác
+          </h3>
+
+          <div class="space-y-4 rounded-xl border border-slate-200/60 bg-white p-5 shadow-sm">
+
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <img
+                [src]="getOwnerAvatar()"
+                class="h-8 w-8 rounded-full"
+                alt="Owner avatar"
+              />
+
+              <div>
+                <p class="text-[10px] font-bold uppercase leading-tight tracking-widest text-slate-400">
+                  Người thực hiện
+                </p>
+                <p class="text-xs font-bold text-slate-900">
+                  {{ getOwnerName() }}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Áp dụng cho
+              </p>
+
+              <p class="text-sm font-bold text-slate-800">
+                {{ dateRange.start }}
+                <span class="mx-1 text-slate-300">→</span>
+                {{ dateRange.end }}
+              </p>
+            </div>
+
+            <div class="border-t border-slate-100 pt-4" *ngIf="activeTab === 'price'">
+              <p class="mb-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Bảng giá thiết lập
+              </p>
+
+              <div class="space-y-2.5">
+                <div
+                  *ngFor="let plan of drawerData.ratePlans; trackBy: trackByPlanId"
+                  class="flex items-end justify-between"
+                >
+                  <div class="min-w-0 pr-2">
+                    <span class="line-clamp-1 text-xs font-semibold text-slate-600">
+                      {{ plan.name }}
+                    </span>
+
+                    <span
+                      *ngIf="hasRatePlanChanged(plan)"
+                      class="text-[9px] font-black uppercase tracking-widest text-amber-600"
+                    >
+                      Đã sửa
+                    </span>
+                  </div>
+
+                  <span class="whitespace-nowrap text-sm font-black text-[#173124]">
+                    {{ getPlanDisplayPrice(plan) | number:'1.0-0' }}đ
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-100 pt-4" *ngIf="activeTab === 'inventory'">
+              <p class="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Tồn kho mới
+              </p>
+
+              <div class="flex items-end justify-between">
+                <span class="text-xs font-semibold text-slate-600">Mở bán</span>
+                <span class="text-2xl font-black text-[#173124]">
+                  {{ newInventory ?? 0 }}
+                </span>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-100 pt-4" *ngIf="activeTab === 'status'">
+              <p class="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Trạng thái mới
+              </p>
+
+              <span
+                class="rounded-md px-2.5 py-1 text-[10px] font-black uppercase tracking-widest"
+                [ngClass]="roomStatus === 'AVAILABLE'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : roomStatus === 'MAINTENANCE'
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-rose-100 text-rose-700'"
+              >
+                {{
+                  roomStatus === 'AVAILABLE'
+                    ? 'Đang mở bán'
+                    : roomStatus === 'MAINTENANCE'
+                      ? 'Bảo trì'
+                      : 'Khoá phòng'
+                }}
+              </span>
+            </div>
+
+            <div
+              class="mt-4 rounded-lg border border-amber-100 bg-amber-50/50 p-3"
+              *ngIf="internalNote"
+            >
+              <p class="mb-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                <span class="material-symbols-outlined text-[12px]">sticky_note_2</span>
+                Log bàn giao
+              </p>
+
+              <p class="text-xs font-medium italic leading-relaxed text-amber-900">
+                "{{ internalNote }}"
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-6">
+          <button
+            (click)="applyChanges()"
+            type="button"
+            class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#173124] py-4 text-sm font-bold text-white shadow-[0_8px_20px_-4px_rgba(23,49,36,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-4px_rgba(23,49,36,0.4)] active:translate-y-0"
+          >
+            <span class="material-symbols-outlined text-[18px]">save</span>
+            Xác nhận & Lưu vết
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
