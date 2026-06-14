@@ -43,7 +43,7 @@
         </div>
 
         <!-- CARD 4: GALLERY CTA -->
-        <div class="relative flex-1 md:hover:!flex-[5] transition-all duration-[1.2s] ease-[cubic-bezier(0.25,1,0.1,1)] rounded-[2rem] overflow-hidden cursor-pointer group/card shadow-lg hover:shadow-2xl">
+        <div (click)="openHomestayGallery()" class="relative flex-1 md:hover:!flex-[5] transition-all duration-[1.2s] ease-[cubic-bezier(0.25,1,0.1,1)] rounded-[2rem] overflow-hidden cursor-pointer group/card shadow-lg hover:shadow-2xl">
             <img [src]="galleryImages().atmosphere" alt="Atmosphere" 
                 class="absolute inset-0 w-full h-full object-cover transition-all duration-[2s] scale-125 group-hover/card:scale-100 brightness-75 group-hover/card:brightness-100" />
             <div class="absolute inset-0 bg-gradient-to-t from-[#173124]/60 via-black/20 to-transparent opacity-60 group-hover/card:opacity-100 transition-opacity duration-1000"></div>
@@ -56,3 +56,4 @@
 
     </div>
 </section>
+<app-shared-image-lightbox #lightbox></app-shared-image-lightbox>

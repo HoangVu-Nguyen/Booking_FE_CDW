@@ -1,0 +1,73 @@
+<div
+  *ngIf="isOpen && currentImage"
+  class="lightbox-overlay"
+  (click)="close()"
+>
+  <div class="lightbox-bg"></div>
+
+  <header class="lightbox-header">
+    <div class="image-counter">
+      <span>{{ currentIndex + 1 }}</span>
+      <span>/</span>
+      <span>{{ images.length }}</span>
+    </div>
+
+    <button class="close-btn" (click)="close(); $event.stopPropagation()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </header>
+
+  <main class="lightbox-main" (click)="$event.stopPropagation()">
+    <button
+      *ngIf="images.length > 1"
+      class="nav-btn nav-left"
+      (click)="prev($event)"
+    >
+      <span class="material-symbols-outlined">chevron_left</span>
+    </button>
+
+    <section class="image-stage" [class.slide-anim]="isAnimating">
+      <div class="image-card">
+        <img
+          [src]="currentImage.url"
+          [alt]="currentImage.caption || 'Homestay image'"
+          draggable="false"
+        />
+
+        <div *ngIf="currentImage.isCover" class="cover-badge">
+          <span class="material-symbols-outlined">verified</span>
+          Ảnh bìa
+        </div>
+      </div>
+
+      <p *ngIf="currentImage.caption" class="image-caption">
+        {{ currentImage.caption }}
+      </p>
+    </section>
+
+    <button
+      *ngIf="images.length > 1"
+      class="nav-btn nav-right"
+      (click)="next($event)"
+    >
+      <span class="material-symbols-outlined">chevron_right</span>
+    </button>
+  </main>
+
+  <footer
+    *ngIf="images.length > 1"
+    class="thumbnail-footer"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="thumbnail-list">
+      <button
+        *ngFor="let img of images; let i = index"
+        class="thumbnail-item"
+        [class.active]="i === currentIndex"
+        (click)="select(i)"
+      >
+        <img [src]="img.url" [alt]="img.caption || 'thumbnail'" />
+      </button>
+    </div>
+  </footer>
+</div>

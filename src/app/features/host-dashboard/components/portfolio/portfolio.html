@@ -64,7 +64,7 @@
 
                 <div
                     class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-95 group-hover:scale-100 z-10">
-                    <button
+                    <button [routerLink]="['/host-dashboard/properties', item.id, 'manage']"
                         class="w-12 h-12 rounded-full bg-white text-stone-900 flex items-center justify-center hover:bg-[#173124] hover:text-white transition-colors shadow-xl"
                         title="Chỉnh sửa">
                         <span class="material-symbols-outlined text-[20px]">edit</span>

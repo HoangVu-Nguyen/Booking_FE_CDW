@@ -1,0 +1,230 @@
+<div class="min-h-screen bg-[#f5f1ea] flex flex-col">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-40 bg-[#fbf8f3] border-b border-[#ded6c9]">
+        <div class="max-w-[1440px] mx-auto px-5 lg:px-8 h-[72px] flex items-center justify-between">
+
+            <!-- LEFT -->
+            <div class="flex items-center gap-4 min-w-0">
+                <button routerLink="/host-dashboard/portfolio"
+                    class="w-10 h-10 rounded-lg border border-[#d6cbbb] bg-white flex items-center justify-center text-[#6f6658] hover:text-[#2f2a22] hover:border-[#bfb19e] transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                </button>
+                
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <p class="text-xs font-semibold text-[#8a8175]">
+                            Quản lý chỗ nghỉ
+                        </p>
+
+                        <span class="w-1 h-1 rounded-full bg-[#b9ac9a]"></span>
+
+                        <p class="text-xs font-semibold text-[#8a8175]">
+                            ID: {{ homestayId() || '---' }}
+                        </p>
+                    </div>
+
+                    <h1 class="text-lg md:text-xl font-bold text-[#2f2a22] truncate">
+                        {{ homestayName() }}
+                    </h1>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="flex items-center gap-3">
+                <div
+                    class="hidden md:flex items-center gap-2 h-10 px-3 rounded-lg bg-[#fff8e8] border border-[#e4c47a]">
+                    <span class="w-2 h-2 rounded-full bg-[#b88746]"></span>
+                    <span class="text-xs font-bold text-[#6b4b13]">
+                        Bản nháp
+                    </span>
+                </div>
+
+                <button type="button"
+                    class="hidden sm:inline-flex h-10 px-4 rounded-lg border border-[#d6cbbb] bg-white text-sm font-bold text-[#5f5548] hover:bg-[#f7f2ea] hover:border-[#bfb19e] transition-colors">
+                    Xem trước
+                </button>
+
+                <button type="button"
+                    class="h-10 px-5 rounded-lg bg-[#3b332b] text-white text-sm font-bold hover:bg-[#2f2a22] transition-colors">
+                    Xuất bản
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- BODY -->
+    <div class="max-w-[1440px] mx-auto w-full px-5 lg:px-8 py-6 flex-1">
+
+        <!-- TOP SUMMARY -->
+        <section class="mb-6 bg-white border border-[#ded6c9] rounded-xl overflow-hidden">
+            <div class="p-5 lg:p-6 grid lg:grid-cols-[1fr_360px] gap-5 items-center">
+
+                <div>
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span
+                            class="inline-flex items-center h-7 px-3 rounded-full bg-[#f4ecdf] text-[#6f4f28] text-xs font-bold">
+                            Host Center
+                        </span>
+
+                        <span
+                            class="inline-flex items-center h-7 px-3 rounded-full bg-[#f1f5f1] text-green-700 text-xs font-bold">
+                            Đang thiết lập
+                        </span>
+                    </div>
+
+                    <h2 class="text-2xl font-bold text-[#2f2a22] tracking-tight">
+                        Hoàn thiện thông tin để sẵn sàng đăng bán
+                    </h2>
+
+                    <p class="mt-2 max-w-[720px] text-sm text-[#70675b] leading-relaxed">
+                        Quản lý thông tin cơ bản, phòng, hình ảnh, tiện nghi, giá và chính sách của chỗ nghỉ. Bạn có thể
+                        lưu thay đổi từng phần trước khi xuất bản.
+                    </p>
+                </div>
+
+                <div class="bg-[#fbf7f0] border border-[#eadfce] rounded-xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-sm font-bold text-[#2f2a22]">
+                            Mức độ hoàn thiện
+                        </p>
+
+                        <p class="text-sm font-black text-[#6f4f28]">
+                            {{ completionPercent() }}%
+                        </p>
+                    </div>
+
+                    <div class="h-2 rounded-full bg-[#eee4d8] overflow-hidden">
+                        <div class="h-full rounded-full bg-[#7a5a32] transition-all duration-300"
+                            [style.width.%]="completionPercent()">
+                        </div>
+                    </div>
+
+                    <p class="mt-2 text-xs text-[#7b7164]">
+                        Hoàn thiện các mục bắt buộc trước khi xuất bản.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="grid lg:grid-cols-[300px_1fr] gap-6 items-start">
+
+            <!-- SIDEBAR -->
+            <aside class="lg:sticky lg:top-[96px]">
+                <div class="bg-white border border-[#ded6c9] rounded-xl overflow-hidden">
+
+                    <!-- PROPERTY CARD -->
+                    <div class="p-5 border-b border-[#eee7dd]">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-12 h-12 rounded-lg bg-[#f1e8da] border border-[#eadfce] flex items-center justify-center text-[#6f4f28] shrink-0">
+                                <span class="material-symbols-outlined text-[26px]">home_work</span>
+                            </div>
+
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-[#2f2a22] truncate">
+                                    {{ homestayName() }}
+                                </p>
+
+                                <p class="mt-1 text-xs text-[#8a8175]">
+                                    Chỗ nghỉ đang ở chế độ bản nháp
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NAV -->
+                    <nav class="p-2">
+                        <a *ngFor="let item of menuItems" [routerLink]="[item.path]"
+                            routerLinkActive="bg-[#3b332b] text-white" #rla="routerLinkActive" [ngClass]="rla.isActive
+                ? 'pointer-events-none'
+                : 'text-[#6f6658] hover:bg-[#f7f2ea] hover:text-[#2f2a22]'"
+                            class="flex items-center justify-between gap-3 px-3 py-3 rounded-lg transition-colors cursor-pointer group">
+
+                            <div class="flex items-center gap-3 min-w-0">
+                                <span class="material-symbols-outlined text-[21px] shrink-0"
+                                    [ngClass]="rla.isActive ? 'text-white' : 'text-[#8a8175] group-hover:text-[#2f2a22]'">
+                                    {{ item.icon }}
+                                </span>
+
+                                <span class="text-sm truncate" [ngClass]="rla.isActive ? 'font-bold' : 'font-semibold'">
+                                    {{ item.label }}
+                                </span>
+                            </div>
+
+                            <span class="material-symbols-outlined text-[18px] shrink-0"
+                                [ngClass]="rla.isActive ? 'text-white/70' : 'text-[#b9ac9a]'">
+                                chevron_right
+                            </span>
+                        </a>
+                    </nav>
+
+                </div>
+
+                <!-- HELP BOX -->
+                <div class="mt-4 bg-[#fff8e8] border border-[#e4c47a] rounded-xl p-4">
+                    <div class="flex items-start gap-3">
+                        <div
+                            class="w-9 h-9 rounded-lg bg-white flex items-center justify-center text-[#8a6400] shrink-0">
+                            <span class="material-symbols-outlined text-[21px]">info</span>
+                        </div>
+
+                        <div>
+                            <p class="text-sm font-bold text-[#4f3900]">
+                                Gợi ý
+                            </p>
+
+                            <p class="mt-1 text-xs text-[#6c520b] leading-relaxed">
+                                Nên hoàn thiện ảnh, giá và chính sách trước khi xuất bản để tăng độ tin cậy với khách
+                                hàng.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="min-w-0 pb-20">
+
+                <!-- CONTENT HEADER -->
+                <div class="bg-white border border-[#ded6c9] rounded-xl overflow-hidden">
+
+                    <div
+                        class="px-5 lg:px-6 py-4 border-b border-[#eee7dd] bg-[#fffdf9] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-bold text-[#8a8175] uppercase tracking-[0.12em]">
+                                Thiết lập chỗ nghỉ
+                            </p>
+
+                            <h2 class="mt-1 text-lg font-bold text-[#2f2a22]">
+                                Thông tin đang chỉnh sửa
+                            </h2>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button type="button"
+                                class="h-9 px-3 rounded-lg border border-[#d6cbbb] bg-white text-xs font-bold text-[#5f5548] hover:bg-[#f7f2ea] transition-colors">
+                                Lưu nháp
+                            </button>
+
+                            <button type="button"
+                                class="h-9 px-3 rounded-lg bg-[#3b332b] text-white text-xs font-bold hover:bg-[#2f2a22] transition-colors">
+                                Lưu thay đổi
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-5 lg:p-6">
+                        <router-outlet></router-outlet>
+                    </div>
+
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+</div>

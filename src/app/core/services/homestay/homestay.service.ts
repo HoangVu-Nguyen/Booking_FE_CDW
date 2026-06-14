@@ -92,4 +92,15 @@ export class HomestayService {
             payload
         );
     }
+    /**
+     * Cập nhật thông tin Homestay
+     * @param id ID của Homestay
+     * @param payload Dữ liệu cập nhật (JSON)
+     */
+    updateHomestay(id: string | number, payload: any): Observable<ApiResponse<HomestayResponse>> {
+        return this.apiService.put<ApiResponse<HomestayResponse>>(
+            `/api/v1/homestays/${id}`, 
+            payload
+        );
+    }
 }

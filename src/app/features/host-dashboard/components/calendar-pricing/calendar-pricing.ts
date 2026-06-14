@@ -1,26 +1,28 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarService } from '../../../../core/services/calendar/calendar.service';
 import { ActivatedRoute } from '@angular/router';
 import {Location} from '@angular/common';
 import { 
+  BedResponse,
   CalendarInventoryResponse, 
   CalendarRoomResponse, 
   HomestayCalendarResponse, 
   RoomCalendarStatus 
 } from '../../../../core/models/response/calendar.response';
 import { RoomActionDrawer } from '../room-action-drawer/room-action-drawer';
-
+import { SharedImageLightbox } from '../../../../shared/components/shared-image-lightbox/shared-image-lightbox';
+import { LightboxImage } from '../../../../core/models/image/image.model';
 @Component({
   selector: 'app-calendar-pricing',
   standalone: true,
-  imports: [CommonModule, RoomActionDrawer],
+  imports: [CommonModule, RoomActionDrawer,SharedImageLightbox],
   templateUrl: './calendar-pricing.html'
 })
 export class CalendarPricing implements OnInit {
 
   dateHeaders: { date: Date; dateStr: string; isWeekend: boolean; isToday: boolean }[] = [];
-  
+  @ViewChild('lightbox') lightbox!: SharedImageLightbox;
   // Dữ liệu API
   homeCalendarDetail!: HomestayCalendarResponse; 
   rooms: CalendarRoomResponse[] = [];
@@ -213,4 +215,36 @@ export class CalendarPricing implements OnInit {
   goBack() {
   this.location.back();
 }
+// 1. Lấy Ảnh Bìa (hoặc ảnh đầu tiên, hoặc ảnh mặc định)
+  getCoverImage(room: CalendarRoomResponse): string {
+    if (!room.images || room.images.length === 0) {
+      // Trả về ảnh placeholder nếu phòng chưa được setup ảnh
+      return 'assets/images/default-room-placeholder.jpg'; 
+    }
+    const cover = room.images.find(img => img.isCover);
+    return cover ? cover.url : room.images[0].url;
+  }
+
+  // 2. Tính tổng số lượng giường trong phòng
+  getTotalBeds(beds: BedResponse[]): number {
+    if (!beds || beds.length === 0) return 0;
+    return beds.reduce((total, bed) => total + bed.quantity, 0);
+  }
+
+  // 3. Tạo dòng mô tả Tooltip khi trỏ chuột vào chỗ "X giường"
+  getBedTooltip(beds: BedResponse[]): string {
+    if (!beds || beds.length === 0) return 'Chưa cấu hình giường';
+    return beds.map(bed => `${bed.quantity} giường ${bed.type}`).join(', ');
+  }
+  openRoomGallery(room: CalendarRoomResponse) {
+    console.log(" dasfdf")
+    const lightboxData: LightboxImage[] = room.images.map(img => ({
+      url: img.url,
+      isCover: img.isCover,
+      caption: `Ảnh phòng ${room.name}` 
+    }));
+
+    // Gọi hàm open
+    this.lightbox.open(lightboxData, 0); 
+  }
 }

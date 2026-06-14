@@ -1,25 +1,25 @@
-import { Component, computed } from '@angular/core';
-
+import { Component, computed, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomestayService } from '../../../../../../core/services/homestay/homestay.service';
+import { SharedImageLightbox } from '../../../../../../shared/components/shared-image-lightbox/shared-image-lightbox';
+import { LightboxImage } from '../../../../../../core/models/image/image.model';
 
 @Component({
   selector: 'app-homestay-gallery',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SharedImageLightbox],
   templateUrl: './homestay-gallery.html',
   styleUrl: './homestay-gallery.css',
 })
 export class HomestayGallery {
-  // Lấy dữ liệu homestay hiện tại từ service
+  @ViewChild('lightbox') lightbox!: SharedImageLightbox;
+
   homestay = computed(() => this.homestayService.currentHomestay());
 
-  // Trích xuất các ảnh cụ thể cho từng vị trí trong gallery
-  // Sử dụng fallback là ảnh mặc định nếu homestay chưa có đủ ảnh
   galleryImages = computed(() => {
-    const images = this.homestay()?.imageUrls || [];
+    const images = this.homestay()?.imageUrls ?? [];
     const placeholder = 'assets/images/placeholder-luxury.jpg';
-    
+
     return {
       exterior: images[0] || placeholder,
       interior: images[1] || placeholder,
@@ -30,4 +30,19 @@ export class HomestayGallery {
   });
 
   constructor(private homestayService: HomestayService) {}
+
+  openHomestayGallery(): void {
+    const homestay = this.homestay();
+
+    if (!homestay?.imageUrls?.length) {
+      return;
+    }
+
+    const lightboxData: LightboxImage[] = homestay.imageUrls.map(url => ({
+      url,
+      caption: 'Tổng quan Homestay'
+    }));
+
+    this.lightbox.open(lightboxData, 0);
+  }
 }

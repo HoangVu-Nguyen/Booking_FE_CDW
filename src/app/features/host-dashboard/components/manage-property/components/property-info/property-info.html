@@ -1,0 +1,340 @@
+<div class="max-w-5xl animate-fade-in">
+
+  <!-- PAGE HEADER -->
+  <div class="mb-6">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
+      <div>
+        <div class="inline-flex items-center gap-2 h-7 px-3 rounded-full bg-[#f7f1e8] border border-[#e5d8c7] text-[#6f4f28] text-xs font-bold mb-3">
+          <span class="material-symbols-outlined text-[16px]">info</span>
+          Thông tin bắt buộc
+        </div>
+
+        <h2 class="text-2xl md:text-3xl font-black text-[#2f2a22] tracking-tight">
+          Thông tin cơ bản
+        </h2>
+
+        <p class="text-sm text-[#756b5e] mt-2 max-w-2xl leading-relaxed">
+          Cập nhật tên, loại hình, mô tả và vị trí chính xác của chỗ nghỉ. Những thông tin này sẽ ảnh hưởng trực tiếp đến cách khách nhìn thấy listing của bạn.
+        </p>
+      </div>
+
+      <div class="bg-[#fbf7f0] border border-[#eadfce] rounded-xl px-4 py-3 min-w-[210px]">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-[#7b7164]">
+            Trạng thái
+          </span>
+
+          <span
+            class="inline-flex items-center gap-1.5 text-xs font-black"
+            [ngClass]="hasPinnedLocation() ? 'text-green-700' : 'text-[#8a6400]'">
+            <span class="w-2 h-2 rounded-full" [ngClass]="hasPinnedLocation() ? 'bg-green-600' : 'bg-[#d79b22]'"></span>
+            {{ hasPinnedLocation() ? 'Đã có vị trí' : 'Chưa ghim vị trí' }}
+          </span>
+        </div>
+
+        <div class="mt-3 h-2 rounded-full bg-[#eee4d8] overflow-hidden">
+          <div
+            class="h-full rounded-full bg-[#7a5a32] transition-all duration-500"
+            [style.width.%]="formCompletionPercent()">
+          </div>
+        </div>
+
+        <p class="mt-2 text-xs text-[#8a8175]">
+          {{ formCompletionPercent() }}% thông tin cơ bản
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SAVE TOAST -->
+  @if (showSavedToast()) {
+    <div class="fixed top-24 right-6 z-[999] animate-slide-in-right">
+      <div class="bg-[#263d2e] text-white rounded-xl shadow-xl px-4 py-3 flex items-center gap-3">
+        <span class="material-symbols-outlined text-[20px] text-green-200">check_circle</span>
+        <div>
+          <p class="text-sm font-bold">Đã lưu thay đổi</p>
+          <p class="text-xs text-white/70">Thông tin cơ bản đã được cập nhật.</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <form (ngSubmit)="saveChanges()" class="space-y-6">
+
+    <!-- BASIC INFO CARD -->
+    <section class="bg-white border border-[#ded6c9] rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(56,44,33,0.05)]">
+
+      <div class="px-5 md:px-6 py-4 border-b border-[#eee7dd] bg-[#fffdf9] flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-black text-[#2f2a22]">
+            Chi tiết chỗ nghỉ
+          </h3>
+          <p class="text-sm text-[#756b5e] mt-1">
+            Tên, loại hình và mô tả sẽ hiển thị trên trang chi tiết.
+          </p>
+        </div>
+
+        <span class="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[#f7f1e8] text-[#6f4f28] text-xs font-bold">
+          <span class="material-symbols-outlined text-[16px]">edit</span>
+          Có thể chỉnh sửa
+        </span>
+      </div>
+
+      <div class="p-5 md:p-6 space-y-5">
+
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-5">
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+              Tên chỗ nghỉ <span class="text-rose-500">*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="infoForm.name"
+              name="name"
+              required
+              (ngModelChange)="markDirty()"
+              class="w-full h-12 px-4 bg-[#fbfaf8] border border-[#cfc3b3] rounded-xl text-sm font-semibold text-[#2f2a22] outline-none transition-all placeholder:text-[#aaa195] focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10 focus:bg-white"
+              placeholder="VD: The Green Nest Dalat">
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+              Loại hình
+            </label>
+
+            <div class="relative">
+              <select
+                [(ngModel)]="infoForm.type"
+                name="type"
+                (ngModelChange)="markDirty()"
+                class="w-full h-12 pl-4 pr-10 appearance-none bg-[#fbfaf8] border border-[#cfc3b3] rounded-xl text-sm font-semibold text-[#2f2a22] outline-none transition-all focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10 focus:bg-white cursor-pointer">
+
+                <option *ngFor="let type of propertyTypes" [value]="type.value">
+                  {{ type.label }}
+                </option>
+              </select>
+
+              <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8175] pointer-events-none">
+                expand_more
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-4">
+            <label class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+              Mô tả chỗ nghỉ
+            </label>
+
+            <span
+              class="text-xs font-bold"
+              [ngClass]="(infoForm.description?.length || 0) > 1800 ? 'text-amber-700' : 'text-[#8a8175]'">
+              {{ infoForm.description?.length || 0 }}/2000
+            </span>
+          </div>
+
+          <textarea
+            [(ngModel)]="infoForm.description"
+            name="description"
+            rows="5"
+            maxlength="2000"
+            (ngModelChange)="markDirty()"
+            class="w-full p-4 bg-[#fbfaf8] border border-[#cfc3b3] rounded-xl text-sm font-medium text-[#2f2a22] leading-relaxed outline-none transition-all placeholder:text-[#aaa195] focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10 focus:bg-white resize-y"
+            placeholder="Mô tả không gian, phong cách, những điểm đặc biệt giúp thu hút khách hàng...">
+          </textarea>
+
+          <p class="text-xs text-[#8a8175]">
+            Gợi ý: mô tả rõ không gian, khu vực xung quanh, điểm nổi bật và trải nghiệm khách có thể nhận được.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- LOCATION CARD -->
+    <section class="bg-white border border-[#ded6c9] rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(56,44,33,0.05)]">
+
+      <div class="px-5 md:px-6 py-4 border-b border-[#eee7dd] bg-[#fffdf9] flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-black text-[#2f2a22]">
+            Vị trí & bản đồ
+          </h3>
+
+          <p class="text-sm text-[#756b5e] mt-1">
+            Khách sẽ thấy vị trí tương đối trước khi đặt phòng. Địa chỉ chính xác chỉ nên hiển thị khi đặt thành công.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          (click)="pinCurrentLocation()"
+          class="h-10 px-4 rounded-xl border border-[#d6cbbb] bg-white text-sm font-bold text-[#5f5548] hover:bg-[#f7f2ea] hover:border-[#bfb19e] transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-[19px]">my_location</span>
+          Vị trí thiết bị
+        </button>
+      </div>
+
+      <div class="p-5 md:p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
+
+          <!-- LEFT LOCATION FORM -->
+          <div class="space-y-5">
+
+            <div class="relative flex flex-col gap-2">
+              <label class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+                Địa chỉ chi tiết <span class="text-rose-500">*</span>
+              </label>
+
+              <div class="relative">
+                <input
+                  type="text"
+                  [(ngModel)]="infoForm.addressDetail"
+                  name="addressDetail"
+                  (input)="onAddressInput()"
+                  (ngModelChange)="markDirty()"
+                  autocomplete="off"
+                  class="w-full h-12 pl-4 pr-11 bg-[#fbfaf8] border border-[#cfc3b3] rounded-xl text-sm font-semibold text-[#2f2a22] outline-none transition-all placeholder:text-[#aaa195] focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10 focus:bg-white"
+                  placeholder="Nhập số nhà, tên đường...">
+
+                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#8a8175] pointer-events-none">
+                  search
+                </span>
+              </div>
+
+              @if (addressSuggestions.length > 0) {
+                <div class="absolute top-[76px] left-0 right-0 bg-white border border-[#ded6c9] rounded-xl shadow-[0_18px_45px_rgba(56,44,33,0.16)] overflow-hidden z-30">
+                  <button
+                    *ngFor="let suggestion of addressSuggestions"
+                    type="button"
+                    (click)="selectAddressSuggestion(suggestion)"
+                    class="w-full text-left px-4 py-3 hover:bg-[#fbf7f0] border-b border-[#f1e8da] last:border-0 transition-colors">
+
+                    <p class="text-sm font-black text-[#2f2a22] line-clamp-1">
+                      {{ suggestion.display_name.split(',')[0] }}
+                    </p>
+
+                    <p class="text-xs text-[#756b5e] line-clamp-1 mt-0.5">
+                      {{ suggestion.display_name }}
+                    </p>
+                  </button>
+                </div>
+              }
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+                Tỉnh / Thành phố
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="infoForm.city"
+                name="city"
+                readonly
+                class="w-full h-12 px-4 bg-[#f1eee9] border border-[#ded6c9] rounded-xl text-sm font-semibold text-[#756b5e] cursor-not-allowed"
+                placeholder="Tự động trích xuất">
+
+              <p class="text-xs text-[#8a8175]">
+                Hệ thống tự động nhận diện từ địa chỉ phía trên.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-[#fbf7f0] rounded-xl p-4 border border-[#eadfce]">
+                <p class="text-[10px] font-black text-[#8a8175] uppercase tracking-widest mb-1">
+                  Vĩ độ
+                </p>
+                <p class="text-sm font-mono font-black text-[#2f2a22]">
+                  {{ infoForm.lat || '---' }}
+                </p>
+              </div>
+
+              <div class="bg-[#fbf7f0] rounded-xl p-4 border border-[#eadfce]">
+                <p class="text-[10px] font-black text-[#8a8175] uppercase tracking-widest mb-1">
+                  Kinh độ
+                </p>
+                <p class="text-sm font-mono font-black text-[#2f2a22]">
+                  {{ infoForm.lng || '---' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="rounded-xl bg-[#fff8e8] border border-[#e4c47a] p-4">
+              <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined text-[21px] text-[#8a6400] mt-0.5">
+                  tips_and_updates
+                </span>
+
+                <p class="text-xs text-[#6c520b] leading-relaxed font-medium">
+                  Nếu vị trí thiết bị không chính xác, hãy nhập địa chỉ rồi kéo ghim trên bản đồ để chỉnh đúng vị trí chỗ nghỉ.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- MAP -->
+          <div class="relative w-full h-[420px] rounded-2xl overflow-hidden border border-[#cfc3b3] shadow-inner bg-[#eee6da] group">
+
+            <div #mapContainer class="absolute inset-0 z-10"></div>
+
+            <div class="absolute top-4 left-4 z-[20] bg-white/95 backdrop-blur-sm px-4 py-3 rounded-xl shadow-sm border border-[#ded6c9]">
+              <p class="text-xs font-black text-[#8a8175] uppercase tracking-widest">
+                Vị trí
+              </p>
+
+              <p class="mt-1 text-sm font-black" [ngClass]="hasPinnedLocation() ? 'text-green-700' : 'text-[#2f2a22]'">
+                {{ hasPinnedLocation() ? 'Đã ghim trên bản đồ' : 'Chưa ghim' }}
+              </p>
+            </div>
+
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-[20] bg-white/95 backdrop-blur-sm px-4 py-2.5 rounded-full shadow-lg border border-[#ded6c9] pointer-events-none transition-all group-hover:-translate-y-1">
+              <p class="text-xs font-bold text-[#2f2a22] flex items-center gap-1.5 whitespace-nowrap">
+                <span class="material-symbols-outlined text-[16px] text-[#b88746]">touch_app</span>
+                Bấm vào bản đồ hoặc kéo ghim để chỉnh vị trí
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER ACTION -->
+    <div class="sticky bottom-0 z-20 -mx-0 bg-gradient-to-t from-[#f5f1ea] via-[#f5f1ea] to-transparent pt-5">
+      <div class="bg-white border border-[#ded6c9] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-[0_-8px_35px_rgba(56,44,33,0.06)]">
+
+        <div>
+          <p class="text-sm font-bold text-[#2f2a22]">
+            {{ isDirty() ? 'Bạn có thay đổi chưa lưu' : 'Thông tin đã sẵn sàng' }}
+          </p>
+
+          <p class="text-xs text-[#756b5e] mt-1">
+            Kiểm tra lại tên, địa chỉ và vị trí trước khi lưu.
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="isSaving()"
+          class="h-12 px-7 rounded-xl bg-[#3b332b] text-white hover:bg-[#2f2a22] transition-all font-black text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed min-w-[160px]">
+
+          @if (isSaving()) {
+            <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            <span>Đang lưu...</span>
+          } @else {
+            <span class="material-symbols-outlined text-[19px]">save</span>
+            <span>Lưu thay đổi</span>
+          }
+        </button>
+
+      </div>
+    </div>
+
+  </form>
+</div>

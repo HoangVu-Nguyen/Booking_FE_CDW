@@ -36,6 +36,9 @@ import { CalendarPricing } from './features/host-dashboard/components/calendar-p
 import { InvoiceHistory } from './features/profile/components/invoice-history/invoice-history';
 import { Inbox } from './features/host-dashboard/components/inbox/inbox';
 import { AddProperty } from './features/host-dashboard/components/add-property/add-property';
+import { ManageProperty } from './features/host-dashboard/components/manage-property/manage-property';
+import { PropertyInfo } from './features/host-dashboard/components/manage-property/components/property-info/property-info';
+import { RoomManager } from './features/host-dashboard/components/manage-property/components/room-manager/room-manager';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -161,13 +164,31 @@ export const routes: Routes = [
             title: 'Hộp thư - Host Dashboard - Clyvasync'
           },
           {
-            path:'add-propety',
-            component:AddProperty
+            path: 'add-propety',
+            component: AddProperty
+          },
+          {
+            path: 'properties/:id/manage',
+            component: ManageProperty,
+            children: [
+              {
+                path: '', redirectTo: 'info', pathMatch: 'full'
+              },
+              {
+                path: 'info',
+                component: PropertyInfo
+              },
+              {
+                path:'rooms',
+                component:RoomManager
+              }
+            ]
           }
         ]
       }
     ]
   },
+
 
 
   { path: '**', redirectTo: 'login' }

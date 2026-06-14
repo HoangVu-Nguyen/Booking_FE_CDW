@@ -11,7 +11,8 @@
                 <h1 class="text-[15px] font-black text-stone-900 leading-tight">{{homeCalendarDetail.homestayName}}</h1>
                 <p
                     class="text-[10px] font-bold text-stone-500 uppercase tracking-[0.15em] flex items-center gap-1.5 mt-0.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {{homeCalendarDetail.status}} • {{homeCalendarDetail.roomCode}} - {{homeCalendarDetail.homestayId}}
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {{homeCalendarDetail.status}} •
+                    {{homeCalendarDetail.roomCode}} - {{homeCalendarDetail.homestayId}}
                 </p>
             </div>
         </div>
@@ -83,12 +84,23 @@
                         class="h-[100px] shrink-0 border-b border-stone-100 flex items-center px-4 hover:bg-stone-50/80 transition-colors group relative bg-white">
 
                         <div
-                            class="absolute left-0 top-0 bottom-0 w-1 bg-stone-200 group-hover:bg-[#173124] transition-colors">
+                            class="absolute left-0 top-0 bottom-0 w-1 bg-stone-200 group-hover:bg-[#173124] transition-colors pointer-events-none">
                         </div>
 
-                        <div
-                            class="w-16 h-16 shrink-0 rounded-lg overflow-hidden border border-stone-100 bg-stone-100 mr-4 shadow-sm">
-                            <img [src]="room.imageUrl" [alt]="room.name" class="w-full h-full object-cover">
+                        <div class="w-16 h-16 shrink-0 rounded-lg overflow-hidden border border-stone-100 bg-stone-100 mr-4 shadow-sm relative cursor-pointer group/img"
+                            (click)="openRoomGallery(room)">
+
+                            <img [src]="getCoverImage(room)" [alt]="room.name" class="w-full h-full object-cover">
+
+                            <div
+                                class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white text-[20px]">zoom_in</span>
+                            </div>
+
+                            <div *ngIf="room.images?.length"
+                                class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm px-1 rounded text-[8px] font-bold text-white tracking-wider z-10">
+                                {{ room.images.length }} ẢNH
+                            </div>
                         </div>
 
                         <div class="flex-1 flex flex-col justify-center min-w-0">
@@ -97,17 +109,11 @@
                                 {{ room.name }}
                             </p>
 
-                            <div class="flex items-center gap-3 mt-2">
-                                <div
-                                    class="flex items-center gap-2 text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-1 rounded-md">
-                                    <span class="flex items-center gap-0.5">
-                                        <span class="material-symbols-outlined text-[12px]">group</span> 2
-                                       
-                                    </span>
-                                    <span class="w-0.5 h-2.5 bg-stone-300"></span>
-                                    <span class="flex items-center gap-0.5">
-                                        <span class="material-symbols-outlined text-[12px]">bed</span> 2
-                                    </span>
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="flex items-center gap-1.5 text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-1 rounded-md cursor-help"
+                                    [title]="getBedTooltip(room.beds)">
+                                    <span class="material-symbols-outlined text-[12px] text-[#173124]">bed</span>
+                                    <span>{{ getTotalBeds(room.beds) }} giường</span>
                                 </div>
 
                                 <p class="text-[11px] font-medium text-stone-400">
@@ -301,3 +307,4 @@
     </app-room-action-drawer>
 
 </div>
+<app-shared-image-lightbox #lightbox></app-shared-image-lightbox>

@@ -4,11 +4,12 @@ import { PortfolioService } from '../../../../core/services/manager/portfolio.se
 import { PropertySummaryResponse } from '../../../../core/models/response/property.response';
 // Chú ý: Cập nhật lại đường dẫn import cho đúng với cấu trúc thư mục của bạn
 import { AddProperty } from '../add-property/add-property';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-host-portfolio',
   standalone: true,
-  imports: [CommonModule,AddProperty],
+  imports: [CommonModule,AddProperty,RouterModule],
   templateUrl: './portfolio.html'
 })
 export class Portfolio implements OnInit {

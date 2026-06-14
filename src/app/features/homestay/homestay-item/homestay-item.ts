@@ -1,15 +1,16 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, signal, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, signal, SimpleChanges, ViewChild } from '@angular/core';
 import { HomestayResponse } from '../../../core/models/response/homestay.response';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ChatStateService } from '../../../core/services/chat/chat-state.service';
+
 @Component({
   selector: 'app-homestay-item',
   imports: [CommonModule, RouterModule],
   templateUrl: './homestay-item.html',
   styleUrl: './homestay-item.css',
 })
-export class HomestayItem implements OnInit,OnDestroy {
+export class HomestayItem implements OnInit, OnDestroy {
   @Input() homestay!: HomestayResponse;
   @Input() layoutType: number = 0;
   coverImage: string = '';
@@ -21,11 +22,12 @@ export class HomestayItem implements OnInit,OnDestroy {
 
   ngOnInit() {
     this.setCoverImage();
-    
-   
+
+
 
   }
 
+  
   private setCoverImage() {
     if (this.homestay?.imageUrls && this.homestay.imageUrls.length > 0) {
       this.coverImage = this.homestay.imageUrls[0];
