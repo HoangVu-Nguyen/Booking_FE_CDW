@@ -49,3 +49,13 @@ export interface BookingAvailabilityResponse {
   rooms: RoomResponse[];
   suggestedTours: TourResponse[];
 }
+export interface HomestayImageView {
+   id: number | string;
+  clientImageId?: string;
+  url: string;
+  file?: File;
+  objectKey?: string | null;
+  isCover: boolean;
+  displayOrder: number;
+  isNew: boolean;
+}

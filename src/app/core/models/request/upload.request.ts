@@ -5,3 +5,7 @@ export interface UploadRequest {
     isCover: boolean;
     sortOrder: number;
 }
+export interface BatchUploadRequest {
+  targetId: number;
+  items: UploadRequest[];
+}

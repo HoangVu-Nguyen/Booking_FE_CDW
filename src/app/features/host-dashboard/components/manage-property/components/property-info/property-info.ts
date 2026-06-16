@@ -16,6 +16,11 @@ import { HomestayService } from '../../../../../../core/services/homestay/homest
 import { ActivatedRoute } from '@angular/router';
 import { ToastService } from '../../../../../../core/services/toast/toast.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { HomestayImageView } from '../../../../../../core/models/response/homestay.response';
+import { firstValueFrom } from 'rxjs';
+import { PresignedUrlResponse } from '../../../../../../core/models/file/file.model';
+import { BatchUploadRequest } from '../../../../../../core/models/request/upload.request';
+import { ImageType } from '../../../../../../core/enum/image-type.enum';
 interface NominatimSuggestion {
   place_id: number;
   display_name: string;
@@ -41,7 +46,7 @@ export class PropertyInfo implements OnInit, AfterViewInit, OnDestroy {
 
   private route = inject(ActivatedRoute);
   private homestayService = inject(HomestayService);
-private cdr = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef);
   homestayId: string | null = null;
 
   isSaving = signal(false);
@@ -49,7 +54,8 @@ private cdr = inject(ChangeDetectorRef);
   showSavedToast = signal(false);
   isLoading = signal(false);
   private toastService = inject(ToastService);
-
+  homestayImages: HomestayImageView[] = [];
+  selectedHomestayImageIndex = 0;
   infoForm = {
     type: 'APARTMENT',
     name: '',
@@ -74,7 +80,7 @@ private cdr = inject(ChangeDetectorRef);
   private mapReady = false;
   private pendingLocation: { lat: number; lng: number } | null = null;
 
-  constructor(private zone: NgZone) {}
+  constructor(private zone: NgZone) { }
 
   ngOnInit(): void {
     this.route.parent?.paramMap.subscribe(params => {
@@ -115,6 +121,7 @@ private cdr = inject(ChangeDetectorRef);
           }
 
           const data = res.data;
+          console.log(data)
 
           let mapType: 'APARTMENT' | 'VILLA' | 'HOUSE' = 'APARTMENT';
 
@@ -133,6 +140,7 @@ private cdr = inject(ChangeDetectorRef);
             lat: data.latitude ?? null,
             lng: data.longitude ?? null
           };
+          this.setHomestayImagesFromImageUrls(data.imageUrls);
 
           this.isDirty.set(false);
 
@@ -429,36 +437,47 @@ private cdr = inject(ChangeDetectorRef);
     return Math.round((completed / 5) * 100);
   }
 
-  saveChanges(): void {
-    if (!this.infoForm.name.trim()) {
-      alert('Vui lòng nhập tên chỗ nghỉ.');
-      return;
+  async saveChanges(): Promise<void> {
+  // 1. VALIDATE CƠ BẢN
+  if (!this.infoForm.name.trim()) { alert('Vui lòng nhập tên chỗ nghỉ.'); return; }
+  if (!this.infoForm.addressDetail.trim()) { alert('Vui lòng nhập địa chỉ.'); return; }
+  if (!this.hasPinnedLocation()) { alert('Vui lòng ghim vị trí.'); return; }
+  if (!this.homestayId) { alert('Không tìm thấy ID!'); return; }
+
+  this.isSaving.set(true);
+
+  try {
+    // 2. BƯỚC 1: XỬ LÝ UPLOAD ẢNH MỚI LÊN S3 (Nếu có)
+    const newImages = this.homestayImages.filter(img => img.isNew && img.file);
+    let presignedUrls: PresignedUrlResponse[] = [];
+
+    if (newImages.length > 0) {
+      const batchRequest: BatchUploadRequest = {
+        targetId: Number(this.homestayId),
+        items: newImages.map(img => ({
+          fileName: img.file!.name,
+          contentType: img.file!.type,
+          fileSize: img.file!.size,
+          imageType:ImageType.HOMESTAY,
+          isCover: img.isCover,
+          sortOrder: img.displayOrder
+        }))
+      };
+
+      // Gọi API xin link S3
+      presignedUrls = await firstValueFrom(this.homestayService.prepareHomestayImagesBatch( batchRequest));
+
+      // Upload song song lên S3 bằng fetch (để tránh Interceptor)
+      await Promise.all(presignedUrls.map(urlInfo => {
+        const file = newImages.find(i => i.file?.name === urlInfo.fileName)?.file;
+        return file ? firstValueFrom(this.homestayService.uploadFileToS3(urlInfo.uploadUrl, file)) : Promise.resolve();
+      }));
     }
 
-    if (!this.infoForm.addressDetail.trim()) {
-      alert('Vui lòng nhập địa chỉ chỗ nghỉ.');
-      return;
-    }
-
-    if (!this.hasPinnedLocation()) {
-      alert('Vui lòng ghim vị trí chỗ nghỉ trên bản đồ.');
-      return;
-    }
-
-    if (!this.homestayId) {
-      alert('Không tìm thấy ID chỗ nghỉ!');
-      return;
-    }
-
-    this.isSaving.set(true);
-
+    // 3. BƯỚC 2: BUILD PAYLOAD CHỐT SỔ (Gửi thông tin text + danh sách ảnh đã map)
     let mapCategoryId = 1;
-
-    if (this.infoForm.type === 'VILLA') {
-      mapCategoryId = 2;
-    } else if (this.infoForm.type === 'HOUSE') {
-      mapCategoryId = 3;
-    }
+    if (this.infoForm.type === 'VILLA') mapCategoryId = 2;
+    else if (this.infoForm.type === 'HOUSE') mapCategoryId = 3;
 
     const payload = {
       categoryId: mapCategoryId,
@@ -467,28 +486,136 @@ private cdr = inject(ChangeDetectorRef);
       addressDetail: this.infoForm.addressDetail.trim(),
       city: this.infoForm.city,
       latitude: this.infoForm.lat,
-      longitude: this.infoForm.lng
+      longitude: this.infoForm.lng,
+      // 👉 Gộp ảnh cũ (dùng ID) và ảnh mới (dùng objectKey)
+      images: this.homestayImages.map(img => ({
+        id: img.isNew ? null : img.id, // Giả sử backend dùng id này để đối chiếu
+        objectKey: img.isNew ? presignedUrls.find(u => u.fileName === img.file?.name)?.objectKey : null,
+        isCover: img.isCover,
+        sortOrder: img.displayOrder
+      }))
     };
+    console.log(payload)
 
-    console.log('Payload Update:', payload);
+    // 4. BƯỚC 3: GỌI API UPDATE HOMESTAY (Backend sẽ Active các ảnh PENDING)
+    const res = await firstValueFrom(this.homestayService.updateHomestay(Number(this.homestayId), payload));
+    
+    if (res.success) {
+      this.isDirty.set(false);
+      this.toastService.show('success', 'Thành công', 'Đã cập nhật chỗ nghỉ');
+      // Reload lại data nếu cần để lấy ID chuẩn từ DB về
+      this.loadHomestayData(this.homestayId); 
+    } else {
+      this.toastService.show('error', 'Thất bại', res.message);
+    }
 
-    this.homestayService.updateHomestay(this.homestayId, payload).subscribe({
-      next: res => {
-        this.isSaving.set(false);
+  } catch (err) {
+    console.error('Lỗi khi lưu Homestay:', err);
+    this.toastService.show('error', 'Lỗi hệ thống', 'Có lỗi xảy ra khi lưu thông tin.');
+  } finally {
+    this.isSaving.set(false);
+  }
+}
+  private setHomestayImagesFromImageUrls(imageUrls: string[] | null | undefined): void {
+    this.homestayImages = (imageUrls || [])
+      .filter(url => !!url)
+      .map((url, index) => ({
+        id: index,
+        url,
+        objectKey: null,
+        isCover: index === 0,
+        displayOrder: index,
+        isNew: false
+      }));
 
-        if (res.success) {
-          this.isDirty.set(false);
-          this.toastService.show('success','Chỉnh sửa thành công',res.message)
-        } else {
-           this.toastService.show('error','Chỉnh sửa thất bại',res.message)
-        }
-      },
-      error: err => {
-        console.error('Lỗi update:', err);
-        this.isSaving.set(false);
-        alert('Có lỗi xảy ra khi lưu thông tin.');
-      }
-    });
+    this.selectedHomestayImageIndex = 0;
+  }
+  onHomestayImagesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+
+    if (files.length === 0) {
+      return;
+    }
+
+    const currentLength = this.homestayImages.length;
+
+    const newImages: HomestayImageView[] = files.map((file, index) => ({
+      id: crypto.randomUUID(),
+      clientImageId: crypto.randomUUID(),
+      url: URL.createObjectURL(file),
+      file,
+      objectKey: null,
+      isCover: this.homestayImages.length === 0 && index === 0,
+      displayOrder: currentLength + index,
+      isNew: true
+    }));
+
+    this.homestayImages = [
+      ...this.homestayImages,
+      ...newImages
+    ];
+
+    this.reorderHomestayImages();
+    this.markDirty();
+
+    input.value = '';
+  }
+  setHomestayCover(index: number): void {
+    this.homestayImages = this.homestayImages.map((image, i) => ({
+      ...image,
+      isCover: i === index
+    }));
+
+    this.selectedHomestayImageIndex = index;
+    this.markDirty();
+  }
+  private reorderHomestayImages(): void {
+    this.homestayImages = this.homestayImages.map((image, index) => ({
+      ...image,
+      displayOrder: index
+    }));
+  }
+  removeHomestayImage(index: number): void {
+    const removedImage = this.homestayImages[index];
+
+    if (!removedImage) {
+      return;
+    }
+
+    if (removedImage.isNew && removedImage.url.startsWith('blob:')) {
+      URL.revokeObjectURL(removedImage.url);
+    }
+
+    this.homestayImages = this.homestayImages.filter((_, i) => i !== index);
+
+    if (this.homestayImages.length > 0 && !this.homestayImages.some(image => image.isCover)) {
+      this.homestayImages[0].isCover = true;
+    }
+
+    if (this.selectedHomestayImageIndex >= this.homestayImages.length) {
+      this.selectedHomestayImageIndex = Math.max(this.homestayImages.length - 1, 0);
+    }
+
+    this.reorderHomestayImages();
+    this.markDirty();
+  }
+  getSelectedHomestayImage(): HomestayImageView | null {
+    return this.homestayImages[this.selectedHomestayImageIndex] || null;
   }
 
+  selectHomestayImage(index: number): void {
+    this.selectedHomestayImageIndex = index;
+  }
+
+  getHomestayCoverImage(): HomestayImageView | null {
+    return this.homestayImages.find(image => image.isCover) || this.homestayImages[0] || null;
+  }
+
+  trackByHomestayImage(index: number, image: HomestayImageView): number | string {
+    return image.id ?? index;
+  }
+  getNewHomestayImageCount(): number {
+    return this.homestayImages.filter(image => image.isNew).length;
+  }
 }

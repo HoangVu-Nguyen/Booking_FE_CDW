@@ -18,6 +18,7 @@ export interface BatchUploadRequest {
 
 // Cấu trúc BE trả về
 export interface PresignedUrlResponse {
+  fileName: string;
   uploadUrl: string; // Dùng để PUT file lên S3
   objectKey: string; // Dùng để lưu vào Message làm fileUrl
 }

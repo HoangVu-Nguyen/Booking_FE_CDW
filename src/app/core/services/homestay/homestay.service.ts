@@ -9,6 +9,7 @@ import { PageResponse } from "../../models/response/page.response";
 import { ReviewResponse } from "../../models/response/review.response";
 import { HttpParams } from "@angular/common/http";
 import { RoomDisplayResponse, RoomResponse } from "../../models/response/room.response";
+import { PresignedUrlResponse } from "../file/file.service";
 
 @Injectable({ providedIn: 'root' })
 export class HomestayService {
@@ -107,4 +108,36 @@ export class HomestayService {
     const endpoint = `/api/v1/homestays/${homestayId}/rooms`;
     return this.apiService.get<ApiResponse<RoomDisplayResponse[]>>(endpoint);
   }
+  /**
+     * Hàm xin link upload cho nhiều phòng/homestay cùng lúc
+     * Sử dụng cấu trúc MultiRoomBatchUploadRequest để linh hoạt
+     */
+    prepareHomestayImagesBatch(batchRequest: any): Observable<PresignedUrlResponse[]> {
+        const url = `/api/v1/homestays/images/presign`;
+        return this.apiService.post<ApiResponse<PresignedUrlResponse[]>>(url, batchRequest).pipe(
+            map(response => response.success ? response.data : [])
+        );
+    }
+
+    /**
+     * Upload file vật lý lên S3 bằng fetch (Bypass Interceptor)
+     */
+    uploadFileToS3(uploadUrl: string, file: File): Observable<any> {
+        return new Observable(observer => {
+            fetch(uploadUrl, {
+                method: 'PUT',
+                body: file,
+                headers: { 'Content-Type': file.type } // Quan trọng để S3 nhận đúng file
+            })
+            .then(response => {
+                if (response.ok) {
+                    observer.next(response);
+                    observer.complete();
+                } else {
+                    observer.error(response);
+                }
+            })
+            .catch(err => observer.error(err));
+        });
+    }
 }
