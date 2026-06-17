@@ -29,20 +29,20 @@ export class HomestayItem implements OnInit, OnDestroy {
 
   
   private setCoverImage() {
-    if (this.homestay?.imageUrls && this.homestay.imageUrls.length > 0) {
-      this.coverImage = this.homestay.imageUrls[0];
+    if (this.homestay?.images && this.homestay.images.length > 0 ) {
+      this.coverImage = this.homestay.images[0].imageUrl;
     } else {
       this.coverImage = 'assets/images/homestay-placeholder.jpg';
     }
   }
 
   startImageSequence() {
-    if (!this.homestay?.imageUrls || this.homestay.imageUrls.length <= 1) return;
+    if (!this.homestay?.images || this.homestay.images.length <= 1) return;
     if (this.intervalId) return;
 
     // CHUẨN APP HIỆN ĐẠI: 1.5 giây đổi ảnh 1 lần
     this.intervalId = setInterval(() => {
-      this.currentImgIndex.update(idx => (idx + 1) % this.homestay.imageUrls.length);
+      this.currentImgIndex.update(idx => (idx + 1) % this.homestay.images.length);
       this.cdr.markForCheck();
     }, 1500);
   }

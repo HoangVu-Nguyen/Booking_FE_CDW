@@ -16,7 +16,7 @@ import { HomestayService } from '../../../../../../core/services/homestay/homest
 import { ActivatedRoute } from '@angular/router';
 import { ToastService } from '../../../../../../core/services/toast/toast.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { HomestayImageView } from '../../../../../../core/models/response/homestay.response';
+import { HomestayImageResponse, HomestayImageView } from '../../../../../../core/models/response/homestay.response';
 import { firstValueFrom } from 'rxjs';
 import { PresignedUrlResponse } from '../../../../../../core/models/file/file.model';
 import { BatchUploadRequest } from '../../../../../../core/models/request/upload.request';
@@ -140,7 +140,7 @@ export class PropertyInfo implements OnInit, AfterViewInit, OnDestroy {
             lat: data.latitude ?? null,
             lng: data.longitude ?? null
           };
-          this.setHomestayImagesFromImageUrls(data.imageUrls);
+          this.setHomestayImagesFromBackend(data.images);
 
           this.isDirty.set(false);
 
@@ -516,20 +516,23 @@ export class PropertyInfo implements OnInit, AfterViewInit, OnDestroy {
     this.isSaving.set(false);
   }
 }
-  private setHomestayImagesFromImageUrls(imageUrls: string[] | null | undefined): void {
-    this.homestayImages = (imageUrls || [])
-      .filter(url => !!url)
-      .map((url, index) => ({
-        id: index,
-        url,
-        objectKey: null,
-        isCover: index === 0,
-        displayOrder: index,
-        isNew: false
-      }));
+private setHomestayImagesFromBackend(
+  images: HomestayImageResponse[] | null | undefined
+): void {
+  console.log(images)
+  this.homestayImages = (images || [])
+    .filter(image => !!image.imageUrl)
+    .map((image, index): HomestayImageView => ({
+      id: image.id,
+      url: image.imageUrl,
+      objectKey: image.objectKey,
+      isCover: image.isCover ?? index === 0,
+      displayOrder: image.displayOrder ?? index,
+      isNew: false
+    }));
 
-    this.selectedHomestayImageIndex = 0;
-  }
+  this.selectedHomestayImageIndex = 0;
+}
   onHomestayImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files || []);

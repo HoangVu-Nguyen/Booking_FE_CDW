@@ -17,7 +17,7 @@ export class HomestayGallery {
   homestay = computed(() => this.homestayService.currentHomestay());
 
   galleryImages = computed(() => {
-    const images = this.homestay()?.imageUrls ?? [];
+    const images = this.homestay()?.images ?? [];
     const placeholder = 'assets/images/placeholder-luxury.jpg';
 
     return {
@@ -32,17 +32,17 @@ export class HomestayGallery {
   constructor(private homestayService: HomestayService) {}
 
   openHomestayGallery(): void {
-    const homestay = this.homestay();
+  const homestay = this.homestay();
 
-    if (!homestay?.imageUrls?.length) {
-      return;
-    }
-
-    const lightboxData: LightboxImage[] = homestay.imageUrls.map(url => ({
-      url,
-      caption: 'Tổng quan Homestay'
-    }));
-
-    this.lightbox.open(lightboxData, 0);
+  if (!homestay?.images?.length) {
+    return;
   }
+
+  const lightboxData: LightboxImage[] = homestay.images.map(image => ({
+    url: image.imageUrl,
+    caption: 'Tổng quan Homestay'
+  }));
+
+  this.lightbox.open(lightboxData, 0);
+}
 }
