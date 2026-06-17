@@ -1,5 +1,6 @@
 import { BedResponse, CalendarInventoryResponse, RoomCalendarStatus, RoomImageResponse } from "./calendar.response";
 import { AmenityResponse } from "./homestay.response";
+export type BookingMode = 'INSTANT_BOOKING' | 'REQUEST_TO_BOOK' | 'CLOSED';
 
 export interface RoomResponse {
     id: number;
@@ -30,9 +31,9 @@ export interface AmenityHighlight {
 }
 
 export interface RatePlanResponse {
-    id: number;
+    id?: number;
     name: string;             // 'Standard Experience', 'Luxury Package'
-    price: number;            // Giá theo đêm (Backend trả về BigDecimal -> number)
+    price: number | null;            // Giá theo đêm (Backend trả về BigDecimal -> number)
     isNonRefundable: boolean;
     benefits: string[];       // Danh sách text tích xanh (đã được BE xử lý JOIN)
 }
@@ -58,4 +59,6 @@ export interface RoomDisplayResponse {
   hasPrivateBathroom?: boolean;
   beds?: BedResponse[];
   images?: RoomImageResponse[];
+  ratePlans:RatePlanResponse[];
+  isInstantBook?: boolean;
 }

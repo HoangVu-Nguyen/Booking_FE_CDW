@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { HomestayService } from '../../../../../../core/services/homestay/homestay.service';
-import { RoomDisplayResponse } from '../../../../../../core/models/response/room.response';
+import {  RatePlanResponse, RoomDisplayResponse } from '../../../../../../core/models/response/room.response';
 import { BedResponse, RoomImageResponse } from '../../../../../../core/models/response/calendar.response';
 import { firstValueFrom } from 'rxjs';
 import { RoomService } from '../../../../../../core/services/room.service';
 import { ImageType } from '../../../../../../core/enum/image-type.enum';
-
+import { BookingMode } from '../../../../../../core/models/response/room.response';
 
 
 interface Bed {
@@ -39,7 +39,11 @@ interface Room {
   isExpanded: boolean;
   beds: Bed[];
   images: RoomImage[];
+  ratePlans: RatePlanResponse[];
+  isInstantBook: boolean;
+
 }
+
 
 @Component({
   selector: 'app-room-manager',
@@ -89,8 +93,10 @@ export class RoomManager implements OnInit {
 
       if (this.homestayId) {
         this.loadRooms(this.homestayId);
+       
       }
     });
+    console.log(this.rooms)
   }
 
   private loadRooms(id: string): void {
@@ -101,6 +107,7 @@ export class RoomManager implements OnInit {
         const data = res.data || [];
 
         this.rooms = data.map((room, index) => this.mapRoomResponse(room, index));
+         console.log(this.rooms)
 
         this.isLoading.set(false);
         this.isDirty.set(false);
@@ -115,6 +122,7 @@ export class RoomManager implements OnInit {
 
   private mapRoomResponse(room: RoomDisplayResponse, index: number): Room {
     const images = this.mapRoomImages(room.images || []);
+    console.log(room)
 
     return {
       id: room.id,
@@ -126,7 +134,9 @@ export class RoomManager implements OnInit {
       hasPrivateBathroom: Boolean(room.hasPrivateBathroom),
       isExpanded: index === 0,
       beds: this.mapBeds(room.beds || []),
-      images
+      images,
+      ratePlans: room.ratePlans,
+      isInstantBook: room.isInstantBook! 
     };
   }
 
@@ -189,7 +199,9 @@ export class RoomManager implements OnInit {
           quantity: 1
         }
       ],
-      images: []
+      images: [],
+      ratePlans: [],
+      isInstantBook: true
     });
 
     this.markDirty();
@@ -372,147 +384,159 @@ export class RoomManager implements OnInit {
   }
 
   async saveChanges(): Promise<void> {
-  // 1. Validate form (Giữ nguyên của ông giáo)
-  for (const room of this.rooms) {
-    if (!room.name.trim()) {
-      alert('Tên phòng không được để trống.');
-      room.isExpanded = true;
+    // 1. Validate form (Giữ nguyên của ông giáo)
+    for (const room of this.rooms) {
+      if (!room.name.trim()) {
+        alert('Tên phòng không được để trống.');
+        room.isExpanded = true;
+        return;
+      }
+      if (room.maxGuests < 1) {
+        alert(`Sức chứa của "${room.name}" phải lớn hơn 0.`);
+        room.isExpanded = true;
+        return;
+      }
+      if (room.beds.length === 0) {
+        alert(`"${room.name}" cần có ít nhất 1 loại giường.`);
+        room.isExpanded = true;
+        return;
+      }
+    }
+
+    if (!this.homestayId) {
+      alert('Không tìm thấy ID chỗ nghỉ.');
       return;
     }
-    if (room.maxGuests < 1) {
-      alert(`Sức chứa của "${room.name}" phải lớn hơn 0.`);
-      room.isExpanded = true;
-      return;
-    }
-    if (room.beds.length === 0) {
-      alert(`"${room.name}" cần có ít nhất 1 loại giường.`);
-      room.isExpanded = true;
-      return;
+
+    this.isSaving.set(true);
+
+    try {
+      // ==========================================
+      // BƯỚC 1: XIN LINK S3 CHO CÁC ẢNH MỚI
+      // ==========================================
+      // Lọc ra các phòng có ảnh mới và cấu trúc lại để gọi API xin link
+      const roomsWithNewImages = this.rooms
+        .filter(room => room.images.some(img => img.isNew))
+        .map(room => ({
+          roomId: room.id!, // Chú ý: Cần có ID phòng
+          items: room.images
+            .filter(img => img.isNew && img.file)
+            .map((img, index) => ({
+              fileName: img.file!.name,
+              fileSize: img.file!.size,
+              imageType: ImageType.HOMESTAY,
+              contentType: img.file!.type,
+              isCover: img.isCover,
+              sortOrder: index
+            }))
+        }));
+
+      let presignedUrls: any[] = []; // Chứa danh sách link S3 trả về
+
+      // ==========================================
+      // BƯỚC 2: UPLOAD FILE LÊN S3 SONG SONG
+      // ==========================================
+      if (roomsWithNewImages.length > 0) {
+        // Gọi API Backend xin link
+        presignedUrls = await firstValueFrom(this.roomService.prepareImageUploads({ rooms: roomsWithNewImages }));
+
+        // Tạo các Promise để upload thẳng file lên S3
+        const uploadPromises = presignedUrls.map(urlInfo => {
+          // Tìm đúng file vật lý trên RAM khớp với roomId và fileName
+          const room = this.rooms.find(r => r.id === urlInfo.roomId);
+          const imgObj = room?.images.find(img => img.isNew && img.file?.name === urlInfo.fileName);
+
+          if (imgObj && imgObj.file) {
+            return firstValueFrom(this.roomService.uploadFileToS3(urlInfo.uploadUrl, imgObj.file));
+          }
+          return Promise.resolve(); // Bỏ qua nếu không tìm thấy
+        });
+
+        // Chờ TẤT CẢ các file được upload xong
+        await Promise.all(uploadPromises);
+        console.log('Đã upload toàn bộ ảnh mới lên S3 thành công!');
+      }
+
+      // ==========================================
+      // BƯỚC 3: BUILD PAYLOAD CHỐT SỔ GỬI BE
+      // ==========================================
+      // Chú ý: Thay vì chia ra existingImages và newImages như nháp cũ, 
+      // giờ ta gộp chung vào 1 mảng 'images' duy nhất theo DTO chốt hạ
+      const finalPayload = {
+        homestayId: Number(this.homestayId),
+        rooms: this.rooms.map((room, roomIndex) => {
+
+          const oldImages = room.images
+            .filter(img => !img.isNew)
+            .map((img, imgIndex) => ({
+              id: img.backendId,
+              isCover: img.isCover,
+              sortOrder: imgIndex
+            }));
+
+          const newlyUploadedImages = presignedUrls
+            .filter(url => url.roomId === room.id)
+            .map((url, imgIndex) => {
+              const originalFile = room.images.find(
+                img => img.isNew && img.file?.name === url.fileName
+              );
+
+              return {
+                objectKey: url.objectKey,
+                isCover: originalFile?.isCover || false,
+                sortOrder: oldImages.length + imgIndex
+              };
+            });
+
+          return {
+            id: room.id,
+            name: room.name.trim(),
+            type: room.type,
+            description: room.description.trim(),
+            maxGuests: room.maxGuests,
+            area: room.area,
+            isInstantBook: room.isInstantBook,
+            hasPrivateBathroom: room.hasPrivateBathroom,
+            sortOrder: roomIndex,
+
+            beds: room.beds.map(bed => ({
+              id: bed.id,
+              type: bed.type,
+              quantity: bed.quantity
+            })),
+
+            ratePlans: room.ratePlans.map(plan => ({
+              id: plan.id,
+              name: plan.name,
+              price: plan.price,
+              isNonRefundable: plan.isNonRefundable,
+              benefits: plan.benefits || []
+            })),
+
+            images: [...oldImages, ...newlyUploadedImages]
+          };
+        })
+      };
+
+      console.log('Payload Chốt Sổ gửi Backend:', finalPayload);
+
+      // ==========================================
+      // BƯỚC 4: GỌI API UPDATE ROOM CUỐI CÙNG
+      // ==========================================
+      await firstValueFrom(this.roomService.updateRooms(finalPayload));
+
+      // Thành công
+      this.isDirty.set(false);
+      this.showSuccessToast();
+
+    } catch (error) {
+      console.error('Lỗi quá trình lưu phòng và upload ảnh:', error);
+      alert('Có lỗi xảy ra khi lưu thay đổi. Vui lòng thử lại.');
+    } finally {
+      // Luôn tắt trạng thái loading dù thành công hay thất bại
+      this.isSaving.set(false);
     }
   }
-
-  if (!this.homestayId) {
-    alert('Không tìm thấy ID chỗ nghỉ.');
-    return;
-  }
-
-  this.isSaving.set(true);
-
-  try {
-    // ==========================================
-    // BƯỚC 1: XIN LINK S3 CHO CÁC ẢNH MỚI
-    // ==========================================
-    // Lọc ra các phòng có ảnh mới và cấu trúc lại để gọi API xin link
-    const roomsWithNewImages = this.rooms
-      .filter(room => room.images.some(img => img.isNew))
-      .map(room => ({
-        roomId: room.id!, // Chú ý: Cần có ID phòng
-        items: room.images
-          .filter(img => img.isNew && img.file)
-          .map((img, index) => ({
-            fileName: img.file!.name,
-            fileSize: img.file!.size,
-            imageType:ImageType.HOMESTAY,
-            contentType: img.file!.type,
-            isCover: img.isCover,
-            sortOrder: index
-          }))
-      }));
-
-    let presignedUrls: any[] = []; // Chứa danh sách link S3 trả về
-
-    // ==========================================
-    // BƯỚC 2: UPLOAD FILE LÊN S3 SONG SONG
-    // ==========================================
-    if (roomsWithNewImages.length > 0) {
-      // Gọi API Backend xin link
-      presignedUrls = await firstValueFrom(this.roomService.prepareImageUploads({ rooms: roomsWithNewImages }));
-
-      // Tạo các Promise để upload thẳng file lên S3
-      const uploadPromises = presignedUrls.map(urlInfo => {
-        // Tìm đúng file vật lý trên RAM khớp với roomId và fileName
-        const room = this.rooms.find(r => r.id === urlInfo.roomId);
-        const imgObj = room?.images.find(img => img.isNew && img.file?.name === urlInfo.fileName);
-        
-        if (imgObj && imgObj.file) {
-          return firstValueFrom(this.roomService.uploadFileToS3(urlInfo.uploadUrl, imgObj.file));
-        }
-        return Promise.resolve(); // Bỏ qua nếu không tìm thấy
-      });
-
-      // Chờ TẤT CẢ các file được upload xong
-      await Promise.all(uploadPromises);
-      console.log('Đã upload toàn bộ ảnh mới lên S3 thành công!');
-    }
-
-    // ==========================================
-    // BƯỚC 3: BUILD PAYLOAD CHỐT SỔ GỬI BE
-    // ==========================================
-    // Chú ý: Thay vì chia ra existingImages và newImages như nháp cũ, 
-    // giờ ta gộp chung vào 1 mảng 'images' duy nhất theo DTO chốt hạ
-    const finalPayload = {
-      homestayId: Number(this.homestayId),
-      rooms: this.rooms.map((room, roomIndex) => {
-        
-        // A. Gom ảnh cũ (Dùng ID)
-        const oldImages = room.images
-          .filter(img => !img.isNew)
-          .map((img, imgIndex) => ({
-            id: img.backendId, // Lấy ID thực tế từ DB của ông
-            isCover: img.isCover,
-            sortOrder: imgIndex
-          }));
-
-        // B. Gom ảnh mới vừa up xong (Dùng objectKey)
-        const newlyUploadedImages = presignedUrls
-          .filter(url => url.roomId === room.id)
-          .map((url, imgIndex) => {
-            const originalFile = room.images.find(img => img.isNew && img.file?.name === url.fileName);
-            return {
-              objectKey: url.objectKey, // Chìa khóa kết nối đây rồi!
-              isCover: originalFile?.isCover || false,
-              sortOrder: oldImages.length + imgIndex
-            };
-          });
-
-        return {
-          id: room.id,
-          name: room.name.trim(),
-          type: room.type,
-          description: room.description.trim(),
-          maxGuests: room.maxGuests,
-          area: room.area,
-          hasPrivateBathroom: room.hasPrivateBathroom,
-          sortOrder: roomIndex,
-          beds: room.beds.map(bed => ({
-            id: bed.id, // Sẽ undefined nếu Host vừa bấm thêm giường mới
-            type: bed.type,
-            quantity: bed.quantity
-          })),
-          images: [...oldImages, ...newlyUploadedImages] 
-        };
-      })
-    };
-
-    console.log('Payload Chốt Sổ gửi Backend:', finalPayload);
-
-    // ==========================================
-    // BƯỚC 4: GỌI API UPDATE ROOM CUỐI CÙNG
-    // ==========================================
-    await firstValueFrom(this.roomService.updateRooms(finalPayload));
-
-    // Thành công
-    this.isDirty.set(false);
-    this.showSuccessToast();
-
-  } catch (error) {
-    console.error('Lỗi quá trình lưu phòng và upload ảnh:', error);
-    alert('Có lỗi xảy ra khi lưu thay đổi. Vui lòng thử lại.');
-  } finally {
-    // Luôn tắt trạng thái loading dù thành công hay thất bại
-    this.isSaving.set(false);
-  }
-}
 
   buildRoomFormData(): FormData {
     const formData = new FormData();
@@ -562,4 +586,124 @@ export class RoomManager implements OnInit {
       this.showSavedToast.set(false);
     }, 2500);
   }
+  getLowestPriceFromPlans(ratePlans: RatePlanResponse[]): number | null {
+    const prices = ratePlans
+      .map(plan => plan.price)
+      .filter((price): price is number => price !== null && price > 0);
+
+    if (prices.length === 0) {
+      return null;
+    }
+
+    return Math.min(...prices);
+  }
+
+  formatPrice(price: number | null): string {
+    if (price === null || price === undefined || price <= 0) {
+      return '---';
+    }
+
+    return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+  }
+  getBookingModeLabel(mode: BookingMode): string {
+  switch (mode) {
+    case 'INSTANT_BOOKING':
+      return 'Mở đặt ngay';
+    case 'REQUEST_TO_BOOK':
+      return 'Yêu cầu trước khi đặt';
+    case 'CLOSED':
+      return 'Tạm khóa phòng';
+    default:
+      return 'Không xác định';
+  }
+}
+
+getBookingModeDescription(mode: BookingMode): string {
+  switch (mode) {
+    case 'INSTANT_BOOKING':
+      return 'Khách có thể chọn phòng và đặt ngay nếu còn phòng trống.';
+    case 'REQUEST_TO_BOOK':
+      return 'Khách vẫn thấy phòng, nhưng cần gửi yêu cầu để host xác nhận.';
+    case 'CLOSED':
+      return 'Phòng bị tạm khóa, khách không thể đặt phòng này.';
+    default:
+      return '';
+  }
+}
+
+getInstantBookLabel(room: Room): string {
+  return room.isInstantBook ? 'Đặt ngay' : 'Gửi yêu cầu';
+}
+
+getInstantBookDescription(room: Room): string {
+  return room.isInstantBook
+    ? 'Khách có thể đặt phòng ngay nếu còn phòng trống.'
+    : 'Khách vẫn thấy phòng nhưng cần gửi yêu cầu để host xác nhận.';
+}
+
+getInstantBookIcon(room: Room): string {
+  return room.isInstantBook ? 'bolt' : 'mark_email_unread';
+}
+
+getInstantBookBadgeClass(room: Room): string {
+  return room.isInstantBook
+    ? 'bg-green-50 text-green-700 border-green-200'
+    : 'bg-[#fff8e8] text-[#8a6400] border-[#e4c47a]';
+}
+
+toggleInstantBook(room: Room): void {
+  room.isInstantBook = !room.isInstantBook;
+  this.markDirty();
+}
+
+setBookingMode(room: Room, mode: boolean): void {
+  room.isInstantBook = mode;
+  this.markDirty();
+}
+createDefaultRatePlans(room: Room): void {
+  room.ratePlans = [
+    {
+      name: 'Standard',
+      price: null,
+      isNonRefundable: false,
+      benefits: [
+        'Có thể hoàn hủy theo chính sách',
+        'Thanh toán an toàn'
+      ]
+    },
+    {
+      name: 'Luxury',
+      price: null,
+      isNonRefundable: true,
+      benefits: [
+        'Giá tốt hơn',
+        'Không hoàn hủy'
+      ]
+    }
+  ];
+
+  this.markDirty();
+}
+
+addRatePlan(room: Room): void {
+  room.ratePlans.push({
+    name: `Gói giá ${room.ratePlans.length + 1}`,
+    price: null,
+    isNonRefundable: false,
+    benefits: []
+  });
+
+  this.markDirty();
+}
+
+removeRatePlan(room: Room, index: number): void {
+  if (room.ratePlans.length <= 1) {
+    alert('Phòng cần có ít nhất 1 gói giá.');
+    return;
+  }
+
+  room.ratePlans.splice(index, 1);
+  this.markDirty();
+}
+
 }

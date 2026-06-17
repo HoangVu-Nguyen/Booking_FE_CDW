@@ -69,8 +69,8 @@ export class HomestayDetail implements OnInit, OnChanges, OnDestroy {
         this.chatStateService.autoTargetHost.set({
           id: current.owner.id,
           name: current.name,
-          avatar: current.imageUrls && current.imageUrls.length > 0
-            ? current.imageUrls[0]
+          avatar: current.images && current.images.length > 0
+            ? current.images[0].imageUrl
             : 'assets/images/homestay-placeholder.jpg'
         });
         console.log(this.chatStateService.autoTargetHost())

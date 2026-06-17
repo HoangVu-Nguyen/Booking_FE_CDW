@@ -1,14 +1,14 @@
 <div [routerLink]="['/homestay', homestay.id]" class="relative w-full h-[450px] md:h-[550px] lg:h-[600px] rounded-[2rem] overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all duration-[1.2s] ease-[cubic-bezier(0.25,1,0.1,1)] bg-[#1a1a1a]">
     
     <!-- 1A. Ảnh Nguyên Bản (Ảnh 1): Mặc định hiển thị, sáng dần và thu nhỏ khi hover -->
-    <img [src]="homestay.imageUrls?.[0] || coverImage" 
+    <img [src]="homestay.images?.[0] || coverImage" 
          [alt]="homestay.name"
          class="absolute inset-0 w-full h-full object-cover transition-all duration-[1.5s] ease-[cubic-bezier(0.25,1,0.1,1)] scale-110 group-hover:scale-100 brightness-[0.65] group-hover:brightness-100" />
          
     <!-- 1B. Ảnh Hover (Ảnh 2): Ẩn đi mặc định, mờ ảo hiện ra (Crossfade) và thu nhỏ khi hover -->
     <!-- Chỉ render khi homestay có từ 2 ảnh trở lên để tránh lỗi -->
-    @if (homestay.imageUrls && homestay.imageUrls.length > 1) {
-        <img [src]="homestay.imageUrls[1]" 
+    @if (homestay.images && homestay.images.length > 1) {
+        <img [src]="homestay.images[1]" 
              [alt]="homestay.name + ' - View 2'"
              class="absolute inset-0 w-full h-full object-cover transition-all duration-[1.5s] ease-[cubic-bezier(0.25,1,0.1,1)] scale-110 group-hover:scale-100 opacity-0 group-hover:opacity-100 brightness-[0.8]" />
     }
