@@ -1,7 +1,15 @@
-
 import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { RoomAmenityHighlightRequest } from '../../../../../../../../core/models/amenitie/amenities.model';
+import { AmenityResponse } from '../../../../../../../../core/models/response/homestay.response';
+import { RoomDisplayResponse } from '../../../../../../../../core/models/response/room.response';
+import { AmenityService } from '../../../../../../../../core/services/amenity/amenities.service';
+import { HomestayService } from '../../../../../../../../core/services/homestay/homestay.service';
+
+
+
 
 interface RoomOption {
   id: number;
@@ -9,6 +17,8 @@ interface RoomOption {
   type: string;
   maxGuests: number;
   imageUrl: string;
+  area?: string | number | null;
+  bedCount?: number;
 }
 
 interface RoomAmenityItem {
@@ -22,46 +32,38 @@ interface RoomAmenityItem {
 
 interface SelectedRoomAmenity {
   amenityId: number;
-  displayValue: string;
+  displayValue: string | null;
 }
 
 @Component({
   selector: 'app-room-amenity-highlights',
-  imports: [CommonModule,FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './room-amenity-highlights.html',
   styleUrl: './room-amenity-highlights.css',
 })
-export class RoomAmenityHighlights {
+export class RoomAmenityHighlights implements OnInit {
+  private route = inject(ActivatedRoute);
+  private amenityService = inject(AmenityService);
+  private homestayService = inject(HomestayService);
+
+  homestayId: string | null = null;
+
+  isLoadingRooms = signal(false);
+  isLoadingAmenities = signal(false);
+  isLoadingHighlights = signal(false);
   isSaving = signal(false);
   isDirty = signal(false);
 
   searchText = signal('');
   activeGroup = signal('POPULAR');
-  selectedRoomId = signal<number>(1);
 
-  rooms: RoomOption[] = [
-    {
-      id: 1,
-      name: 'Deluxe Ocean Room',
-      type: 'Phòng đôi',
-      maxGuests: 2,
-      imageUrl: 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=900&auto=format&fit=crop'
-    },
-    {
-      id: 2,
-      name: 'Family Garden Suite',
-      type: 'Phòng gia đình',
-      maxGuests: 4,
-      imageUrl: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=900&auto=format&fit=crop'
-    },
-    {
-      id: 3,
-      name: 'Private Villa Room',
-      type: 'Villa riêng',
-      maxGuests: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=900&auto=format&fit=crop'
-    }
-  ];
+  selectedRoomId = signal<number | null>(null);
+
+  rooms = signal<RoomOption[]>([]);
+  amenities = signal<RoomAmenityItem[]>([]);
+
+  selectedByRoom = signal<Record<number, SelectedRoomAmenity[]>>({});
 
   groups = [
     {
@@ -71,206 +73,62 @@ export class RoomAmenityHighlights {
       description: 'Những tiện nghi nên hiển thị lớn ở card phòng.'
     },
     {
-      key: 'SLEEPING',
-      title: 'Giường ngủ',
+      key: 'Connectivity',
+      title: 'Kết nối',
+      icon: 'wifi',
+      description: 'Wifi, internet tốc độ cao và các tiện ích kết nối.'
+    },
+    {
+      key: 'Room',
+      title: 'Trong phòng',
       icon: 'bed',
-      description: 'Loại giường, số giường và chất lượng nghỉ ngơi.'
+      description: 'Giường, phòng tắm, điều hòa và tiện nghi trong phòng.'
     },
     {
-      key: 'BATHROOM',
-      title: 'Phòng tắm',
-      icon: 'shower',
-      description: 'Phòng tắm riêng, bồn tắm, nước nóng, máy sấy.'
+      key: 'Entertainment',
+      title: 'Giải trí',
+      icon: 'tv',
+      description: 'TV, Netflix, âm thanh và tiện ích giải trí.'
     },
     {
-      key: 'VIEW',
+      key: 'Facilities',
+      title: 'Tiện nghi',
+      icon: 'chair',
+      description: 'Điều hòa, minibar, tủ quần áo và tiện nghi khác.'
+    },
+    {
+      key: 'View',
       title: 'Tầm nhìn',
       icon: 'landscape',
       description: 'View biển, view núi, view sân vườn hoặc thành phố.'
     },
     {
-      key: 'WORK',
-      title: 'Làm việc',
-      icon: 'desk',
-      description: 'Wifi, bàn làm việc, ổ cắm, đèn làm việc.'
+      key: 'Dining',
+      title: 'Ăn uống',
+      icon: 'restaurant',
+      description: 'Bữa sáng, minibar, trà cà phê hoặc tiện ích ăn uống.'
     },
     {
-      key: 'COMFORT',
-      title: 'Tiện nghi phòng',
-      icon: 'chair',
-      description: 'Điều hòa, TV, minibar, tủ quần áo.'
+      key: 'Service',
+      title: 'Dịch vụ',
+      icon: 'room_service',
+      description: 'Dọn phòng, lễ tân, hỗ trợ khách và dịch vụ đi kèm.'
     }
   ];
-
-  amenities: RoomAmenityItem[] = [
-    {
-      id: 1,
-      name: 'Wifi tốc độ cao',
-      iconName: 'wifi',
-      groupName: 'WORK',
-      placeholder: 'VD: 150 Mbps',
-      popular: true
-    },
-    {
-      id: 2,
-      name: 'Giường King',
-      iconName: 'bed',
-      groupName: 'SLEEPING',
-      placeholder: 'VD: King Size',
-      popular: true
-    },
-    {
-      id: 3,
-      name: 'Giường Queen',
-      iconName: 'bed',
-      groupName: 'SLEEPING',
-      placeholder: 'VD: Queen Size'
-    },
-    {
-      id: 4,
-      name: '2 giường đơn',
-      iconName: 'single_bed',
-      groupName: 'SLEEPING',
-      placeholder: 'VD: 2 giường đơn'
-    },
-    {
-      id: 5,
-      name: 'Phòng tắm riêng',
-      iconName: 'bathroom',
-      groupName: 'BATHROOM',
-      placeholder: 'VD: Riêng trong phòng',
-      popular: true
-    },
-    {
-      id: 6,
-      name: 'Bồn tắm',
-      iconName: 'bathtub',
-      groupName: 'BATHROOM',
-      placeholder: 'VD: Bồn tắm nằm'
-    },
-    {
-      id: 7,
-      name: 'Nước nóng',
-      iconName: 'water_heater',
-      groupName: 'BATHROOM',
-      placeholder: 'VD: 24/7',
-      popular: true
-    },
-    {
-      id: 8,
-      name: 'Máy sấy tóc',
-      iconName: 'air',
-      groupName: 'BATHROOM',
-      placeholder: 'VD: Có sẵn'
-    },
-    {
-      id: 9,
-      name: 'View biển',
-      iconName: 'beach_access',
-      groupName: 'VIEW',
-      placeholder: 'VD: Hướng biển',
-      popular: true
-    },
-    {
-      id: 10,
-      name: 'View núi',
-      iconName: 'landscape',
-      groupName: 'VIEW',
-      placeholder: 'VD: View núi Sa Pa'
-    },
-    {
-      id: 11,
-      name: 'View sân vườn',
-      iconName: 'yard',
-      groupName: 'VIEW',
-      placeholder: 'VD: Nhìn ra vườn'
-    },
-    {
-      id: 12,
-      name: 'Ban công riêng',
-      iconName: 'balcony',
-      groupName: 'VIEW',
-      placeholder: 'VD: Ban công riêng',
-      popular: true
-    },
-    {
-      id: 13,
-      name: 'Bàn làm việc',
-      iconName: 'desk',
-      groupName: 'WORK',
-      placeholder: 'VD: Bàn rộng 1m2'
-    },
-    {
-      id: 14,
-      name: 'Ổ cắm gần giường',
-      iconName: 'power',
-      groupName: 'WORK',
-      placeholder: 'VD: 2 ổ cắm'
-    },
-    {
-      id: 15,
-      name: 'Điều hòa',
-      iconName: 'ac_unit',
-      groupName: 'COMFORT',
-      placeholder: 'VD: 2 chiều',
-      popular: true
-    },
-    {
-      id: 16,
-      name: 'Smart TV',
-      iconName: 'tv',
-      groupName: 'COMFORT',
-      placeholder: 'VD: 55 inch Netflix'
-    },
-    {
-      id: 17,
-      name: 'Minibar',
-      iconName: 'local_bar',
-      groupName: 'COMFORT',
-      placeholder: 'VD: Có minibar'
-    },
-    {
-      id: 18,
-      name: 'Tủ quần áo',
-      iconName: 'checkroom',
-      groupName: 'COMFORT',
-      placeholder: 'VD: Tủ lớn'
-    }
-  ];
-
-  /**
-   * Hardcode selected theo từng room.
-   * Sau này API sẽ trả về theo roomId.
-   */
-  selectedByRoom = signal<Record<number, SelectedRoomAmenity[]>>({
-    1: [
-      { amenityId: 1, displayValue: '150 Mbps' },
-      { amenityId: 2, displayValue: 'King Size' },
-      { amenityId: 5, displayValue: 'Phòng tắm riêng' },
-      { amenityId: 9, displayValue: 'View biển' },
-      { amenityId: 15, displayValue: 'Điều hòa 2 chiều' }
-    ],
-    2: [
-      { amenityId: 1, displayValue: '100 Mbps' },
-      { amenityId: 4, displayValue: '2 giường đơn' },
-      { amenityId: 11, displayValue: 'View sân vườn' },
-      { amenityId: 12, displayValue: 'Ban công riêng' }
-    ],
-    3: [
-      { amenityId: 1, displayValue: '200 Mbps' },
-      { amenityId: 2, displayValue: 'King Size' },
-      { amenityId: 6, displayValue: 'Bồn tắm nằm' },
-      { amenityId: 12, displayValue: 'Ban công riêng' },
-      { amenityId: 16, displayValue: 'Smart TV 55 inch' }
-    ]
-  });
 
   selectedRoom = computed(() => {
-    return this.rooms.find(room => room.id === this.selectedRoomId()) || this.rooms[0];
+    const rooms = this.rooms();
+    const selectedId = this.selectedRoomId();
+
+    return rooms.find(room => room.id === selectedId) || rooms[0] || null;
   });
 
   currentSelected = computed(() => {
-    return this.selectedByRoom()[this.selectedRoomId()] || [];
+    const roomId = this.selectedRoomId();
+
+    if (!roomId) return [];
+
+    return this.selectedByRoom()[roomId] || [];
   });
 
   currentSelectedIds = computed(() => {
@@ -278,9 +136,11 @@ export class RoomAmenityHighlights {
   });
 
   selectedAmenityViews = computed(() => {
+    const amenities = this.amenities();
+
     return this.currentSelected()
       .map(selected => {
-        const amenity = this.amenities.find(item => item.id === selected.amenityId);
+        const amenity = amenities.find(item => item.id === selected.amenityId);
 
         if (!amenity) return null;
 
@@ -289,14 +149,15 @@ export class RoomAmenityHighlights {
           displayValue: selected.displayValue
         };
       })
-      .filter(Boolean) as Array<RoomAmenityItem & { displayValue: string }>;
+      .filter(Boolean) as Array<RoomAmenityItem & { displayValue: string | null }>;
   });
 
   filteredAmenities = computed(() => {
     const query = this.searchText().trim().toLowerCase();
     const activeGroup = this.activeGroup();
+    const amenities = this.amenities();
 
-    return this.amenities.filter(item => {
+    return amenities.filter(item => {
       const matchGroup =
         activeGroup === 'POPULAR'
           ? item.popular
@@ -321,10 +182,228 @@ export class RoomAmenityHighlights {
     };
   });
 
+  ngOnInit(): void {
+    const paramMap$ =
+      this.route.parent?.parent?.paramMap ??
+      this.route.parent?.paramMap ??
+      this.route.paramMap;
+
+    paramMap$.subscribe(params => {
+      this.homestayId = params.get('id') || params.get('homestayId');
+
+      if (!this.homestayId) {
+        console.warn('Không tìm thấy homestayId trên route');
+        return;
+      }
+
+      this.loadAmenities();
+      this.loadRooms();
+    });
+  }
+
+  private loadRooms(): void {
+    if (!this.homestayId) return;
+
+    this.isLoadingRooms.set(true);
+
+    this.homestayService.getRoomsByHomestayId(this.homestayId).subscribe({
+      next: res => {
+        const rooms = res.data || [];
+
+        const mappedRooms = rooms.map(room => this.mapRoomResponse(room));
+
+        this.rooms.set(mappedRooms);
+        this.isLoadingRooms.set(false);
+
+        if (mappedRooms.length > 0) {
+          const currentRoomId = this.selectedRoomId();
+
+          const roomExists = currentRoomId
+            ? mappedRooms.some(room => room.id === currentRoomId)
+            : false;
+
+          this.selectRoom(roomExists ? currentRoomId! : mappedRooms[0].id);
+        }
+      },
+      error: err => {
+        console.error('Load rooms failed:', err);
+
+        this.rooms.set([]);
+        this.selectedRoomId.set(null);
+        this.isLoadingRooms.set(false);
+      }
+    });
+  }
+
+  private loadAmenities(): void {
+    this.isLoadingAmenities.set(true);
+
+    this.amenityService.getAllAmenities().subscribe({
+      next: res => {
+        const amenities = res.data || [];
+
+        this.amenities.set(
+          amenities.map(item => this.mapAmenityResponse(item))
+        );
+
+        this.isLoadingAmenities.set(false);
+      },
+      error: err => {
+        console.error('Load amenities failed:', err);
+
+        this.amenities.set([]);
+        this.isLoadingAmenities.set(false);
+      }
+    });
+  }
+
+  private loadRoomHighlights(roomId: number): void {
+    if (!this.homestayId) return;
+
+    this.isLoadingHighlights.set(true);
+
+    this.amenityService.getRoomAmenityHighlights(this.homestayId, roomId).subscribe({
+      next: res => {
+        const highlights = res.data || [];
+
+        const selectedItems = highlights.map(item => ({
+          amenityId: item.amenityId,
+          displayValue: item.displayValue || null
+        }));
+
+        this.selectedByRoom.update(old => ({
+          ...old,
+          [roomId]: selectedItems
+        }));
+
+        this.isDirty.set(false);
+        this.isLoadingHighlights.set(false);
+      },
+      error: err => {
+        console.error('Load room amenity highlights failed:', err);
+
+        this.selectedByRoom.update(old => ({
+          ...old,
+          [roomId]: []
+        }));
+
+        this.isDirty.set(false);
+        this.isLoadingHighlights.set(false);
+      }
+    });
+  }
+
+  private mapRoomResponse(room: RoomDisplayResponse): RoomOption {
+    return {
+      id: room.id,
+      name: room.name,
+      type: room.type || this.buildRoomType(room),
+      maxGuests: room.maxGuests || 2,
+      imageUrl: this.getRoomCoverImage(room),
+      area: room.area,
+      bedCount: room.beds?.reduce((total, bed) => total + (bed.quantity || 0), 0) || undefined
+    };
+  }
+
+  private buildRoomType(room: RoomDisplayResponse): string {
+    const parts: string[] = [];
+
+    if (room.area) {
+      parts.push(`${room.area}`);
+    }
+
+    if (room.hasPrivateBathroom) {
+      parts.push('Phòng tắm riêng');
+    }
+
+    if (room.isInstantBook) {
+      parts.push('Đặt ngay');
+    }
+
+    return parts.length > 0 ? parts.join(' · ') : 'Phòng nghỉ';
+  }
+
+  private getRoomCoverImage(room: RoomDisplayResponse): string {
+    const firstImage: any = room.images?.[0];
+
+    if (!firstImage) {
+      return 'assets/images/homestay-placeholder.jpg';
+    }
+
+    if (typeof firstImage === 'string') {
+      return firstImage;
+    }
+
+    return (
+      firstImage.imageUrl ||
+      firstImage.url ||
+      firstImage.cdnUrl ||
+      'assets/images/homestay-placeholder.jpg'
+    );
+  }
+
+  private mapAmenityResponse(item: AmenityResponse): RoomAmenityItem {
+    return {
+      id: item.id,
+      name: item.name,
+      iconName: item.iconName || 'widgets',
+      groupName: item.groupName?.trim() || 'Room',
+      placeholder: this.getPlaceholderByAmenity(item),
+      popular: this.isPopularAmenity(item.id, item.name)
+    };
+  }
+
+  private getPlaceholderByAmenity(item: AmenityResponse): string {
+    const name = item.name.toLowerCase();
+
+    if (name.includes('wifi')) return 'VD: 150 Mbps';
+    if (name.includes('view') || name.includes('biển')) return 'VD: Hướng biển';
+    if (name.includes('giường')) return 'VD: King Size';
+    if (name.includes('tắm')) return 'VD: Riêng trong phòng';
+    if (name.includes('điều hòa')) return 'VD: 2 chiều';
+    if (name.includes('tv')) return 'VD: Smart TV 55 inch';
+
+    return 'VD: Có sẵn';
+  }
+
+  private isPopularAmenity(id: number, name: string): boolean {
+    const popularIds = new Set([
+      1, 2, 3,
+      10, 11,
+      20, 22, 28,
+      30, 32, 33,
+      40,
+      50, 51, 53, 55,
+      71
+    ]);
+
+    if (popularIds.has(id)) {
+      return true;
+    }
+
+    const normalizedName = name.toLowerCase();
+
+    return [
+      'wifi',
+      'view',
+      'biển',
+      'núi',
+      'giường',
+      'phòng tắm',
+      'bồn tắm',
+      'điều hòa',
+      'tv',
+      'ban công',
+      'minibar'
+    ].some(keyword => normalizedName.includes(keyword));
+  }
+
   selectRoom(roomId: number): void {
     this.selectedRoomId.set(roomId);
     this.searchText.set('');
     this.activeGroup.set('POPULAR');
+
+    this.loadRoomHighlights(roomId);
   }
 
   setActiveGroup(groupKey: string): void {
@@ -336,9 +415,12 @@ export class RoomAmenityHighlights {
   }
 
   toggleAmenity(amenity: RoomAmenityItem): void {
-    const roomId = this.selectedRoomId();
-    const current = [...this.currentSelected()];
+    if (!this.selectedRoomId()) {
+      alert('Vui lòng chọn phòng trước.');
+      return;
+    }
 
+    const current = [...this.currentSelected()];
     const index = current.findIndex(item => item.amenityId === amenity.id);
 
     if (index >= 0) {
@@ -367,9 +449,13 @@ export class RoomAmenityHighlights {
   }
 
   quickFill(amenity: RoomAmenityItem): void {
+    if (!this.selectedRoomId()) {
+      alert('Vui lòng chọn phòng trước.');
+      return;
+    }
+
     const current = [...this.currentSelected()];
     const index = current.findIndex(item => item.amenityId === amenity.id);
-
     const defaultValue = amenity.placeholder?.replace('VD: ', '') || amenity.name;
 
     if (index >= 0) {
@@ -388,16 +474,21 @@ export class RoomAmenityHighlights {
   }
 
   getDisplayValue(amenityId: number): string {
-    return this.currentSelected().find(item => item.amenityId === amenityId)?.displayValue || '';
+    return this.currentSelected()
+      .find(item => item.amenityId === amenityId)
+      ?.displayValue || '';
   }
 
   removeSelectedAmenity(amenityId: number): void {
-    const current = this.currentSelected().filter(item => item.amenityId !== amenityId);
+    const current = this.currentSelected()
+      .filter(item => item.amenityId !== amenityId);
 
     this.updateSelectedForCurrentRoom(current);
   }
 
   clearCurrentRoom(): void {
+    if (!this.selectedRoomId()) return;
+
     const ok = confirm('Bạn có chắc muốn xoá toàn bộ tiện nghi nổi bật của phòng này không?');
 
     if (!ok) return;
@@ -408,6 +499,8 @@ export class RoomAmenityHighlights {
   private updateSelectedForCurrentRoom(items: SelectedRoomAmenity[]): void {
     const roomId = this.selectedRoomId();
 
+    if (!roomId) return;
+
     this.selectedByRoom.update(old => ({
       ...old,
       [roomId]: items
@@ -417,14 +510,36 @@ export class RoomAmenityHighlights {
   }
 
   saveChanges(): void {
+    const roomId = this.selectedRoomId();
+
+    if (!this.homestayId || !roomId) {
+      alert('Không tìm thấy phòng.');
+      return;
+    }
+
+    const highlights: RoomAmenityHighlightRequest[] = this.currentSelected().map(item => ({
+      amenityId: item.amenityId,
+      displayValue: item.displayValue?.trim() || null
+    }));
+
     this.isSaving.set(true);
 
-    console.log('Payload update room amenity highlights:', this.payloadPreview());
+    this.amenityService.updateRoomAmenityHighlights(
+      this.homestayId,
+      roomId,
+      highlights
+    ).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.isDirty.set(false);
+        alert('Đã lưu tiện nghi nổi bật của phòng.');
+      },
+      error: err => {
+        console.error('Save room amenity highlights failed:', err);
 
-    setTimeout(() => {
-      this.isSaving.set(false);
-      this.isDirty.set(false);
-      alert('Đã lưu tiện nghi nổi bật của phòng.');
-    }, 700);
+        this.isSaving.set(false);
+        alert('Lưu tiện nghi phòng thất bại.');
+      }
+    });
   }
 }
