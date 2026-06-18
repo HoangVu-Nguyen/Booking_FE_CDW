@@ -58,7 +58,7 @@ export class AmenityService {
    * API: GET /api/v1/host/homestays/{homestayId}/rooms/{roomId}/amenity-highlights
    */
   getRoomAmenityHighlights(
-    homestayId: number,
+    homestayId: string,
     roomId: number
   ): Observable<ApiResponse<RoomAmenityHighlightResponse[]>> {
     const endpoint = `/api/v1/host/homestays/${homestayId}/rooms/${roomId}/amenity-highlights`;
@@ -71,7 +71,7 @@ export class AmenityService {
    * API: PUT /api/v1/host/homestays/{homestayId}/rooms/{roomId}/amenity-highlights
    */
   updateRoomAmenityHighlights(
-    homestayId: number,
+    homestayId: string,
     roomId: number,
     highlights: RoomAmenityHighlightRequest[]
   ): Observable<ApiResponse<any>> {
@@ -83,4 +83,5 @@ export class AmenityService {
 
     return this.apiService.put<ApiResponse<any>>(endpoint, payload);
   }
+  
 }
