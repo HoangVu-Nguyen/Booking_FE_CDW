@@ -54,7 +54,7 @@
         </div>
 
         <div class="space-y-3 max-h-[calc(100vh-230px)] overflow-y-auto pr-1">
-          @for (room of rooms; track room.id) {
+          @for (room of rooms(); track room.id) {
             <button
               type="button"
               (click)="selectRoom(room.id)"

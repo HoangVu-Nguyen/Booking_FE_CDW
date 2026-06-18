@@ -104,8 +104,7 @@ export class PropertyAmenities implements OnInit {
     }
   ];
 
-  amenities: AmenityItem[] = [];
-
+amenities = signal<AmenityItem[]>([]);
   presets: AmenityPreset[] = [
     {
       key: 'ESSENTIAL',
@@ -138,28 +137,30 @@ export class PropertyAmenities implements OnInit {
   ];
 
   filteredAmenities = computed(() => {
-    const query = this.searchText().trim().toLowerCase();
-    const active = this.activeCategory();
+  const query = this.searchText().trim().toLowerCase();
+  const active = this.activeCategory();
+  const amenities = this.amenities();
 
-    return this.amenities.filter(item => {
-      const matchCategory =
-        active === 'POPULAR'
-          ? item.popular
-          : item.category === active;
+  return amenities.filter(item => {
+    const matchCategory =
+      active === 'POPULAR'
+        ? item.popular
+        : item.category === active;
 
-      const matchSearch =
-        !query ||
-        item.name.toLowerCase().includes(query);
+    const matchSearch =
+      !query ||
+      item.name.toLowerCase().includes(query);
 
-      return matchCategory && matchSearch;
-    });
+    return matchCategory && matchSearch;
   });
+});
 
-  selectedAmenities = computed(() => {
-    const selected = this.selectedAmenityIds();
+selectedAmenities = computed(() => {
+  const selected = this.selectedAmenityIds();
+  const amenities = this.amenities();
 
-    return this.amenities.filter(item => selected.has(item.id));
-  });
+  return amenities.filter(item => selected.has(item.id));
+});
 
   ngOnInit(): void {
     const paramMap$ = this.route.parent?.paramMap ?? this.route.paramMap;
@@ -181,7 +182,9 @@ export class PropertyAmenities implements OnInit {
         const amenities = amenityRes.data || [];
         console.log(amenities)
 
-        this.amenities = amenities.map(item => this.mapAmenityResponse(item));
+       this.amenities.set(
+  amenities.map(item => this.mapAmenityResponse(item))
+);
 
         this.amenityService.getHomestayAmenityIds(homestayId).subscribe({
           next: selectedRes => {
@@ -203,7 +206,7 @@ export class PropertyAmenities implements OnInit {
       error: err => {
         console.error('Load amenities failed:', err);
 
-        this.amenities = [];
+        this.amenities.set([]);
         this.selectedAmenityIds.set(new Set());
         this.isDirty.set(false);
         this.isLoading.set(false);
@@ -277,7 +280,7 @@ export class PropertyAmenities implements OnInit {
   }
 
   applyPreset(preset: AmenityPreset): void {
-    const availableIds = new Set(this.amenities.map(item => item.id));
+    const availableIds = new Set(this.amenities().map(item => item.id));
     const next = new Set(this.selectedAmenityIds());
 
     preset.amenityIds.forEach(id => {
@@ -330,14 +333,15 @@ export class PropertyAmenities implements OnInit {
   }
 
   getSelectedCountByCategory(categoryKey: string): number {
-    const selected = this.selectedAmenityIds();
+  const selected = this.selectedAmenityIds();
+  const amenities = this.amenities();
 
-    if (categoryKey === 'POPULAR') {
-      return this.amenities.filter(item => item.popular && selected.has(item.id)).length;
-    }
-
-    return this.amenities.filter(item => item.category === categoryKey && selected.has(item.id)).length;
+  if (categoryKey === 'POPULAR') {
+    return amenities.filter(item => item.popular && selected.has(item.id)).length;
   }
+
+  return amenities.filter(item => item.category === categoryKey && selected.has(item.id)).length;
+}
 
   markDirty(): void {
     this.isDirty.set(true);

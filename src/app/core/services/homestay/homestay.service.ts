@@ -14,7 +14,7 @@ import { PresignedUrlResponse } from "../file/file.service";
 @Injectable({ providedIn: 'root' })
 export class HomestayService {
     constructor(private apiService: ApiService) { }
-    
+
     private currentHomestaySignal = signal<HomestayResponse | null>(null);
     readonly currentHomestay = this.currentHomestaySignal.asReadonly();
 
@@ -34,7 +34,7 @@ export class HomestayService {
                 })
             );
     }
-    
+
     getCurrentData() {
         return this.currentHomestaySignal();
     }
@@ -51,16 +51,16 @@ export class HomestayService {
             checkOut: checkOut,
             guests: guests.toString()
         };
-            
+
         return this.apiService.get<ApiResponse<BookingAvailabilityResponse>>(`/api/v1/homestays/${id}/available-rooms`, params)
             .pipe(
                 tap(response => {
-                    const currentData = this.currentHomestay(); 
+                    const currentData = this.currentHomestay();
                     if (response.success && currentData && response.data) {
                         this.currentHomestaySignal.set({
                             ...currentData,
-                            rooms: response.data.rooms, 
-                            tours: response.data.suggestedTours 
+                            rooms: response.data.rooms,
+                            tours: response.data.suggestedTours
                         });
                     }
                 })
@@ -89,7 +89,7 @@ export class HomestayService {
     createDraftHomestay(payload: any): Observable<ApiResponse<HomestayResponse>> {
         // Gửi JSON thuần túy, ApiService tự động gắn Content-Type: application/json
         return this.apiService.post<ApiResponse<HomestayResponse>>(
-            '/api/v1/homestays/draft', 
+            '/api/v1/homestays/draft',
             payload
         );
     }
@@ -100,18 +100,18 @@ export class HomestayService {
      */
     updateHomestay(id: string | number, payload: any): Observable<ApiResponse<HomestayResponse>> {
         return this.apiService.put<ApiResponse<HomestayResponse>>(
-            `/api/v1/homestays/${id}`, 
+            `/api/v1/homestays/${id}`,
             payload
         );
     }
     getRoomsByHomestayId(homestayId: number | string): Observable<ApiResponse<RoomDisplayResponse[]>> {
-    const endpoint = `/api/v1/homestays/${homestayId}/rooms`;
-    return this.apiService.get<ApiResponse<RoomDisplayResponse[]>>(endpoint);
-  }
-  /**
-     * Hàm xin link upload cho nhiều phòng/homestay cùng lúc
-     * Sử dụng cấu trúc MultiRoomBatchUploadRequest để linh hoạt
-     */
+        const endpoint = `/api/v1/homestays/${homestayId}/rooms`;
+        return this.apiService.get<ApiResponse<RoomDisplayResponse[]>>(endpoint);
+    }
+    /**
+       * Hàm xin link upload cho nhiều phòng/homestay cùng lúc
+       * Sử dụng cấu trúc MultiRoomBatchUploadRequest để linh hoạt
+       */
     prepareHomestayImagesBatch(batchRequest: any): Observable<PresignedUrlResponse[]> {
         const url = `/api/v1/homestays/images/presign`;
         return this.apiService.post<ApiResponse<PresignedUrlResponse[]>>(url, batchRequest).pipe(
@@ -129,15 +129,15 @@ export class HomestayService {
                 body: file,
                 headers: { 'Content-Type': file.type } // Quan trọng để S3 nhận đúng file
             })
-            .then(response => {
-                if (response.ok) {
-                    observer.next(response);
-                    observer.complete();
-                } else {
-                    observer.error(response);
-                }
-            })
-            .catch(err => observer.error(err));
+                .then(response => {
+                    if (response.ok) {
+                        observer.next(response);
+                        observer.complete();
+                    } else {
+                        observer.error(response);
+                    }
+                })
+                .catch(err => observer.error(err));
         });
     }
 }
