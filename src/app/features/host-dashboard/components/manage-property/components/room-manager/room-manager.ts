@@ -589,7 +589,7 @@ export class RoomManager implements OnInit {
   getLowestPriceFromPlans(ratePlans: RatePlanResponse[]): number | null {
     const prices = ratePlans
       .map(plan => plan.price)
-      .filter((price): price is number => price !== null && price > 0);
+      .filter((price): price is number => price !== null && price! > 0);
 
     if (prices.length === 0) {
       return null;

@@ -20,3 +20,30 @@ export interface AmenityPreset {
   icon: string;
   amenityIds: number[];
 }
+export interface AmenityResponse {
+  id: number;
+  name: string;
+  iconName: string;
+  groupName: string;
+}
+
+export interface UpdateHomestayAmenitiesRequest {
+  amenityIds: number[];
+}
+
+export interface RoomAmenityHighlightResponse {
+  roomId: number;
+  amenityId: number;
+  name: string;
+  icon: string;
+  displayValue: string;
+}
+
+export interface RoomAmenityHighlightRequest {
+  amenityId: number;
+  displayValue: string | null;
+}
+
+export interface UpdateRoomAmenityHighlightsRequest {
+  highlights: RoomAmenityHighlightRequest[];
+}
