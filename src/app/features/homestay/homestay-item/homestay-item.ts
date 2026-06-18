@@ -1,4 +1,14 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, signal, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  signal,
+  SimpleChanges
+} from '@angular/core';
+
 import { HomestayResponse } from '../../../core/models/response/homestay.response';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -6,58 +16,75 @@ import { ChatStateService } from '../../../core/services/chat/chat-state.service
 
 @Component({
   selector: 'app-homestay-item',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './homestay-item.html',
   styleUrl: './homestay-item.css',
 })
-export class HomestayItem implements OnInit, OnDestroy {
+export class HomestayItem implements OnInit, OnChanges, OnDestroy {
   @Input() homestay!: HomestayResponse;
   @Input() layoutType: number = 0;
-  coverImage: string = '';
+
+  coverImage = 'assets/images/homestay-placeholder.jpg';
 
   currentImgIndex = signal(0);
   private intervalId: any;
 
-  constructor(private cdr: ChangeDetectorRef, private chatStateService: ChatStateService) { }
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private chatStateService: ChatStateService
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setCoverImage();
-
-
-
   }
 
-  
-  private setCoverImage() {
-    if (this.homestay?.images && this.homestay.images.length > 0 ) {
-      this.coverImage = this.homestay.images[0].imageUrl;
-    } else {
-      this.coverImage = 'assets/images/homestay-placeholder.jpg';
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['homestay']) {
+      this.setCoverImage();
     }
   }
 
-  startImageSequence() {
-    if (!this.homestay?.images || this.homestay.images.length <= 1) return;
+  private setCoverImage(): void {
+    this.coverImage = this.getImageUrl(0) || 'assets/images/homestay-placeholder.jpg';
+
+    console.log('imageUrls:', this.homestay?.imageUrls);
+    console.log('coverImage:', this.coverImage);
+  }
+
+  getImageUrl(index: number): string | null {
+    return this.homestay?.imageUrls?.[index] || null;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/images/homestay-placeholder.jpg';
+  }
+
+  startImageSequence(): void {
+    const imageCount = this.homestay?.imageUrls?.length || 0;
+
+    if (imageCount <= 1) return;
     if (this.intervalId) return;
 
-    // CHUẨN APP HIỆN ĐẠI: 1.5 giây đổi ảnh 1 lần
     this.intervalId = setInterval(() => {
-      this.currentImgIndex.update(idx => (idx + 1) % this.homestay.images.length);
+      this.currentImgIndex.update(idx => (idx + 1) % imageCount);
       this.cdr.markForCheck();
     }, 1500);
   }
 
-  stopImageSequence() {
+  stopImageSequence(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+
     this.currentImgIndex.set(0);
     this.cdr.markForCheck();
   }
-  ngOnDestroy() {
 
+  ngOnDestroy(): void {
+    this.stopImageSequence();
     this.chatStateService.autoTargetHost.set(null);
   }
-
 }
