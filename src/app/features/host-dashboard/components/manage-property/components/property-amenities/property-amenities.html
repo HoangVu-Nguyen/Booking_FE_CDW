@@ -1,0 +1,363 @@
+<div class="max-w-6xl animate-fade-in">
+
+  <!-- HEADER -->
+  <div class="mb-6 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+    <div>
+      <div class="inline-flex items-center gap-2 h-7 px-3 rounded-full bg-[#f7f1e8] border border-[#e5d8c7] text-[#6f4f28] text-xs font-bold mb-3">
+        <span class="material-symbols-outlined text-[16px]">widgets</span>
+        Tiện nghi chỗ nghỉ
+      </div>
+
+      <h2 class="text-2xl md:text-3xl font-black text-[#2f2a22] tracking-tight">
+        Tiện nghi chung của homestay
+      </h2>
+
+      <p class="text-sm text-[#756b5e] mt-2 max-w-2xl leading-relaxed">
+        Chọn các tiện nghi nổi bật để khách dễ lọc và ra quyết định nhanh hơn. Có thể dùng gợi ý nhanh thay vì chọn từng tiện nghi một.
+      </p>
+    </div>
+
+    <div class="bg-white border border-[#ded6c9] rounded-2xl px-5 py-3 min-w-[170px]">
+      <p class="text-xs font-bold text-[#8a8175]">Đã chọn</p>
+      <p class="mt-1 text-2xl font-black text-[#2f2a22]">
+        {{ selectedAmenityIds().size }}
+      </p>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  @if (showSavedToast()) {
+    <div class="fixed top-24 right-6 z-[999] animate-slide-in-right">
+      <div class="bg-[#263d2e] text-white rounded-xl shadow-xl px-4 py-3 flex items-center gap-3">
+        <span class="material-symbols-outlined text-[20px] text-green-200">check_circle</span>
+        <div>
+          <p class="text-sm font-bold">Đã lưu tiện nghi</p>
+          <p class="text-xs text-white/70">Danh sách tiện nghi chỗ nghỉ đã được cập nhật.</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- SMART PRESETS -->
+  <section class="bg-white border border-[#ded6c9] rounded-2xl p-5 mb-6 shadow-[0_8px_28px_rgba(56,44,33,0.04)]">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+      <div>
+        <h3 class="text-base font-black text-[#2f2a22]">
+          Gợi ý nhanh theo kiểu chỗ nghỉ
+        </h3>
+        <p class="text-xs text-[#756b5e] mt-1">
+          Chọn một bộ gợi ý để tự động thêm nhiều tiện nghi phù hợp.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="clearAll()"
+        class="h-9 px-3 rounded-xl border border-[#e5d8c7] text-xs font-black text-[#8a8175] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors">
+        Bỏ chọn tất cả
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+      <button
+        type="button"
+        *ngFor="let preset of presets"
+        (click)="applyPreset(preset)"
+        class="text-left rounded-2xl border border-[#eee7dd] bg-[#fbfaf8] p-4 hover:bg-[#f7f1e8] hover:border-[#d6cbbb] transition-all group">
+
+        <div class="w-10 h-10 rounded-xl bg-white border border-[#eadfce] flex items-center justify-center text-[#b88746] mb-3 group-hover:scale-105 transition-transform">
+          <span class="material-symbols-outlined text-[22px]">
+            {{ preset.icon }}
+          </span>
+        </div>
+
+        <p class="text-sm font-black text-[#2f2a22]">
+          {{ preset.title }}
+        </p>
+
+        <p class="text-xs text-[#756b5e] mt-1 leading-relaxed">
+          {{ preset.description }}
+        </p>
+      </button>
+    </div>
+  </section>
+
+  <!-- MAIN GRID -->
+  <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="space-y-4">
+
+      <!-- SEARCH -->
+      <div class="bg-white border border-[#ded6c9] rounded-2xl p-4">
+        <label class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+          Tìm tiện nghi
+        </label>
+
+        <div class="relative mt-3">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8175] text-[20px]">
+            search
+          </span>
+
+          <input
+            type="text"
+            [ngModel]="searchText()"
+            (ngModelChange)="onSearchChange($event)"
+            class="w-full h-11 pl-10 pr-3 bg-[#fbfaf8] border border-[#cfc3b3] rounded-xl text-sm font-semibold text-[#2f2a22] outline-none transition-all focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10 focus:bg-white"
+            placeholder="VD: wifi, hồ bơi, BBQ...">
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="bg-white border border-[#ded6c9] rounded-2xl p-3">
+        <p class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em] px-2 mb-2">
+          Nhóm tiện nghi
+        </p>
+
+        <div class="space-y-1">
+          <button
+            type="button"
+            *ngFor="let category of categories"
+            (click)="setActiveCategory(category.key)"
+            class="w-full flex items-center justify-between gap-3 px-3 py-3 rounded-xl text-left transition-all"
+            [ngClass]="activeCategory() === category.key
+              ? 'bg-[#3b332b] text-white'
+              : 'text-[#5f5548] hover:bg-[#f7f1e8]'">
+
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="material-symbols-outlined text-[20px] shrink-0">
+                {{ category.icon }}
+              </span>
+
+              <span class="text-sm font-black truncate">
+                {{ category.title }}
+              </span>
+            </div>
+
+            <span
+              class="min-w-6 h-6 rounded-full text-[11px] font-black flex items-center justify-center"
+              [ngClass]="activeCategory() === category.key
+                ? 'bg-white/15 text-white'
+                : 'bg-[#f0e6d8] text-[#7a5a32]'">
+              {{ getSelectedCountByCategory(category.key) }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- SELECTED -->
+      <div class="hidden lg:block bg-white border border-[#ded6c9] rounded-2xl p-4 sticky top-24">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <p class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+            Đã chọn
+          </p>
+
+          <span class="text-xs font-black text-[#7a5a32]">
+            {{ selectedAmenityIds().size }}
+          </span>
+        </div>
+
+        @if (selectedAmenities().length === 0) {
+          <p class="text-xs text-[#8a8175] leading-relaxed">
+            Chưa có tiện nghi nào được chọn.
+          </p>
+        } @else {
+          <div class="flex flex-wrap gap-2 max-h-[260px] overflow-y-auto pr-1">
+            <button
+              type="button"
+              *ngFor="let amenity of selectedAmenities()"
+              (click)="removeSelectedAmenity(amenity.id)"
+              class="h-8 px-2.5 rounded-full bg-[#f7f1e8] text-[#5f5548] text-xs font-bold flex items-center gap-1.5 hover:bg-rose-50 hover:text-rose-600 transition-colors">
+              <span class="material-symbols-outlined text-[14px]">
+                {{ amenity.icon }}
+              </span>
+              <span>{{ amenity.name }}</span>
+              <span class="material-symbols-outlined text-[14px]">
+                close
+              </span>
+            </button>
+          </div>
+        }
+      </div>
+
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="space-y-5">
+
+      <!-- CATEGORY HEADER -->
+      <section class="bg-white border border-[#ded6c9] rounded-2xl p-5">
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div class="flex items-start gap-3">
+            <div class="w-11 h-11 rounded-xl bg-[#f7f1e8] border border-[#eadfce] flex items-center justify-center text-[#b88746] shrink-0">
+              <span class="material-symbols-outlined text-[24px]">
+                {{ categories.find(c => c.key === activeCategory())?.icon }}
+              </span>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-black text-[#2f2a22]">
+                {{ categories.find(c => c.key === activeCategory())?.title }}
+              </h3>
+
+              <p class="text-sm text-[#756b5e] mt-1 leading-relaxed">
+                {{ categories.find(c => c.key === activeCategory())?.description }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              (click)="selectAllInCurrentCategory()"
+              class="h-9 px-3 rounded-xl bg-[#3b332b] text-white text-xs font-black hover:bg-[#2f2a22] transition-colors">
+              Chọn nhóm này
+            </button>
+
+            <button
+              type="button"
+              (click)="clearCurrentCategory()"
+              class="h-9 px-3 rounded-xl border border-[#d6cbbb] text-[#5f5548] text-xs font-black hover:bg-[#f7f1e8] transition-colors">
+              Bỏ nhóm
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- AMENITY GRID -->
+      @if (filteredAmenities().length === 0) {
+        <div class="bg-white border-2 border-dashed border-[#ded6c9] rounded-2xl py-16 flex flex-col items-center justify-center text-center">
+          <span class="material-symbols-outlined text-[40px] text-[#b88746]">
+            search_off
+          </span>
+
+          <p class="mt-3 text-sm font-black text-[#2f2a22]">
+            Không tìm thấy tiện nghi phù hợp
+          </p>
+
+          <p class="text-xs text-[#756b5e] mt-1">
+            Thử đổi từ khóa hoặc chọn nhóm tiện nghi khác.
+          </p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+          <button
+            type="button"
+            *ngFor="let amenity of filteredAmenities()"
+            (click)="toggleAmenity(amenity.id)"
+            class="group text-left rounded-2xl border p-4 transition-all"
+            [ngClass]="isSelected(amenity.id)
+              ? 'bg-[#fff8e8] border-[#d8aa5a] ring-2 ring-[#d8aa5a]/20 shadow-sm'
+              : 'bg-white border-[#eee7dd] hover:bg-[#fbf7f0] hover:border-[#d6cbbb]'">
+
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-start gap-3">
+                <div
+                  class="w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 transition-colors"
+                  [ngClass]="isSelected(amenity.id)
+                    ? 'bg-[#3b332b] text-white border-[#3b332b]'
+                    : 'bg-[#f7f1e8] text-[#b88746] border-[#eadfce]'">
+
+                  <span class="material-symbols-outlined text-[23px]">
+                    {{ amenity.icon }}
+                  </span>
+                </div>
+
+                <div>
+                  <p class="text-sm font-black text-[#2f2a22]">
+                    {{ amenity.name }}
+                  </p>
+
+                  @if (amenity.popular) {
+                    <p class="text-[11px] font-black text-[#b88746] mt-1">
+                      Khách thường tìm
+                    </p>
+                  }
+                </div>
+              </div>
+
+              <div
+                class="w-6 h-6 rounded-full border flex items-center justify-center shrink-0"
+                [ngClass]="isSelected(amenity.id)
+                  ? 'bg-[#3b332b] border-[#3b332b] text-white'
+                  : 'bg-white border-[#d6cbbb] text-transparent'">
+
+                <span class="material-symbols-outlined text-[16px]">
+                  check
+                </span>
+              </div>
+            </div>
+          </button>
+        </div>
+      }
+
+      <!-- MOBILE SELECTED -->
+      <section class="lg:hidden bg-white border border-[#ded6c9] rounded-2xl p-4">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <p class="text-xs font-black text-[#3f392f] uppercase tracking-[0.12em]">
+            Đã chọn
+          </p>
+
+          <span class="text-xs font-black text-[#7a5a32]">
+            {{ selectedAmenityIds().size }}
+          </span>
+        </div>
+
+        @if (selectedAmenities().length === 0) {
+          <p class="text-xs text-[#8a8175] leading-relaxed">
+            Chưa có tiện nghi nào được chọn.
+          </p>
+        } @else {
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              *ngFor="let amenity of selectedAmenities()"
+              (click)="removeSelectedAmenity(amenity.id)"
+              class="h-8 px-2.5 rounded-full bg-[#f7f1e8] text-[#5f5548] text-xs font-bold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[14px]">
+                {{ amenity.icon }}
+              </span>
+              <span>{{ amenity.name }}</span>
+              <span class="material-symbols-outlined text-[14px]">
+                close
+              </span>
+            </button>
+          </div>
+        }
+      </section>
+
+      <!-- STICKY ACTION -->
+      <div class="sticky bottom-0 z-20 bg-gradient-to-t from-[#f5f1ea] via-[#f5f1ea] to-transparent pt-5">
+        <div class="bg-white border border-[#ded6c9] rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-[0_-8px_35px_rgba(56,44,33,0.06)]">
+
+          <div>
+            <p class="text-sm font-bold text-[#2f2a22]">
+              {{ isDirty() ? 'Bạn có thay đổi chưa lưu' : 'Tiện nghi đã được lưu' }}
+            </p>
+
+            <p class="text-xs text-[#756b5e] mt-1">
+              {{ selectedAmenityIds().size }} tiện nghi đang được chọn cho chỗ nghỉ này.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="saveChanges()"
+            [disabled]="isSaving()"
+            class="h-12 px-7 rounded-xl bg-[#3b332b] text-white hover:bg-[#2f2a22] transition-all font-black text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed min-w-[170px]">
+
+            @if (isSaving()) {
+              <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span>Đang lưu...</span>
+            } @else {
+              <span class="material-symbols-outlined text-[19px]">save</span>
+              <span>Lưu tiện nghi</span>
+            }
+          </button>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>

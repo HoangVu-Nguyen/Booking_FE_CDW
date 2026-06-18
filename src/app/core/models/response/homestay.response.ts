@@ -19,7 +19,8 @@ export interface HomestayResponse {
   categoryName: string;
   cityName: string;
   
-  imageUrls: string[];
+  images: HomestayImageResponse[];
+  imageUrls:string[];
   amenities: AmenityResponse[];
   owner: OwnerResponse;
   status:HomestayStatus;
@@ -57,5 +58,12 @@ export interface HomestayImageView {
   objectKey?: string | null;
   isCover: boolean;
   displayOrder: number;
-  isNew: boolean;
+  isNew?: boolean;
+}
+export interface HomestayImageResponse {
+  id: number;
+  imageUrl: string;
+  objectKey: string | null;
+  isCover: boolean;
+  displayOrder: number;
 }

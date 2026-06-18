@@ -17,14 +17,14 @@ export class HomestayGallery {
   homestay = computed(() => this.homestayService.currentHomestay());
 
   galleryImages = computed(() => {
-    const images = this.homestay()?.imageUrls ?? [];
+    const images = this.homestay()?.images ?? [];
     const placeholder = 'assets/images/placeholder-luxury.jpg';
 
     return {
-      exterior: images[0] || placeholder,
-      interior: images[1] || placeholder,
-      wellness: images[2] || placeholder,
-      atmosphere: images[3] || placeholder,
+      exterior: images[0]?.imageUrl || placeholder,
+      interior: images[1]?.imageUrl || placeholder,
+      wellness: images[2]?.imageUrl || placeholder,
+      atmosphere: images[3]?.imageUrl || placeholder,
       totalCount: images.length
     };
   });
@@ -34,14 +34,18 @@ export class HomestayGallery {
   openHomestayGallery(): void {
     const homestay = this.homestay();
 
-    if (!homestay?.imageUrls?.length) {
+    const images = homestay?.images ?? [];
+
+    const lightboxData: LightboxImage[] = images
+      .filter(image => !!image?.imageUrl)
+      .map(image => ({
+        url: image.imageUrl,
+        caption: 'Tổng quan Homestay'
+      }));
+
+    if (lightboxData.length === 0) {
       return;
     }
-
-    const lightboxData: LightboxImage[] = homestay.imageUrls.map(url => ({
-      url,
-      caption: 'Tổng quan Homestay'
-    }));
 
     this.lightbox.open(lightboxData, 0);
   }

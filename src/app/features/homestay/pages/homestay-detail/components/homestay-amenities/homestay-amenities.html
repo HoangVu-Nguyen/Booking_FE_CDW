@@ -1,43 +1,352 @@
-<section class="py-12 border-t border-outline-variant/15">
-    <div class="flex items-center justify-between mb-10">
-        <div>
-            <h3 class="text-3xl font-headline font-bold text-primary tracking-tight">Curated Amenities</h3>
-            <p class="text-on-surface-variant mt-2 font-medium">Everything you need for a perfect stay.</p>
-        </div>
-        
-        <!-- Hiển thị tổng số tiện nghi động -->
-        @if (amenities().length > 0) {
-            <button class="hidden md:flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all group">
-                <span>View all {{ amenities().length }} amenities</span>
-                <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
-            </button>
-        }
+<section class="py-14 border-t border-outline-variant/15">
+  <!-- HEADER -->
+  <div class="flex items-end justify-between gap-6 mb-8">
+    <div>
+      <p class="text-xs font-black uppercase tracking-[0.18em] text-[#9a7a4f] mb-2">
+        Amenities
+      </p>
+
+      <h3 class="text-3xl md:text-4xl font-headline font-black text-primary tracking-tight">
+        Tiện nghi nổi bật
+      </h3>
+
+      <p class="text-on-surface-variant mt-2 font-medium">
+        Những tiện ích giúp kỳ nghỉ của bạn thoải mái hơn.
+      </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Render danh sách tiện nghi từ API -->
-        @for (item of amenities(); track item.id) {
-            <div class="flex items-start gap-5 p-6 bg-surface-container-lowest border border-outline-variant/10 rounded-2xl transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-primary/20 group">
-                <!-- Icon động từ iconName trong DTO -->
-                <div class="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-primary/5 rounded-xl text-primary transition-colors group-hover:bg-primary group-hover:text-white">
-                    <span class="material-symbols-outlined text-[28px]">{{ item.iconName }}</span>
-                </div>
-                <div>
-                    <p class="font-bold text-lg text-primary mb-1">{{ item.name }}</p>
-                    <p class="text-sm text-on-surface-variant leading-relaxed">
-                        Chất lượng dịch vụ tiêu chuẩn dành cho kỳ nghỉ của bạn tại Clyvasync.
-                    </p>
-                </div>
-            </div>
-        } @empty {
-            <!-- Trạng thái khi không có dữ liệu -->
-            <p class="text-stone-400 italic">No amenities listed for this homestay.</p>
-        }
-    </div>
-    
     @if (amenities().length > 0) {
-        <button class="w-full mt-8 py-4 border border-outline-variant/20 rounded-xl text-primary font-bold md:hidden active:scale-95 transition-transform">
-            View all {{ amenities().length }} amenities
-        </button>
+      <button
+        type="button"
+        (click)="openModal()"
+        class="hidden md:inline-flex items-center gap-2 h-11 px-5 rounded-full bg-[#2f2a22] text-white text-sm font-black hover:bg-[#1f1b16] transition-all shadow-[0_10px_24px_rgba(47,42,34,0.18)]">
+
+        <span>Xem tất cả {{ amenities().length }}</span>
+        <span class="material-symbols-outlined text-[19px]">arrow_forward</span>
+      </button>
     }
+  </div>
+
+  @if (previewAmenities().length > 0) {
+    <div class="grid grid-cols-1 lg:grid-cols-[1.05fr_1.4fr] gap-5">
+
+      <!-- FEATURE CARD -->
+      <button
+        type="button"
+        (click)="openModal()"
+        class="relative overflow-hidden text-left min-h-[280px] rounded-[28px] bg-[#2f2a22] text-white p-6 md:p-7 shadow-[0_18px_45px_rgba(47,42,34,0.18)] group">
+
+        <div class="absolute -right-16 -top-20 w-56 h-56 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="absolute right-10 bottom-[-70px] w-44 h-44 rounded-full bg-[#c69c6d]/25 blur-2xl"></div>
+
+        <div class="relative h-full flex flex-col justify-between">
+          <div>
+            <div class="w-16 h-16 rounded-3xl bg-white/10 border border-white/10 flex items-center justify-center mb-5">
+              <span class="material-symbols-outlined text-[34px] text-white">
+                widgets
+              </span>
+            </div>
+
+            <p class="text-sm font-black uppercase tracking-[0.18em] text-white/60 mb-2">
+              Included amenities
+            </p>
+
+            <h4 class="text-3xl font-black leading-tight tracking-tight">
+              {{ amenities().length }} tiện nghi cho kỳ nghỉ này
+            </h4>
+
+            <p class="text-sm text-white/70 mt-3 leading-relaxed max-w-sm">
+              Tất cả tiện nghi được sắp xếp theo nhóm như kết nối, phòng, bếp, ngoài trời và dịch vụ.
+            </p>
+          </div>
+
+          <div class="mt-8 flex items-center justify-between gap-4">
+            <div class="flex -space-x-2">
+              @for (item of previewAmenities().slice(0, 4); track item.id) {
+                <div class="w-10 h-10 rounded-full bg-white border border-white/60 flex items-center justify-center text-[#7a5a32]">
+                  <span class="material-symbols-outlined text-[20px]">
+                    {{ item.iconName || 'widgets' }}
+                  </span>
+                </div>
+              }
+            </div>
+
+            <div class="h-11 px-4 rounded-full bg-white text-[#2f2a22] text-sm font-black flex items-center gap-2 group-hover:gap-3 transition-all">
+              <span>Xem chi tiết</span>
+              <span class="material-symbols-outlined text-[18px]">
+                arrow_forward
+              </span>
+            </div>
+          </div>
+        </div>
+      </button>
+
+      <!-- PREVIEW LIST -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        @for (item of previewAmenities(); track item.id) {
+          <button
+            type="button"
+            (click)="openModal()"
+            class="text-left flex items-center gap-4 p-5 bg-white border border-[#eee7dd] rounded-[24px] transition-all duration-300 hover:shadow-[0_14px_40px_rgba(56,44,33,0.07)] hover:border-[#d8c7aa] hover:-translate-y-0.5 group">
+
+            <div
+              class="w-13 h-13 md:w-14 md:h-14 flex-shrink-0 flex items-center justify-center bg-[#f7f1e8] border border-[#eadfce] rounded-2xl text-[#7a5a32] transition-all group-hover:bg-[#2f2a22] group-hover:text-white group-hover:border-[#2f2a22]">
+              <span class="material-symbols-outlined text-[27px]">
+                {{ item.iconName || 'widgets' }}
+              </span>
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <p class="font-black text-[15px] md:text-base text-[#2f2a22] mb-1 truncate">
+                {{ item.name }}
+              </p>
+
+              <p class="text-sm text-[#756b5e] leading-relaxed truncate">
+                {{ getGroupTitle(item.groupName || 'Other') }}
+              </p>
+            </div>
+
+            <span class="material-symbols-outlined text-[#b8a58a] group-hover:text-[#7a5a32] transition-colors">
+              chevron_right
+            </span>
+          </button>
+        }
+
+        @if (amenities().length > previewAmenities().length) {
+          <button
+            type="button"
+            (click)="openModal()"
+            class="text-left flex items-center gap-4 p-5 bg-[#fbfaf8] border border-dashed border-[#d8c7aa] rounded-[24px] transition-all duration-300 hover:bg-[#f7f1e8] hover:border-[#b9996c] group">
+
+            <div class="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-white border border-[#eadfce] rounded-2xl text-[#7a5a32]">
+              <span class="material-symbols-outlined text-[27px]">
+                add
+              </span>
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <p class="font-black text-base text-[#2f2a22] mb-1">
+                +{{ amenities().length - previewAmenities().length }} tiện nghi khác
+              </p>
+
+              <p class="text-sm text-[#756b5e] leading-relaxed">
+                Xem toàn bộ danh sách tiện nghi
+              </p>
+            </div>
+
+            <span class="material-symbols-outlined text-[#7a5a32] group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- MOBILE CTA -->
+    <button
+      type="button"
+      (click)="openModal()"
+      class="md:hidden w-full mt-7 h-14 rounded-2xl bg-[#2f2a22] text-white font-black active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_10px_24px_rgba(47,42,34,0.18)]">
+
+      <span>Xem tất cả {{ amenities().length }} tiện nghi</span>
+      <span class="material-symbols-outlined text-[20px]">open_in_full</span>
+    </button>
+
+  } @else {
+    <div class="rounded-3xl border-2 border-dashed border-[#ded6c9] bg-[#fbfaf8] py-14 px-6 text-center">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-white border border-[#eee7dd] flex items-center justify-center text-[#b88746]">
+        <span class="material-symbols-outlined text-[36px]">
+          widgets
+        </span>
+      </div>
+
+      <p class="mt-4 text-sm font-black text-[#2f2a22]">
+        Chưa có tiện nghi nào được thêm
+      </p>
+
+      <p class="mt-1 text-sm text-[#8a8175]">
+        Host chưa cập nhật tiện nghi cho chỗ nghỉ này.
+      </p>
+    </div>
+  }
 </section>
+
+<!-- ALL AMENITIES MODAL -->
+@if (isModalOpen()) {
+  <div
+    class="fixed inset-0 z-[9999] bg-[#0f0f0f]/55 backdrop-blur-[6px] flex items-end md:items-center justify-center p-0 md:p-6"
+    (click)="closeModal()">
+
+    <div
+      class="w-full md:max-w-4xl max-h-[92vh] bg-[#fbfaf8] rounded-t-[28px] md:rounded-[28px] shadow-[0_30px_90px_rgba(0,0,0,0.28)] overflow-hidden animate-amenity-modal border border-white/70"
+      (click)="$event.stopPropagation()">
+
+      <!-- MODAL HEADER -->
+      <div class="relative bg-white border-b border-[#eee7dd] px-5 md:px-7 pt-6 pb-5">
+
+        <!-- Drag handle mobile -->
+        <div class="md:hidden absolute top-3 left-1/2 -translate-x-1/2 w-11 h-1.5 rounded-full bg-stone-300"></div>
+
+        <div class="flex items-start justify-between gap-5">
+          <div class="flex items-start gap-4 min-w-0">
+            <div class="w-14 h-14 rounded-2xl bg-[#f7f1e8] border border-[#eadfce] flex items-center justify-center text-[#8a5a24] shrink-0">
+              <span class="material-symbols-outlined text-[31px]">
+                widgets
+              </span>
+            </div>
+
+            <div class="min-w-0">
+              <p class="text-xs font-black uppercase tracking-[0.18em] text-[#9a7a4f] mb-1">
+                Homestay amenities
+              </p>
+
+              <h3 class="text-2xl md:text-3xl font-black text-[#2f2a22] tracking-tight">
+                All amenities
+              </h3>
+
+              <p class="text-sm text-[#756b5e] mt-1 leading-relaxed">
+                {{ amenities().length }} tiện nghi được cung cấp tại chỗ nghỉ này.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="w-11 h-11 rounded-full bg-[#f5f1ea] hover:bg-[#ebe2d6] flex items-center justify-center text-[#3f392f] transition-colors shrink-0">
+
+            <span class="material-symbols-outlined text-[23px]">
+              close
+            </span>
+          </button>
+        </div>
+
+        <!-- TOP SUMMARY -->
+        <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="rounded-2xl bg-[#fbfaf8] border border-[#eee7dd] px-4 py-3">
+            <p class="text-[11px] font-bold text-[#8a8175] uppercase tracking-wide">
+              Tổng tiện nghi
+            </p>
+            <p class="text-xl font-black text-[#2f2a22] mt-0.5">
+              {{ amenities().length }}
+            </p>
+          </div>
+
+          <div class="rounded-2xl bg-[#fbfaf8] border border-[#eee7dd] px-4 py-3">
+            <p class="text-[11px] font-bold text-[#8a8175] uppercase tracking-wide">
+              Nhóm
+            </p>
+            <p class="text-xl font-black text-[#2f2a22] mt-0.5">
+              {{ groupedAmenities().length }}
+            </p>
+          </div>
+
+          <div class="hidden md:block rounded-2xl bg-[#fbfaf8] border border-[#eee7dd] px-4 py-3">
+            <p class="text-[11px] font-bold text-[#8a8175] uppercase tracking-wide">
+              Kết nối
+            </p>
+            <p class="text-xl font-black text-[#2f2a22] mt-0.5">
+              Wifi
+            </p>
+          </div>
+
+          <div class="hidden md:block rounded-2xl bg-[#fbfaf8] border border-[#eee7dd] px-4 py-3">
+            <p class="text-[11px] font-bold text-[#8a8175] uppercase tracking-wide">
+              Trạng thái
+            </p>
+            <p class="text-xl font-black text-[#2f2a22] mt-0.5">
+              Available
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL BODY -->
+      <div class="overflow-y-auto max-h-[calc(92vh-250px)] md:max-h-[calc(92vh-270px)] px-5 md:px-7 py-6">
+
+        <div class="space-y-7">
+          @for (group of groupedAmenities(); track group.groupName) {
+            <section class="bg-white border border-[#eee7dd] rounded-3xl overflow-hidden shadow-[0_10px_30px_rgba(56,44,33,0.04)]">
+
+              <!-- GROUP HEADER -->
+              <div class="px-5 py-4 border-b border-[#f0e7dc] bg-[#fffdf9] flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-[#f7f1e8] border border-[#eadfce] flex items-center justify-center text-[#8a5a24] shrink-0">
+                    <span class="material-symbols-outlined text-[24px]">
+                      {{ group.icon }}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 class="text-base md:text-lg font-black text-[#2f2a22]">
+                      {{ group.title }}
+                    </h4>
+
+                    <p class="text-xs text-[#8a8175] mt-0.5">
+                      {{ group.items.length }} tiện nghi
+                    </p>
+                  </div>
+                </div>
+
+                <span class="hidden sm:inline-flex h-8 px-3 rounded-full bg-[#f7f1e8] text-[#6f4f28] text-xs font-black items-center">
+                  {{ group.groupName }}
+                </span>
+              </div>
+
+              <!-- GROUP ITEMS -->
+              <div class="p-4 md:p-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  @for (item of group.items; track item.id) {
+                    <div class="flex items-center gap-4 rounded-2xl border border-[#f0e7dc] bg-[#fbfaf8] px-4 py-3.5 hover:bg-[#fff8ed] hover:border-[#e2cda9] transition-colors">
+
+                      <div class="w-10 h-10 rounded-xl bg-white border border-[#eadfce] flex items-center justify-center text-[#7a5a32] shrink-0">
+                        <span class="material-symbols-outlined text-[23px]">
+                          {{ item.iconName || 'check_circle' }}
+                        </span>
+                      </div>
+
+                      <div class="min-w-0 flex-1">
+                        <p class="text-[15px] font-black text-[#2f2a22] truncate">
+                          {{ item.name }}
+                        </p>
+
+                        <p class="text-xs text-[#8a8175] mt-0.5">
+                          Included in this stay
+                        </p>
+                      </div>
+
+                      <div class="w-7 h-7 rounded-full bg-[#ecf8ef] text-green-700 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[17px]">
+                          check
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </section>
+          }
+        </div>
+      </div>
+
+      <!-- MODAL FOOTER -->
+      <div class="bg-white border-t border-[#eee7dd] px-5 md:px-7 py-4 flex items-center justify-between gap-4">
+        <div class="hidden sm:block">
+          <p class="text-sm font-black text-[#2f2a22]">
+            Everything you need for a comfortable stay
+          </p>
+          <p class="text-xs text-[#8a8175] mt-0.5">
+            Amenities may vary by room type and booking conditions.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="w-full sm:w-auto h-12 px-7 rounded-2xl bg-[#2f2a22] text-white text-sm font-black hover:bg-[#1f1b16] active:scale-[0.98] transition-all">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+}

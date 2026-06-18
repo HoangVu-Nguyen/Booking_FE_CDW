@@ -34,6 +34,7 @@ export class ManageProperty implements OnInit {
     { id: 'rooms', label: 'Phòng & giường', icon: 'bed', path: 'rooms', required: true },
     { id: 'photos', label: 'Hình ảnh', icon: 'photo_library', path: 'photos', required: true },
     { id: 'amenities', label: 'Tiện nghi', icon: 'wifi', path: 'amenities', required: false },
+    {id:'room/amenities',label: 'Tiện nghi Phòng', icon: 'wifi', path: 'room/amenities', required: false},
     { id: 'pricing', label: 'Giá & phụ phí', icon: 'payments', path: 'pricing', required: true },
     { id: 'policies', label: 'Chính sách', icon: 'policy', path: 'policies', required: false }
   ];
