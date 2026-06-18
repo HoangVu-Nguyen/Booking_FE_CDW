@@ -18,13 +18,14 @@ export class HomestayGallery {
 
   galleryImages = computed(() => {
     const images = this.homestay()?.images ?? [];
+    console.log(this.homestay()?.images)
     const placeholder = 'assets/images/placeholder-luxury.jpg';
 
     return {
-      exterior: images[0] || placeholder,
-      interior: images[1] || placeholder,
-      wellness: images[2] || placeholder,
-      atmosphere: images[3] || placeholder,
+      exterior: images[0].imageUrl || placeholder,
+      interior: images[1].imageUrl || placeholder,
+      wellness: images[2].imageUrl || placeholder,
+      atmosphere: images[3].imageUrl || placeholder,
       totalCount: images.length
     };
   });

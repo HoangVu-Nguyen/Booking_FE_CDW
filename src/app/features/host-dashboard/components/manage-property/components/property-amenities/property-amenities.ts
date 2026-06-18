@@ -2,18 +2,30 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AmenityCategory, AmenityItem, AmenityPreset } from '../../../../../../core/models/amenitie/amenities.model';
+
+import {
+  AmenityCategory,
+  AmenityItem,
+  AmenityPreset,
+  AmenityResponse
+} from '../../../../../../core/models/amenitie/amenities.model';
+import { AmenityService } from '../../../../../../core/services/amenity/amenities.service';
+
+
 @Component({
   selector: 'app-property-amenities',
-  imports: [CommonModule,FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './property-amenities.html',
   styleUrl: './property-amenities.css',
 })
-export class PropertyAmenities {
+export class PropertyAmenities implements OnInit {
   private route = inject(ActivatedRoute);
+  private amenityService = inject(AmenityService);
 
   homestayId: string | null = null;
 
+  isLoading = signal(false);
   isSaving = signal(false);
   isDirty = signal(false);
   showSavedToast = signal(false);
@@ -31,116 +43,68 @@ export class PropertyAmenities {
       icon: 'star'
     },
     {
-      key: 'INTERNET_WORK',
-      title: 'Internet & làm việc',
-      description: 'Phù hợp khách đi công tác, học tập hoặc làm việc từ xa.',
+      key: 'Connectivity',
+      title: 'Kết nối',
+      description: 'Wifi, internet tốc độ cao và các tiện ích kết nối.',
       icon: 'wifi'
     },
     {
-      key: 'PARKING_TRANSPORT',
-      title: 'Đỗ xe & di chuyển',
-      description: 'Các tiện ích liên quan đến xe, đưa đón và đi lại.',
-      icon: 'local_parking'
+      key: 'Room',
+      title: 'Trong phòng',
+      description: 'Các tiện nghi có sẵn bên trong phòng hoặc không gian nghỉ.',
+      icon: 'bed'
     },
     {
-      key: 'KITCHEN_DINING',
+      key: 'Entertainment',
+      title: 'Giải trí',
+      description: 'TV, Netflix, âm thanh, trò chơi và các tiện ích giải trí.',
+      icon: 'tv'
+    },
+    {
+      key: 'Facilities',
+      title: 'Cơ sở vật chất',
+      description: 'Bãi đỗ xe, hồ bơi, máy giặt, điều hòa và tiện ích chung.',
+      icon: 'apartment'
+    },
+    {
+      key: 'Dining',
       title: 'Bếp & ăn uống',
-      description: 'Tiện nghi nấu nướng, ăn uống, BBQ và sinh hoạt gia đình.',
+      description: 'Bếp, BBQ, bàn ăn, dụng cụ nấu nướng và khu vực ăn uống.',
       icon: 'restaurant'
     },
     {
-      key: 'POOL_OUTDOOR',
-      title: 'Hồ bơi & ngoài trời',
-      description: 'Không gian thư giãn, sân vườn, ban công, view và BBQ.',
-      icon: 'pool'
+      key: 'Outdoor',
+      title: 'Ngoài trời',
+      description: 'Sân vườn, ban công, sân hiên và khu vực thư giãn ngoài trời.',
+      icon: 'yard'
     },
     {
-      key: 'FAMILY',
-      title: 'Gia đình & trẻ em',
-      description: 'Dành cho nhóm gia đình, trẻ nhỏ và người đi theo đoàn.',
-      icon: 'family_restroom'
+      key: 'View',
+      title: 'Tầm nhìn',
+      description: 'View biển, view núi, view thành phố hoặc view sân vườn.',
+      icon: 'landscape'
     },
     {
-      key: 'COMFORT',
-      title: 'Tiện nghi sinh hoạt',
-      description: 'Các tiện nghi cơ bản giúp khách ở thoải mái hơn.',
-      icon: 'home'
+      key: 'Policies',
+      title: 'Chính sách',
+      description: 'Hút thuốc, thú cưng, tiệc tùng và các quy định lưu trú.',
+      icon: 'rule'
     },
     {
-      key: 'SAFETY',
-      title: 'An toàn & hỗ trợ',
-      description: 'Thiết bị an toàn, hỗ trợ khẩn cấp và tiện ích bảo vệ.',
-      icon: 'health_and_safety'
+      key: 'Service',
+      title: 'Dịch vụ',
+      description: 'Dọn phòng, lễ tân, hỗ trợ khách và các dịch vụ đi kèm.',
+      icon: 'room_service'
+    },
+    {
+      key: 'Transport',
+      title: 'Di chuyển',
+      description: 'Đưa đón sân bay, thuê xe, xe máy và hỗ trợ đi lại.',
+      icon: 'airport_shuttle'
     }
   ];
 
-  amenities: AmenityItem[] = [
-    // POPULAR / INTERNET
-    { id: 1, name: 'Wifi miễn phí', icon: 'wifi', category: 'INTERNET_WORK', popular: true },
-    { id: 2, name: 'Wifi tốc độ cao', icon: 'network_wifi', category: 'INTERNET_WORK', popular: true },
-    { id: 3, name: 'Không gian làm việc', icon: 'desk', category: 'INTERNET_WORK', popular: true },
-    { id: 4, name: 'Ổ cắm gần bàn làm việc', icon: 'power', category: 'INTERNET_WORK' },
-    { id: 5, name: 'Máy in', icon: 'print', category: 'INTERNET_WORK' },
-    { id: 6, name: 'Phòng họp nhỏ', icon: 'meeting_room', category: 'INTERNET_WORK' },
-
-    // PARKING
-    { id: 10, name: 'Bãi đỗ xe miễn phí', icon: 'local_parking', category: 'PARKING_TRANSPORT', popular: true },
-    { id: 11, name: 'Đỗ xe trong khuôn viên', icon: 'garage', category: 'PARKING_TRANSPORT', popular: true },
-    { id: 12, name: 'Đỗ xe ngoài đường', icon: 'directions_car', category: 'PARKING_TRANSPORT' },
-    { id: 13, name: 'Sạc xe điện', icon: 'ev_station', category: 'PARKING_TRANSPORT' },
-    { id: 14, name: 'Đưa đón sân bay', icon: 'airport_shuttle', category: 'PARKING_TRANSPORT' },
-    { id: 15, name: 'Cho thuê xe máy', icon: 'two_wheeler', category: 'PARKING_TRANSPORT' },
-
-    // KITCHEN
-    { id: 20, name: 'Bếp riêng', icon: 'kitchen', category: 'KITCHEN_DINING', popular: true },
-    { id: 21, name: 'Bếp chung', icon: 'countertops', category: 'KITCHEN_DINING' },
-    { id: 22, name: 'Tủ lạnh', icon: 'kitchen', category: 'KITCHEN_DINING', popular: true },
-    { id: 23, name: 'Lò vi sóng', icon: 'microwave', category: 'KITCHEN_DINING' },
-    { id: 24, name: 'Ấm đun nước', icon: 'coffee_maker', category: 'KITCHEN_DINING' },
-    { id: 25, name: 'Máy pha cà phê', icon: 'coffee', category: 'KITCHEN_DINING' },
-    { id: 26, name: 'Bàn ăn', icon: 'table_restaurant', category: 'KITCHEN_DINING' },
-    { id: 27, name: 'Dụng cụ nấu ăn', icon: 'skillet', category: 'KITCHEN_DINING' },
-    { id: 28, name: 'BBQ', icon: 'outdoor_grill', category: 'KITCHEN_DINING', popular: true },
-
-    // POOL OUTDOOR
-    { id: 30, name: 'Hồ bơi', icon: 'pool', category: 'POOL_OUTDOOR', popular: true },
-    { id: 31, name: 'Hồ bơi riêng', icon: 'pool', category: 'POOL_OUTDOOR' },
-    { id: 32, name: 'Sân vườn', icon: 'yard', category: 'POOL_OUTDOOR', popular: true },
-    { id: 33, name: 'Ban công', icon: 'balcony', category: 'POOL_OUTDOOR', popular: true },
-    { id: 34, name: 'Sân hiên', icon: 'deck', category: 'POOL_OUTDOOR' },
-    { id: 35, name: 'View núi', icon: 'landscape', category: 'POOL_OUTDOOR' },
-    { id: 36, name: 'View biển', icon: 'beach_access', category: 'POOL_OUTDOOR' },
-    { id: 37, name: 'Khu vực picnic', icon: 'park', category: 'POOL_OUTDOOR' },
-    { id: 38, name: 'Bàn ghế ngoài trời', icon: 'deck', category: 'POOL_OUTDOOR' },
-
-    // FAMILY
-    { id: 40, name: 'Phù hợp gia đình', icon: 'family_restroom', category: 'FAMILY', popular: true },
-    { id: 41, name: 'Cũi trẻ em', icon: 'crib', category: 'FAMILY' },
-    { id: 42, name: 'Ghế ăn trẻ em', icon: 'chair_alt', category: 'FAMILY' },
-    { id: 43, name: 'Khu vui chơi trẻ em', icon: 'toys', category: 'FAMILY' },
-    { id: 44, name: 'Cầu thang có chắn', icon: 'stairs', category: 'FAMILY' },
-    { id: 45, name: 'Sách và đồ chơi trẻ em', icon: 'menu_book', category: 'FAMILY' },
-
-    // COMFORT
-    { id: 50, name: 'Điều hòa', icon: 'ac_unit', category: 'COMFORT', popular: true },
-    { id: 51, name: 'Máy giặt', icon: 'local_laundry_service', category: 'COMFORT', popular: true },
-    { id: 52, name: 'Máy sấy quần áo', icon: 'dry_cleaning', category: 'COMFORT' },
-    { id: 53, name: 'TV', icon: 'tv', category: 'COMFORT', popular: true },
-    { id: 54, name: 'Netflix / Smart TV', icon: 'smart_display', category: 'COMFORT' },
-    { id: 55, name: 'Nước nóng', icon: 'water_heater', category: 'COMFORT', popular: true },
-    { id: 56, name: 'Máy sấy tóc', icon: 'air', category: 'COMFORT' },
-    { id: 57, name: 'Bàn ủi', icon: 'iron', category: 'COMFORT' },
-    { id: 58, name: 'Tủ quần áo', icon: 'checkroom', category: 'COMFORT' },
-    { id: 59, name: 'Dọn phòng', icon: 'cleaning_services', category: 'COMFORT' },
-
-    // SAFETY
-    { id: 70, name: 'Camera an ninh khu chung', icon: 'videocam', category: 'SAFETY' },
-    { id: 71, name: 'Bình chữa cháy', icon: 'fire_extinguisher', category: 'SAFETY', popular: true },
-    { id: 72, name: 'Máy báo khói', icon: 'detector_smoke', category: 'SAFETY' },
-    { id: 73, name: 'Bộ sơ cứu', icon: 'medical_services', category: 'SAFETY' },
-    { id: 74, name: 'Khóa thông minh', icon: 'lock', category: 'SAFETY' },
-    { id: 75, name: 'Bảo vệ 24/7', icon: 'security', category: 'SAFETY' }
-  ];
+  amenities: AmenityItem[] = [];
 
   presets: AmenityPreset[] = [
     {
@@ -204,17 +168,87 @@ export class PropertyAmenities {
       this.homestayId = params.get('id') || params.get('homestayId');
 
       if (this.homestayId) {
-        this.loadAmenities(this.homestayId);
+        this.loadAmenities(Number(this.homestayId));
       }
     });
   }
 
-  private loadAmenities(homestayId: string): void {
-    console.log('Load amenities for homestay:', homestayId);
+  private loadAmenities(homestayId: number): void {
+    this.isLoading.set(true);
 
-    // Hardcode demo: sau này thay bằng API.
-    this.selectedAmenityIds.set(new Set([1, 10, 20, 50, 53, 55]));
-    this.isDirty.set(false);
+    this.amenityService.getAllAmenities().subscribe({
+      next: amenityRes => {
+        const amenities = amenityRes.data || [];
+        console.log(amenities)
+
+        this.amenities = amenities.map(item => this.mapAmenityResponse(item));
+
+        this.amenityService.getHomestayAmenityIds(homestayId).subscribe({
+          next: selectedRes => {
+            const selectedIds = selectedRes.data || [];
+
+            this.selectedAmenityIds.set(new Set(selectedIds));
+            this.isDirty.set(false);
+            this.isLoading.set(false);
+          },
+          error: err => {
+            console.error('Load selected homestay amenities failed:', err);
+
+            this.selectedAmenityIds.set(new Set());
+            this.isDirty.set(false);
+            this.isLoading.set(false);
+          }
+        });
+      },
+      error: err => {
+        console.error('Load amenities failed:', err);
+
+        this.amenities = [];
+        this.selectedAmenityIds.set(new Set());
+        this.isDirty.set(false);
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  private mapAmenityResponse(item: AmenityResponse): AmenityItem {
+    return {
+      id: item.id,
+      name: item.name,
+      icon: item.iconName || 'widgets',
+      category: item.groupName?.trim() || 'Room',
+      popular: this.isPopularAmenity(item.id, item.name)
+    };
+  }
+
+  private isPopularAmenity(id: number, name: string): boolean {
+    const popularIds = new Set([
+      1, 2, 3,
+      10, 11,
+      20, 22, 28,
+      30, 32, 33,
+      40,
+      50, 51, 53, 55,
+      71
+    ]);
+
+    if (popularIds.has(id)) {
+      return true;
+    }
+
+    const normalizedName = name.toLowerCase();
+
+    return [
+      'wifi',
+      'bãi đỗ',
+      'hồ bơi',
+      'bếp',
+      'điều hòa',
+      'máy giặt',
+      'tv',
+      'nước nóng',
+      'bbq'
+    ].some(keyword => normalizedName.includes(keyword));
   }
 
   setActiveCategory(categoryKey: string): void {
@@ -243,10 +277,13 @@ export class PropertyAmenities {
   }
 
   applyPreset(preset: AmenityPreset): void {
+    const availableIds = new Set(this.amenities.map(item => item.id));
     const next = new Set(this.selectedAmenityIds());
 
     preset.amenityIds.forEach(id => {
-      next.add(id);
+      if (availableIds.has(id)) {
+        next.add(id);
+      }
     });
 
     this.selectedAmenityIds.set(next);
@@ -312,23 +349,30 @@ export class PropertyAmenities {
       return;
     }
 
+    const homestayId = Number(this.homestayId);
+
+    if (Number.isNaN(homestayId)) {
+      alert('ID chỗ nghỉ không hợp lệ.');
+      return;
+    }
+
     this.isSaving.set(true);
 
-    const payload = {
-      homestayId: Number(this.homestayId),
-      amenityIds: Array.from(this.selectedAmenityIds())
-    };
+    const amenityIds = Array.from(this.selectedAmenityIds());
 
-    console.log('Payload save property amenities:', payload);
+    this.amenityService.updateHomestayAmenities(homestayId, amenityIds).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.isDirty.set(false);
+        this.showSuccessToast();
+      },
+      error: err => {
+        console.error('Save homestay amenities failed:', err);
 
-    // Sau này gọi API:
-    // this.homestayService.updateAmenities(payload).subscribe(...)
-
-    setTimeout(() => {
-      this.isSaving.set(false);
-      this.isDirty.set(false);
-      this.showSuccessToast();
-    }, 800);
+        this.isSaving.set(false);
+        alert('Lưu tiện nghi thất bại. Vui lòng thử lại.');
+      }
+    });
   }
 
   private showSuccessToast(): void {
