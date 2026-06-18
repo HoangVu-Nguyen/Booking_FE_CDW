@@ -1,0 +1,50 @@
+.room-tab {
+  background: white;
+  color: #2f2a22;
+  border-color: #ded6c9;
+}
+
+.room-tab:hover {
+  background: #fbfaf8;
+  border-color: #d8c7aa;
+}
+
+.room-tab-icon {
+  background: #f7f1e8;
+  border-color: #eadfce;
+  color: #7a5a32;
+}
+
+.room-tab:hover .room-tab-icon {
+  background: #2f2a22;
+  color: white;
+}
+
+.room-tab-description {
+  color: #756b5e;
+}
+
+.room-tab-arrow {
+  color: #b8a58a;
+}
+
+.room-tab.is-active-room-tab {
+  background: #2f2a22;
+  color: white;
+  border-color: #2f2a22;
+  box-shadow: 0 18px 42px rgba(47, 42, 34, 0.18);
+}
+
+.room-tab.is-active-room-tab .room-tab-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.room-tab.is-active-room-tab .room-tab-description {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.room-tab.is-active-room-tab .room-tab-arrow {
+  color: white;
+}

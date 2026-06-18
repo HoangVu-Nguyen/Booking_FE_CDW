@@ -41,6 +41,8 @@ import { PropertyInfo } from './features/host-dashboard/components/manage-proper
 import { RoomManager } from './features/host-dashboard/components/manage-property/components/room-manager/room-manager';
 import { PropertyAmenities } from './features/host-dashboard/components/manage-property/components/property-amenities/property-amenities';
 import { RoomAmenities } from './features/host-dashboard/components/manage-property/components/room-amenities/room-amenities';
+import { RoomAmenityHighlights } from './features/host-dashboard/components/manage-property/components/room-amenities/components/room-amenity-highlights/room-amenity-highlights';
+import { RatePlanBenefits } from './features/host-dashboard/components/manage-property/components/room-amenities/components/rate-plan-benefits/rate-plan-benefits';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -190,7 +192,22 @@ export const routes: Routes = [
               },
               {
                 path: 'room/amenities',
-                component: RoomAmenities
+                component: RoomAmenities,
+                children: [
+                  {
+                    path: '',
+                    pathMatch: 'full',
+                    redirectTo: 'highlights'
+                  },
+                  {
+                    path: 'highlights',
+                    component:RoomAmenityHighlights
+                  },
+                  {
+                    path: 'rate-plan-benefits',
+                    component:RatePlanBenefits
+                  }
+                ]
               }
             ]
           }
