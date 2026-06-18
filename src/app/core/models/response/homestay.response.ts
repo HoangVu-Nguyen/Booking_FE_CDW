@@ -20,6 +20,7 @@ export interface HomestayResponse {
   cityName: string;
   
   images: HomestayImageResponse[];
+  imageUrls:string[];
   amenities: AmenityResponse[];
   owner: OwnerResponse;
   status:HomestayStatus;
