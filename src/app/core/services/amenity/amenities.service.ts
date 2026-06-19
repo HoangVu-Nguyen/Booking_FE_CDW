@@ -4,6 +4,7 @@ import { ApiService } from '../api/api.service';
 import { ApiResponse } from '../../models/response/api.response';
 import { UpdateHomestayAmenitiesRequest, RoomAmenityHighlightResponse, RoomAmenityHighlightRequest, UpdateRoomAmenityHighlightsRequest } from '../../models/amenitie/amenities.model';
 import { AmenityResponse } from '../../models/response/homestay.response';
+import { RatePlanBenefitRequest } from '../../models/request/amenity.request';
 
 
 
@@ -11,6 +12,7 @@ import { AmenityResponse } from '../../models/response/homestay.response';
   providedIn: 'root'
 })
 export class AmenityService {
+
 
   constructor(private apiService: ApiService) {}
 

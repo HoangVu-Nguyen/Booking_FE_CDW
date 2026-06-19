@@ -5,6 +5,7 @@ import { ApiResponse } from "../models/response/api.response";
 import { ApiService } from "./api/api.service";
 import { PresignedUrlResponse } from "./file/file.service";
 import { MultiRoomBatchUploadRequest, RoomBatchUpdateRequest } from "../models/request/room.request";
+import { RatePlanBenefitResponse, RatePlanBenefitRequest } from "../models/request/amenity.request";
 
 
 @Injectable({ providedIn: 'root' })
@@ -15,7 +16,7 @@ export class RoomService {
 
     // --- API CALLS ---
     getUnavailableDates(homestayId: number, month: number, year: number): Observable<string[]> {
-        const url = `/api/v1/rooms/homestays/${homestayId}/unavailable-dates?month=${month}&year=${year}`;
+        const url = `/api/v1/${homestayId}/rooms/unavailable-dates?month=${month}&year=${year}`;
         return this.apiService.get<ApiResponse<string[]>>(url).pipe(
             map(response => response.success ? response.data : [])
         );
@@ -55,4 +56,27 @@ export class RoomService {
         const url = `/api/v1/rooms`;
         return this.apiService.put<ApiResponse<any>>(url, payload);
     }
+       
+    getRatePlanBenefits(
+        homestayId: number | string,
+        roomId: number | string,
+        ratePlanId: number | string
+    ) {
+        return this.apiService.get<ApiResponse<RatePlanBenefitResponse[]>>(
+            `/api/v1/${homestayId}/rooms/${roomId}/rate-plans/${ratePlanId}/benefits`
+        );
+    }
+
+    updateRatePlanBenefits(
+        homestayId: number | string,
+        roomId: number | string,
+        ratePlanId: number | string,
+        benefits: RatePlanBenefitRequest[]
+    ) {
+        return this.apiService.put<ApiResponse<void>>(
+            `/api/v1/${homestayId}/rooms/${roomId}/rate-plans/${ratePlanId}/benefits`,
+            { benefits }
+        );
+    }
+
 }
