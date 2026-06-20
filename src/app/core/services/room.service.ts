@@ -43,8 +43,8 @@ export class RoomService {
                 .catch(err => observer.error(err));
         });
     }
-    prepareImageUploads(payload: MultiRoomBatchUploadRequest): Observable<PresignedUrlResponse[]> {
-        const url = `/api/v1/rooms/images/presign`;
+    prepareImageUploads(homestayId:string,payload: MultiRoomBatchUploadRequest): Observable<PresignedUrlResponse[]> {
+        const url = `/api/v1/${homestayId}/rooms/images/presign`;
         return this.apiService.post<ApiResponse<PresignedUrlResponse[]>>(url, payload).pipe(
             map(response => response.success ? response.data : [])
         );

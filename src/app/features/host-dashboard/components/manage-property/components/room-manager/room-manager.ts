@@ -438,7 +438,7 @@ export class RoomManager implements OnInit {
       // ==========================================
       if (roomsWithNewImages.length > 0) {
         // Gọi API Backend xin link
-        presignedUrls = await firstValueFrom(this.roomService.prepareImageUploads({ rooms: roomsWithNewImages }));
+        presignedUrls = await firstValueFrom(this.roomService.prepareImageUploads(this.homestayId,{ rooms: roomsWithNewImages }));
 
         // Tạo các Promise để upload thẳng file lên S3
         const uploadPromises = presignedUrls.map(urlInfo => {
@@ -510,7 +510,7 @@ export class RoomManager implements OnInit {
               name: plan.name,
               price: plan.price,
               isNonRefundable: plan.isNonRefundable,
-              benefits: plan.benefits || []
+              
             })),
 
             images: [...oldImages, ...newlyUploadedImages]
