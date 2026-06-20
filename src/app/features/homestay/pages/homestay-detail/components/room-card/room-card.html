@@ -1,174 +1,221 @@
-<div
-    class="bg-white border border-stone-200 rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-10 relative">
+<div class="bg-white border border-[#E8E4DB] rounded-2xl shadow-[0_4px_20px_rgba(163,135,106,0.04)] hover:shadow-[0_8px_30px_rgba(163,135,106,0.08)] transition-all duration-300 overflow-hidden mb-8 relative font-sans">
 
-    <div
-        class="px-6 py-5 border-b border-stone-200 bg-stone-50/50 flex flex-col md:flex-row md:items-start justify-between gap-4">
+    <div class="p-5 md:px-7 md:py-6 border-b border-[#E8E4DB] bg-[#FAF8F3] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h3 class="text-2xl font-black text-stone-900 tracking-tight">{{ room().name }}</h3>
-            <div class="flex flex-wrap items-center gap-4 mt-2 text-sm font-medium text-stone-600">
+            <h3 class="text-[22px] font-bold text-[#3E3934] tracking-tight leading-tight">{{ room().name }}</h3>
+
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2 text-[14px] text-[#756C61]">
                 <span class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[18px] text-stone-400">square_foot</span>
+                    <span class="material-symbols-outlined text-[18px] text-[#A89F91]">square_foot</span>
                     {{ room().area || 'N/A' }}
                 </span>
-                <span class="flex items-center gap-1.5 cursor-help hover:text-stone-900 transition-colors"
-                    [title]="getBedTooltip(room().beds)">
-                    <span class="material-symbols-outlined text-[18px] text-stone-400">king_bed</span>
-                    <span class="underline decoration-dashed decoration-stone-300 underline-offset-4">{{ room().bedCount
-                        }} Giường</span>
+                <span class="w-1 h-1 bg-[#D6D0C4] rounded-full"></span>
+                <span class="flex items-center gap-1.5 cursor-help group" [title]="getBedTooltip(room().beds)">
+                    <span class="material-symbols-outlined text-[18px] text-[#A89F91] group-hover:text-[#8C7156] transition-colors">king_bed</span>
+                    <span class="border-b border-dashed border-[#D6D0C4] group-hover:border-[#8C7156] transition-colors">
+                        {{ room().bedCount }} Giường
+                    </span>
                 </span>
+                <span class="w-1 h-1 bg-[#D6D0C4] rounded-full"></span>
                 <span class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[18px] text-stone-400">group</span>
+                    <span class="material-symbols-outlined text-[18px] text-[#A89F91]">group</span>
                     Tối đa {{ room().maxGuests }} khách
                 </span>
             </div>
         </div>
 
-        <div *ngIf="room().availableQuantity <= 0"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 text-rose-600 rounded-lg text-sm font-bold border border-rose-100">
-            <span class="material-symbols-outlined text-[18px]">event_busy</span> Hết phòng
-        </div>
+        @if(room().availableQuantity <= 0) { 
+            <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#FDF3F1] text-[#B55B51] rounded-lg text-sm font-semibold border border-[#F5E1DE]">
+                <span class="material-symbols-outlined text-[18px]">event_busy</span> Hết phòng
+            </div>
+        }
     </div>
 
     <div class="flex flex-col lg:flex-row">
 
-        <div class="w-full lg:w-[35%] p-6 border-b lg:border-b-0 lg:border-r border-stone-200 bg-white">
-
-            <div class="aspect-[4/3] rounded-xl overflow-hidden mb-5 shadow-sm border border-stone-100 relative group/img cursor-pointer"
+        <div class="w-full lg:w-[35%] p-5 md:p-7 border-b lg:border-b-0 lg:border-r border-[#E8E4DB] bg-white">
+            <div class="aspect-[4/3] rounded-xl overflow-hidden mb-5 relative cursor-pointer group shadow-sm border border-[#F0EBE1]"
                 (click)="openRoomGallery(room())">
-
-                <img [src]="getCoverImage(room())"
-                    class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-700">
-
-                <div
-                    class="absolute inset-0 bg-stone-900/30 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                    <span class="material-symbols-outlined text-white text-[32px] drop-shadow-md">zoom_in_map</span>
+                <img [src]="getCoverImage(room())" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                <div class="absolute inset-0 bg-[#3E3934]/10 group-hover:bg-[#3E3934]/30 transition-colors duration-300 flex items-center justify-center backdrop-blur-[1px]">
+                    <span class="material-symbols-outlined text-white text-[32px] opacity-0 group-hover:opacity-100 transition-opacity">zoom_in_map</span>
                 </div>
-
-                <div *ngIf="room().images?.length"
-                    class="absolute bottom-3 right-3 bg-stone-900/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-white tracking-widest border border-white/20 flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[14px]">photo_library</span>
-                    {{ room().images.length }}
+                @if(room().images?.length) {
+                <div class="absolute bottom-3 right-3 bg-[#3E3934]/80 backdrop-blur-md px-2.5 py-1 rounded-md text-[11px] font-bold text-[#FAF8F3] tracking-wider flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[14px]">photo_library</span> {{ room().images.length }}
                 </div>
+                }
             </div>
 
             <div class="flex flex-wrap gap-2 mb-5">
-                <div *ngFor="let feat of room().highlights | slice:0:4"
-                    class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100 transition-colors cursor-default">
-                    <span class="material-symbols-outlined text-[14px] text-stone-500">{{ feat.icon }}</span>
-                    <span class="text-[11px] font-bold tracking-wide">{{ feat.value }}</span>
-                </div>
-                <div *ngIf="room().highlights.length > 4"
-                    class="inline-flex items-center justify-center px-2 py-1.5 rounded-md border border-dashed border-stone-300 text-[11px] font-bold text-stone-500 cursor-pointer hover:bg-stone-50">
+                @for(feat of room().highlights | slice:0:4; track feat) {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#F4F1EB] text-[#5C5449] text-[12px] font-semibold border border-[#E8E4DB] max-w-full">
+                    <span class="material-symbols-outlined text-[14px] text-[#A3876A] shrink-0">{{ feat.icon }}</span>
+                    <span class="truncate whitespace-nowrap">{{ feat.value }}</span>
+                </span>
+                }
+                @if(room().highlights.length > 4) {
+                <span class="inline-flex items-center px-2.5 py-1.5 rounded-md border border-dashed border-[#D6D0C4] text-[#8A8175] text-[12px] font-semibold hover:bg-[#F4F1EB] cursor-pointer transition-colors whitespace-nowrap">
                     +{{ room().highlights.length - 4 }}
-                </div>
+                </span>
+                }
             </div>
 
-            <p class="text-sm text-stone-600 leading-relaxed line-clamp-4" [title]="room().description">
+            <p class="text-[13.5px] text-[#756C61] leading-relaxed line-clamp-3 font-medium" [title]="room().description">
                 {{ room().description }}
             </p>
         </div>
 
         <div class="w-full lg:w-[65%] flex flex-col bg-white">
-
-            <div *ngFor="let plan of room().ratePlans; let last = last"
-                class="flex flex-col md:flex-row gap-6 p-6 transition-colors hover:bg-blue-50/20"
-                [ngClass]="{'border-b border-stone-200': !last}">
+            @for(plan of room().ratePlans; track plan; let last = $last) {
+            <div class="flex flex-col md:flex-row gap-6 p-5 md:p-6 transition-colors hover:bg-[#FCFBF9]"
+                [ngClass]="{'border-b border-[#E8E4DB]': !last}">
 
                 <div class="flex-1">
-                    <h4 class="text-lg font-black text-stone-900 leading-tight mb-3">
-                        {{ plan.name }}
-                    </h4>
+                    <h4 class="text-[17px] font-bold text-[#3E3934] mb-4">{{ plan.name }}</h4>
 
-                    <div class="space-y-2 mb-4">
-                        <div *ngFor="let benefit of plan.benefits" class="flex items-start gap-2.5 group/ben">
-                            <span
-                                class="material-symbols-outlined text-[16px] text-emerald-600 font-black mt-0.5">check</span>
-                            <span
-                                class="text-sm font-medium text-stone-700 group-hover/ben:text-stone-900 transition-colors">
-                                {{ benefit }}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2"
+                        [ngClass]="{'mb-2': plan.benefits.length > 6, 'mb-5': plan.benefits.length <= 6}">
+                        
+                        @for(benefit of plan.benefits | slice:0:6; track benefit) {
+                        <div class="flex items-start gap-2">
+                            <span class="material-symbols-outlined text-[16px] text-[#A3876A] mt-[2px] shrink-0">
+                                {{ benefit.iconName || 'check' }}
                             </span>
+                            <span class="text-[13.5px] text-[#5C5449] font-medium leading-snug">{{ benefit.displayValue }}</span>
                         </div>
+                        }
                     </div>
 
-                    <div class="flex flex-wrap gap-2 mt-4">
-                        <div [class]="plan.isNonRefundable ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'"
-                            class="flex items-center gap-1.5 px-2.5 py-1 border rounded-md">
+                    @if(plan.benefits.length > 6) {
+                    <div class="mb-4">
+                        <button (click)="openAmenitiesModal(plan)" class="inline-flex items-center gap-1 text-[12.5px] font-bold text-[#A3876A] hover:text-[#8C7156] transition-colors group/btn cursor-pointer">
+                            <span class="underline decoration-dashed decoration-[#D6D0C4] underline-offset-4 group-hover:decoration-[#8C7156]">
+                                Xem tất cả {{ plan.benefits.length }} tiện ích
+                            </span>
+                            <span class="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1">chevron_right</span>
+                        </button>
+                    </div>
+                    }
+
+                    <div class="flex flex-wrap gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase border"
+                            [ngClass]="plan.isNonRefundable ? 'text-[#A05E54] bg-[#FDF4F3] border-[#F2DFDD]' : 'text-[#506B56] bg-[#F1F5F2] border-[#E1E8E3]'">
                             <span class="material-symbols-outlined text-[14px]">
                                 {{ plan.isNonRefundable ? 'lock_reset' : 'event_available' }}
                             </span>
-                            <span class="text-[11px] font-black uppercase tracking-wide">
-                                {{ plan.isNonRefundable ? 'Không hoàn tiền' : 'Hủy miễn phí' }}
-                            </span>
-                        </div>
+                            {{ plan.isNonRefundable ? 'Không hoàn tiền' : 'Hủy miễn phí' }}
+                        </span>
 
-                        <div
-                            class="flex items-center gap-1.5 px-2.5 py-1 bg-sky-50 border border-sky-200 text-sky-700 rounded-md">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase text-[#546A7A] bg-[#F4F6F8] border border-[#E3E8EC]">
                             <span class="material-symbols-outlined text-[14px]">payments</span>
-                            <span class="text-[11px] font-black uppercase tracking-wide">Thanh toán tại chỗ</span>
-                        </div>
+                            Thanh toán tại chỗ
+                        </span>
                     </div>
                 </div>
 
-                <div
-                    class="w-full md:w-[220px] shrink-0 flex flex-col justify-end md:items-end border-t md:border-t-0 pt-4 md:pt-0 border-stone-100">
-                    @if(plan.price){
+                <div class="w-full md:w-[220px] shrink-0 flex flex-col justify-end pt-5 md:pt-0 border-t border-[#E8E4DB] md:border-t-0">
+                    @if(plan.price) {
                     <div class="text-left md:text-right mb-4">
-                        <div class="text-xs text-stone-400 font-medium line-through mb-0.5" *ngIf="nights() > 0">
+                        @if(nights() > 0) {
+                        <div class="text-[13px] text-[#A89F91] font-medium line-through mb-0.5">
                             {{ (plan.price * nights() * 1.2) | number }} đ
                         </div>
-                        <div class="text-2xl font-black text-stone-900 tracking-tight leading-none">
+                        }
+                        <div class="text-[24px] font-bold text-[#3E3934] leading-none tracking-tight">
                             {{ (plan.price * (nights() || 1)) | number }} đ
                         </div>
-                        <div class="text-[10px] font-medium text-stone-500 mt-1.5">
-                            Giá {{ nights() || 1 }} đêm · Đã gồm thuế & phí
+                        <div class="text-[11.5px] font-medium text-[#8A8175] mt-1.5">
+                            Giá {{ nights() || 1 }} đêm · Đã gồm thuế phí
                         </div>
                     </div>
                     }
 
-
-                    <div class="w-full space-y-2">
-                        <div class="relative w-full">
-                            <select #roomSelect
-                                class="w-full h-11 appearance-none bg-white border border-stone-300 text-stone-900 text-sm font-bold rounded-lg focus:ring-2 focus:ring-stone-900 focus:border-stone-900 pl-4 pr-10 outline-none transition-all cursor-pointer hover:bg-stone-50 disabled:bg-stone-100 disabled:text-stone-400 disabled:cursor-not-allowed"
-                                [disabled]="room().availableQuantity <= 0">
-
-                                @for (num of [].constructor(room().availableQuantity); track $index) {
-                                <option [value]="$index + 1">
-                                    {{ $index + 1 }} Phòng
-                                </option>
+                    <div class="space-y-2.5">
+                        <div class="relative">
+                            <select #roomSelect class="w-full h-10 appearance-none bg-white border border-[#D6D0C4] text-[#3E3934] text-[13.5px] font-bold rounded-lg focus:ring-2 focus:ring-[#A3876A]/20 focus:border-[#A3876A] pl-3.5 pr-9 outline-none cursor-pointer disabled:bg-[#F4F1EB] disabled:text-[#A89F91] hover:border-[#A3876A] transition-all shadow-sm" [disabled]="room().availableQuantity <= 0">
+                                @for(num of [].constructor(room().availableQuantity); track $index) {
+                                <option [value]="$index + 1">{{ $index + 1 }} Phòng</option>
                                 }
-
-                                @if (room().availableQuantity <= 0) { <option value="0" disabled selected>Đã bán hết
-                                    </option>
-                                    }
+                                @if(room().availableQuantity <= 0) { 
+                                <option value="0" disabled selected>Đã bán hết</option>
+                                }
                             </select>
-                            <div
-                                class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-stone-500">
-                                <span class="material-symbols-outlined text-[20px]">expand_more</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-[#8A8175]">
+                                <span class="material-symbols-outlined text-[18px]">expand_more</span>
                             </div>
                         </div>
 
-                        @if (room().availableQuantity > 0 && room().availableQuantity <= 3) { <div
-                            class="bg-rose-50 border border-rose-100 rounded-md py-1.5 px-2 flex items-center justify-center gap-1.5">
-                            <span
-                                class="material-symbols-outlined text-rose-600 text-[14px] animate-pulse">local_fire_department</span>
-                            <span class="text-[11px] font-bold text-rose-700">Chỉ còn {{ room().availableQuantity }}
-                                phòng!</span>
-                    </div>
-                    }
+                        @if(room().availableQuantity > 0 && room().availableQuantity <= 3) { 
+                        <div class="text-[12px] font-bold text-[#B55B51] flex items-center justify-end md:justify-start gap-1">
+                            <span class="material-symbols-outlined text-[15px] animate-pulse">local_fire_department</span>
+                            Chỉ còn {{ room().availableQuantity }} phòng
+                        </div>
+                        }
 
-                    <button (click)="onSelectRoom(room(), plan, +roomSelect.value)"
-                        [disabled]="room().availableQuantity <= 0"
-                        [ngClass]="room().availableQuantity <= 0 ? 'bg-stone-200 text-stone-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.98] shadow-md hover:shadow-lg'"
-                        class="w-full h-11 rounded-lg text-sm font-black uppercase tracking-wide transition-all flex items-center justify-center gap-2">
-                        {{ room().availableQuantity <= 0 ? 'HẾT PHÒNG' : 'ĐẶT NGAY' }} </button>
+                        <button (click)="onSelectRoom(room(), plan, +roomSelect.value)"
+                            [disabled]="room().availableQuantity <= 0"
+                            [ngClass]="room().availableQuantity <= 0 ? 'bg-[#F4F1EB] text-[#A89F91] cursor-not-allowed' : 'bg-[#A3876A] text-white hover:bg-[#8C7156] active:scale-[0.98] shadow-md shadow-[#A3876A]/20'"
+                            class="w-full h-10 rounded-lg text-[13px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2">
+                            {{ room().availableQuantity <= 0 ? 'HẾT PHÒNG' : 'ĐẶT NGAY' }} 
+                        </button>
+                    </div>
                 </div>
 
             </div>
+            }
         </div>
 
     </div>
 </div>
+
+@if (isAmenitiesModalOpen()) {
+<div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+
+    <div class="absolute inset-0 bg-[#3E3934]/40 backdrop-blur-[2px] transition-opacity cursor-pointer"
+        (click)="closeAmenitiesModal()">
+    </div>
+
+    <div class="relative bg-white rounded-[1.25rem] w-full max-w-md shadow-[0_20px_60px_rgba(62,57,52,0.12)] overflow-hidden flex flex-col max-h-[85vh] transform transition-all">
+
+        <div class="px-6 py-4 border-b border-[#E8E4DB] bg-[#FAF8F3] flex items-center justify-between shrink-0">
+            <div>
+                <h3 class="text-[18px] font-bold text-[#3E3934]">Tiện ích phòng</h3>
+                <p class="text-[13px] text-[#756C61] mt-0.5">{{ selectedPlanForModal()?.name }}</p>
+            </div>
+            <button (click)="closeAmenitiesModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-[#D6D0C4] text-[#756C61] hover:bg-[#FDF3F1] hover:text-[#B55B51] hover:border-[#F5E1DE] transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto custom-scrollbar">
+            <div class="flex items-center gap-2 mb-5 px-4 py-2.5 bg-[#F4F1EB] rounded-lg border border-[#E8E4DB]">
+                <span class="material-symbols-outlined text-[18px] text-[#A3876A]">hotel_class</span>
+                <span class="text-[13px] font-semibold text-[#5C5449]">
+                    Gói này bao gồm {{ selectedPlanForModal()?.benefits?.length }} tiện ích nổi bật
+                </span>
+            </div>
+
+            <div class="space-y-4">
+                @for (benefit of selectedPlanForModal()?.benefits; track benefit) {
+                <div class="flex items-start gap-3 p-1">
+                    <span class="material-symbols-outlined text-[20px] text-[#A3876A] mt-[1px] shrink-0">
+                        {{ benefit.iconName || 'check_circle' }}
+                    </span>
+                    <span class="text-[14.5px] text-[#3E3934] font-medium leading-relaxed">{{ benefit.displayValue }}</span>
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="p-5 border-t border-[#E8E4DB] shrink-0 bg-white">
+            <button (click)="closeAmenitiesModal()" class="w-full h-11 bg-[#A3876A] text-white rounded-xl text-[14px] font-bold tracking-wide hover:bg-[#8C7156] transition-colors shadow-sm">
+                ĐÃ HIỂU
+            </button>
+        </div>
+
+    </div>
 </div>
+}
 
 <app-shared-image-lightbox #lightbox></app-shared-image-lightbox>

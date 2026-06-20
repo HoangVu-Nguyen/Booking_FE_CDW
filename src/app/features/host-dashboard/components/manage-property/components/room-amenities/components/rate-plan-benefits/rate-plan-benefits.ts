@@ -276,44 +276,56 @@ export class RatePlanBenefits implements OnInit {
   }
 
   private loadRatePlanBenefits(ratePlanId: number): void {
-    const roomId = this.selectedRoomId();
+  const roomId = this.selectedRoomId();
 
-    if (!this.homestayId || !roomId) return;
+  if (!this.homestayId || !roomId) return;
 
-    this.isLoadingSelectedBenefits.set(true);
+  this.isLoadingSelectedBenefits.set(true);
 
-    this.roomService.getRatePlanBenefits(
-      this.homestayId,
-      roomId,
-      ratePlanId
-    ).subscribe({
-      next: res => {
-        const items = res.data || [];
+  this.roomService.getRatePlanBenefits(
+    this.homestayId,
+    roomId,
+    ratePlanId
+  ).subscribe({
+    next: res => {
+      const items = res.data || [];
 
-        this.selectedBenefitsByRatePlan.update(old => ({
-          ...old,
-          [ratePlanId]: items.map(item => ({
-            amenityId: item.amenityId,
-            displayValue: item.displayValue || null
-          }))
-        }));
+      const nextBenefits: SelectedRatePlanBenefit[] = items
+        .map((item: any): SelectedRatePlanBenefit | null => {
+          const amenityId = Number(item.amenityId);
 
-        this.isDirty.set(false);
-        this.isLoadingSelectedBenefits.set(false);
-      },
-      error: err => {
-        console.error('Load rate plan benefits failed:', err);
+          if (!amenityId || Number.isNaN(amenityId)) {
+            return null;
+          }
 
-        this.selectedBenefitsByRatePlan.update(old => ({
-          ...old,
-          [ratePlanId]: []
-        }));
+          return {
+            amenityId,
+            displayValue: item.displayValue?.trim() || null
+          };
+        })
+        .filter((item): item is SelectedRatePlanBenefit => item !== null);
 
-        this.isDirty.set(false);
-        this.isLoadingSelectedBenefits.set(false);
-      }
-    });
-  }
+      this.selectedBenefitsByRatePlan.update(old => ({
+        ...old,
+        [ratePlanId]: nextBenefits
+      }));
+
+      this.isDirty.set(false);
+      this.isLoadingSelectedBenefits.set(false);
+    },
+    error: err => {
+      console.error('Load rate plan benefits failed:', err);
+
+      this.selectedBenefitsByRatePlan.update(old => ({
+        ...old,
+        [ratePlanId]: []
+      }));
+
+      this.isDirty.set(false);
+      this.isLoadingSelectedBenefits.set(false);
+    }
+  });
+}
 
   private mapRoomResponse(room: RoomDisplayResponse): RoomOption {
     return {
