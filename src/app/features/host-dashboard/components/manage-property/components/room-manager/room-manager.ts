@@ -523,7 +523,7 @@ export class RoomManager implements OnInit {
       // ==========================================
       // BƯỚC 4: GỌI API UPDATE ROOM CUỐI CÙNG
       // ==========================================
-      await firstValueFrom(this.roomService.updateRooms(finalPayload));
+      await firstValueFrom(this.roomService.updateRooms(this.homestayId,finalPayload));
 
       // Thành công
       this.isDirty.set(false);
@@ -667,8 +667,22 @@ createDefaultRatePlans(room: Room): void {
       price: null,
       isNonRefundable: false,
       benefits: [
-        'Có thể hoàn hủy theo chính sách',
-        'Thanh toán an toàn'
+        {
+          ratePlanId: null,
+          amenityId: null,
+          name: 'REFUNDABLE_POLICY',
+          iconName: 'event_available',
+          groupName: 'POLICY',
+          displayValue: 'Có thể hoàn hủy theo chính sách'
+        },
+        {
+          ratePlanId: null,
+          amenityId: null,
+          name: 'SECURE_PAYMENT',
+          iconName: 'payments',
+          groupName: 'PAYMENT',
+          displayValue: 'Thanh toán an toàn'
+        }
       ]
     },
     {
@@ -676,8 +690,22 @@ createDefaultRatePlans(room: Room): void {
       price: null,
       isNonRefundable: true,
       benefits: [
-        'Giá tốt hơn',
-        'Không hoàn hủy'
+        {
+          ratePlanId: null,
+          amenityId: null,
+          name: 'BEST_PRICE',
+          iconName: 'sell',
+          groupName: 'PRICE',
+          displayValue: 'Giá tốt hơn'
+        },
+        {
+          ratePlanId: null,
+          amenityId: null,
+          name: 'NON_REFUNDABLE',
+          iconName: 'lock',
+          groupName: 'POLICY',
+          displayValue: 'Không hoàn hủy'
+        }
       ]
     }
   ];
