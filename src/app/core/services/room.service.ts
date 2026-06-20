@@ -43,17 +43,17 @@ export class RoomService {
                 .catch(err => observer.error(err));
         });
     }
-    prepareImageUploads(payload: MultiRoomBatchUploadRequest): Observable<PresignedUrlResponse[]> {
-        const url = `/api/v1/rooms/images/presign`;
+    prepareImageUploads(homestayId:string,payload: MultiRoomBatchUploadRequest): Observable<PresignedUrlResponse[]> {
+        const url = `/api/v1/${homestayId}/rooms/images/presign`;
         return this.apiService.post<ApiResponse<PresignedUrlResponse[]>>(url, payload).pipe(
             map(response => response.success ? response.data : [])
         );
     }
 
     // 4. Chốt sổ: Cập nhật thông tin text và xác nhận các ảnh đã upload
-    updateRooms(payload: RoomBatchUpdateRequest): Observable<any> {
+    updateRooms(homestayId:string,payload: RoomBatchUpdateRequest): Observable<any> {
         // Giả sử ông có API PUT hoặc POST để update toàn bộ
-        const url = `/api/v1/rooms`;
+        const url = `/api/v1/${homestayId}/rooms`;
         return this.apiService.put<ApiResponse<any>>(url, payload);
     }
        

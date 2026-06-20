@@ -8,8 +8,8 @@ export interface UpdateRatePlanBenefitsRequest {
 }
 
 export interface RatePlanBenefitResponse {
-  ratePlanId: number;
-  amenityId: number;
+  ratePlanId: string | null;
+  amenityId: string | null;
   name: string;
   iconName: string;
   groupName: string;

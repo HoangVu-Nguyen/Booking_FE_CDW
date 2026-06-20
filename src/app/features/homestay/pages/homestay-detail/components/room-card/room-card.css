@@ -56,3 +56,17 @@ h3 {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #FAF8F3; 
+    border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #D6D0C4; 
+    border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #A89F91; 
+}
