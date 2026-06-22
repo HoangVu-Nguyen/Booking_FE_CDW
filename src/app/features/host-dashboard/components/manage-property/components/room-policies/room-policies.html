@@ -1,0 +1,534 @@
+<div class="max-w-[1500px] mx-auto animate-fade-in">
+
+  <!-- HEADER -->
+  <div class="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+    <div>
+      <div
+        class="inline-flex items-center gap-2 h-8 px-3 rounded-full bg-[#f7f1e8] border border-[#e5d8c7] text-[#6f4f28] text-xs font-black mb-3">
+        <span class="material-symbols-outlined text-[16px]">shield</span>
+        Chính sách phòng
+      </div>
+
+      <h2 class="text-2xl md:text-3xl font-black text-[#2f2a22] tracking-tight">
+        Cấu hình chính sách lưu trú
+      </h2>
+
+      <p class="text-sm text-[#756b5e] mt-2 max-w-3xl leading-relaxed">
+        Thiết lập giờ nhận phòng, chính sách huỷ, quy định lưu trú và các điều kiện đặt phòng để khách nắm rõ trước khi thanh toán.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        (click)="resetForm()"
+        class="h-12 px-5 rounded-2xl bg-white border border-[#ded6c9] text-[#6f6254] text-sm font-black hover:bg-[#fbfaf8] transition-all">
+        Khôi phục
+      </button>
+
+      <button
+        type="button"
+        (click)="saveChanges()"
+        [disabled]="isSaving()"
+        class="h-12 px-6 rounded-2xl bg-[#2f2a22] text-white text-sm font-black hover:bg-[#1f1b16] transition-all shadow-[0_10px_24px_rgba(47,42,34,0.14)] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+
+        @if (isSaving()) {
+          <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          <span>Đang lưu...</span>
+        } @else {
+          <span class="material-symbols-outlined text-[19px]">save</span>
+          <span>Lưu chính sách</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- SAVED TOAST -->
+  @if (showSavedToast()) {
+    <div
+      class="fixed right-6 bottom-6 z-50 rounded-2xl bg-[#2f2a22] text-white px-5 py-4 shadow-[0_18px_45px_rgba(47,42,34,0.22)] flex items-center gap-3">
+      <span class="material-symbols-outlined text-emerald-300">check_circle</span>
+      <span class="text-sm font-black">Đã lưu chính sách phòng</span>
+    </div>
+  }
+
+  <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6">
+
+    <!-- LEFT FORM -->
+    <main class="min-w-0 space-y-6">
+
+      <!-- TIME POLICY -->
+      <section class="bg-white border border-[#ded6c9] rounded-[28px] p-5 md:p-6 shadow-[0_10px_30px_rgba(56,44,33,0.04)]">
+        <div class="flex items-start gap-4 mb-5">
+          <div class="w-12 h-12 rounded-2xl bg-[#f7f1e8] border border-[#eadfce] text-[#7a5a32] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[26px]">schedule</span>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-black text-[#2f2a22]">
+              Thời gian nhận và trả phòng
+            </h3>
+
+            <p class="text-sm text-[#756b5e] mt-1">
+              Giúp khách biết chính xác khung giờ có thể nhận phòng và thời điểm cần trả phòng.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <label class="block">
+            <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+              Nhận phòng từ
+            </span>
+
+            <input
+              type="time"
+              [ngModel]="form().checkInFrom"
+              (ngModelChange)="updateField('checkInFrom', $event)"
+              class="mt-2 w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+          </label>
+
+          <label class="block">
+            <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+              Nhận phòng đến
+            </span>
+
+            <input
+              type="time"
+              [ngModel]="form().checkInTo"
+              (ngModelChange)="updateField('checkInTo', $event)"
+              class="mt-2 w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+          </label>
+
+          <label class="block">
+            <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+              Trả phòng trước
+            </span>
+
+            <input
+              type="time"
+              [ngModel]="form().checkOutBefore"
+              (ngModelChange)="updateField('checkOutBefore', $event)"
+              class="mt-2 w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+          </label>
+        </div>
+      </section>
+
+      <!-- BOOKING MODE -->
+      <section class="bg-white border border-[#ded6c9] rounded-[28px] p-5 md:p-6 shadow-[0_10px_30px_rgba(56,44,33,0.04)]">
+        <div class="flex items-start gap-4 mb-5">
+          <div class="w-12 h-12 rounded-2xl bg-[#f7f1e8] border border-[#eadfce] text-[#7a5a32] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[26px]">bolt</span>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-black text-[#2f2a22]">
+              Kiểu đặt phòng
+            </h3>
+
+            <p class="text-sm text-[#756b5e] mt-1">
+              Chọn cách khách có thể đặt phòng trên hệ thống.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (mode of bookingModes; track mode.value) {
+            <button
+              type="button"
+              (click)="selectBookingMode(mode.value)"
+              class="text-left rounded-[24px] border p-5 transition-all"
+              [ngClass]="form().bookingMode === mode.value
+                ? 'border-[#2f2a22] bg-[#2f2a22] text-white shadow-[0_16px_36px_rgba(47,42,34,0.16)]'
+                : 'border-[#eee7dd] bg-[#fbfaf8] text-[#2f2a22] hover:border-[#d8c7aa]'">
+
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
+                  [ngClass]="form().bookingMode === mode.value
+                    ? 'bg-white/10 text-white'
+                    : 'bg-white border border-[#eadfce] text-[#7a5a32]'">
+                  <span class="material-symbols-outlined text-[25px]">
+                    {{ mode.icon }}
+                  </span>
+                </div>
+
+                <div>
+                  <p class="text-base font-black">
+                    {{ mode.title }}
+                  </p>
+
+                  <p
+                    class="text-sm mt-1 leading-relaxed"
+                    [ngClass]="form().bookingMode === mode.value ? 'text-white/65' : 'text-[#756b5e]'">
+                    {{ mode.description }}
+                  </p>
+                </div>
+              </div>
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- CANCELLATION -->
+      <section class="bg-white border border-[#ded6c9] rounded-[28px] p-5 md:p-6 shadow-[0_10px_30px_rgba(56,44,33,0.04)]">
+        <div class="flex items-start gap-4 mb-5">
+          <div class="w-12 h-12 rounded-2xl bg-[#f7f1e8] border border-[#eadfce] text-[#7a5a32] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[26px]">event_available</span>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-black text-[#2f2a22]">
+              Chính sách huỷ phòng
+            </h3>
+
+            <p class="text-sm text-[#756b5e] mt-1">
+              Chính sách rõ ràng giúp giảm tranh chấp và tăng niềm tin khi khách đặt phòng.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (policy of cancellationPolicies; track policy.value) {
+            <button
+              type="button"
+              (click)="selectCancellationPolicy(policy.value)"
+              class="text-left rounded-[24px] border p-5 transition-all"
+              [ngClass]="form().cancellationPolicy === policy.value
+                ? 'border-[#b88746] bg-[#fff8e8] ring-2 ring-[#b88746]/15'
+                : 'border-[#eee7dd] bg-white hover:bg-[#fbfaf8] hover:border-[#d8c7aa]'">
+
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
+                  [ngClass]="form().cancellationPolicy === policy.value
+                    ? 'bg-[#2f2a22] text-white'
+                    : 'bg-[#f7f1e8] border border-[#eadfce] text-[#7a5a32]'">
+                  <span class="material-symbols-outlined text-[25px]">
+                    {{ policy.icon }}
+                  </span>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <p class="text-base font-black text-[#2f2a22]">
+                    {{ policy.title }}
+                  </p>
+
+                  <p class="text-sm text-[#756b5e] mt-1 leading-relaxed">
+                    {{ policy.description }}
+                  </p>
+                </div>
+
+                @if (form().cancellationPolicy === policy.value) {
+                  <span class="material-symbols-outlined text-emerald-600 text-[22px]">
+                    check_circle
+                  </span>
+                }
+              </div>
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- RULES -->
+      <section class="bg-white border border-[#ded6c9] rounded-[28px] p-5 md:p-6 shadow-[0_10px_30px_rgba(56,44,33,0.04)]">
+        <div class="flex items-start gap-4 mb-5">
+          <div class="w-12 h-12 rounded-2xl bg-[#f7f1e8] border border-[#eadfce] text-[#7a5a32] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[26px]">rule</span>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-black text-[#2f2a22]">
+              Quy định lưu trú
+            </h3>
+
+            <p class="text-sm text-[#756b5e] mt-1">
+              Các quy định quan trọng giúp khách hiểu rõ điều được phép và không được phép.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <button
+            type="button"
+            (click)="toggleBoolean('childrenAllowed')"
+            class="flex items-center justify-between gap-4 rounded-2xl border p-4 transition-all"
+            [ngClass]="form().childrenAllowed ? 'bg-[#f0fbf4] border-emerald-200' : 'bg-white border-[#eee7dd]'">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-[#7a5a32]">child_care</span>
+              <div class="text-left">
+                <p class="text-sm font-black text-[#2f2a22]">Cho phép trẻ em</p>
+                <p class="text-xs text-[#8a8175]">Phù hợp gia đình có trẻ nhỏ</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined" [ngClass]="form().childrenAllowed ? 'text-emerald-600' : 'text-[#b8a58a]'">
+              {{ form().childrenAllowed ? 'toggle_on' : 'toggle_off' }}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            (click)="toggleBoolean('petsAllowed')"
+            class="flex items-center justify-between gap-4 rounded-2xl border p-4 transition-all"
+            [ngClass]="form().petsAllowed ? 'bg-[#f0fbf4] border-emerald-200' : 'bg-white border-[#eee7dd]'">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-[#7a5a32]">pets</span>
+              <div class="text-left">
+                <p class="text-sm font-black text-[#2f2a22]">Cho phép thú cưng</p>
+                <p class="text-xs text-[#8a8175]">Khách có thể mang thú cưng</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined" [ngClass]="form().petsAllowed ? 'text-emerald-600' : 'text-[#b8a58a]'">
+              {{ form().petsAllowed ? 'toggle_on' : 'toggle_off' }}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            (click)="toggleBoolean('smokingAllowed')"
+            class="flex items-center justify-between gap-4 rounded-2xl border p-4 transition-all"
+            [ngClass]="form().smokingAllowed ? 'bg-[#fff8e8] border-[#e5d8c7]' : 'bg-white border-[#eee7dd]'">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-[#7a5a32]">smoking_rooms</span>
+              <div class="text-left">
+                <p class="text-sm font-black text-[#2f2a22]">Cho phép hút thuốc</p>
+                <p class="text-xs text-[#8a8175]">Có thể hút thuốc trong khu vực cho phép</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined" [ngClass]="form().smokingAllowed ? 'text-[#b88746]' : 'text-[#b8a58a]'">
+              {{ form().smokingAllowed ? 'toggle_on' : 'toggle_off' }}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            (click)="toggleBoolean('partyAllowed')"
+            class="flex items-center justify-between gap-4 rounded-2xl border p-4 transition-all"
+            [ngClass]="form().partyAllowed ? 'bg-[#fff8e8] border-[#e5d8c7]' : 'bg-white border-[#eee7dd]'">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-[#7a5a32]">celebration</span>
+              <div class="text-left">
+                <p class="text-sm font-black text-[#2f2a22]">Cho phép tiệc tùng</p>
+                <p class="text-xs text-[#8a8175]">Khách có thể tổ chức tiệc nhỏ</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined" [ngClass]="form().partyAllowed ? 'text-[#b88746]' : 'text-[#b8a58a]'">
+              {{ form().partyAllowed ? 'toggle_on' : 'toggle_off' }}
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <!-- NIGHT / DEPOSIT / QUIET HOURS -->
+      <section class="bg-white border border-[#ded6c9] rounded-[28px] p-5 md:p-6 shadow-[0_10px_30px_rgba(56,44,33,0.04)]">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+          <div>
+            <h3 class="text-lg font-black text-[#2f2a22] mb-4">
+              Điều kiện đặt phòng
+            </h3>
+
+            <div class="grid grid-cols-2 gap-4">
+              <label class="block">
+                <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+                  Tối thiểu
+                </span>
+
+                <input
+                  type="number"
+                  min="1"
+                  [ngModel]="form().minNights"
+                  (ngModelChange)="updateNumberField('minNights', $event)"
+                  class="mt-2 w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+              </label>
+
+              <label class="block">
+                <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+                  Tối đa
+                </span>
+
+                <input
+                  type="number"
+                  min="1"
+                  [ngModel]="form().maxNights"
+                  (ngModelChange)="updateNumberField('maxNights', $event)"
+                  placeholder="Không giới hạn"
+                  class="mt-2 w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between gap-4 mb-4">
+              <div>
+                <h3 class="text-lg font-black text-[#2f2a22]">
+                  Tiền cọc
+                </h3>
+
+                <p class="text-xs text-[#8a8175] mt-1">
+                  Áp dụng nếu host muốn giữ cọc khi nhận phòng.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                (click)="toggleBoolean('depositRequired')"
+                class="material-symbols-outlined text-[38px]"
+                [ngClass]="form().depositRequired ? 'text-emerald-600' : 'text-[#b8a58a]'">
+                {{ form().depositRequired ? 'toggle_on' : 'toggle_off' }}
+              </button>
+            </div>
+
+            @if (form().depositRequired) {
+              <input
+                type="number"
+                min="0"
+                [ngModel]="form().depositAmount"
+                (ngModelChange)="updateNumberField('depositAmount', $event)"
+                placeholder="VD: 500000"
+                class="w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+            } @else {
+              <div class="h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#eee7dd] text-sm font-bold text-[#8a8175] flex items-center">
+                Không yêu cầu tiền cọc
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="mt-6 border-t border-[#eee7dd] pt-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div>
+              <h3 class="text-lg font-black text-[#2f2a22]">
+                Giờ yên lặng
+              </h3>
+
+              <p class="text-sm text-[#756b5e] mt-1">
+                Giới hạn tiếng ồn trong khung giờ nghỉ ngơi.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              (click)="toggleBoolean('quietHoursEnabled')"
+              class="material-symbols-outlined text-[40px]"
+              [ngClass]="form().quietHoursEnabled ? 'text-emerald-600' : 'text-[#b8a58a]'">
+              {{ form().quietHoursEnabled ? 'toggle_on' : 'toggle_off' }}
+            </button>
+          </div>
+
+          @if (form().quietHoursEnabled) {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <label class="block">
+                <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+                  Từ
+                </span>
+
+                <input
+                  type="time"
+                  [ngModel]="form().quietFrom"
+                  (ngModelChange)="updateField('quietFrom', $event)"
+                  class="mt-2 w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+              </label>
+
+              <label class="block">
+                <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+                  Đến
+                </span>
+
+                <input
+                  type="time"
+                  [ngModel]="form().quietTo"
+                  (ngModelChange)="updateField('quietTo', $event)"
+                  class="mt-2 w-full h-12 px-4 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-black text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10">
+              </label>
+            </div>
+          }
+        </div>
+
+        <div class="mt-6">
+          <label class="block">
+            <span class="text-xs font-black uppercase tracking-[0.12em] text-[#8a8175]">
+              Ghi chú thêm
+            </span>
+
+            <textarea
+              rows="4"
+              [ngModel]="form().extraNotes"
+              (ngModelChange)="updateField('extraNotes', $event)"
+              placeholder="VD: Không gây ồn sau 22:00, giữ gìn vệ sinh chung..."
+              class="mt-2 w-full resize-none px-4 py-3 rounded-2xl bg-[#fbfaf8] border border-[#d6cbbb] text-sm font-semibold text-[#2f2a22] outline-none focus:border-[#7a5a32] focus:ring-4 focus:ring-[#7a5a32]/10"></textarea>
+          </label>
+        </div>
+      </section>
+    </main>
+
+    <!-- RIGHT SUMMARY -->
+    <aside class="xl:sticky xl:top-24 h-fit space-y-4">
+      <section class="rounded-[28px] bg-[#2f2a22] text-white p-5 md:p-6 shadow-[0_18px_45px_rgba(47,42,34,0.18)]">
+        <p class="text-xs font-black uppercase tracking-[0.18em] text-white/50">
+          Tóm tắt chính sách
+        </p>
+
+        <h3 class="text-2xl font-black mt-2">
+          Khách sẽ thấy gì?
+        </h3>
+
+        <div class="mt-5 space-y-3">
+          @for (item of summaryItems(); track item.label) {
+            <div class="flex items-center gap-3 rounded-2xl bg-white/10 border border-white/10 p-3">
+              <span class="material-symbols-outlined text-[22px] text-[#f0d6aa]">
+                {{ item.icon }}
+              </span>
+
+              <div>
+                <p class="text-xs text-white/50 font-bold">
+                  {{ item.label }}
+                </p>
+
+                <p class="text-sm font-black text-white">
+                  {{ item.value }}
+                </p>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="rounded-[28px] border border-[#ded6c9] bg-white p-5 shadow-[0_10px_30px_rgba(56,44,33,0.04)]">
+        <h3 class="text-base font-black text-[#2f2a22]">
+          Quy định nhanh
+        </h3>
+
+        <div class="mt-4 space-y-3 text-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-[#756b5e]">Trẻ em</span>
+            <span class="font-black" [ngClass]="form().childrenAllowed ? 'text-emerald-700' : 'text-rose-600'">
+              {{ form().childrenAllowed ? 'Cho phép' : 'Không' }}
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#756b5e]">Thú cưng</span>
+            <span class="font-black" [ngClass]="form().petsAllowed ? 'text-emerald-700' : 'text-rose-600'">
+              {{ form().petsAllowed ? 'Cho phép' : 'Không' }}
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#756b5e]">Hút thuốc</span>
+            <span class="font-black" [ngClass]="form().smokingAllowed ? 'text-[#b88746]' : 'text-rose-600'">
+              {{ form().smokingAllowed ? 'Có khu vực riêng' : 'Không' }}
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="text-[#756b5e]">Tiệc tùng</span>
+            <span class="font-black" [ngClass]="form().partyAllowed ? 'text-[#b88746]' : 'text-rose-600'">
+              {{ form().partyAllowed ? 'Cho phép' : 'Không' }}
+            </span>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
