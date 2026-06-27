@@ -27,11 +27,17 @@ export class NotificationMenu implements OnInit {
   filteredNotifs = computed(() => {
     const filter = this.activeFilter();
     const list = this.notifications();
-
+    console.log(list)
+console.log(list.filter(n => n.type === 'SYSTEM'))
+ console.log(filter)
     switch (filter) {
       case 'UNREAD': return list.filter(n => !n.isRead);
       case 'BOOKING': return list.filter(n => n.metadata?.category === 'BOOKING');
-      case 'SYSTEM': return list.filter(n => n.metadata?.category === 'SYSTEM');
+      case 'SYSTEM': 
+         const filtered = list.filter(n => n.type === 'SYSTEM');
+         console.log("Kết quả sau khi filter SYSTEM:", filtered);
+         return filtered;
+      
       default: return list;
     }
   });

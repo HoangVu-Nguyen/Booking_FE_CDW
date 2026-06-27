@@ -17,6 +17,8 @@ import { KycService } from '../../../../core/services/kyc/kyc.service';
 export class IdentityInfo implements OnInit {
   kycForm!: FormGroup;
   isSubmitting = false;
+  rejectionReason : string | null = null;
+  status : string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -25,18 +27,35 @@ export class IdentityInfo implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // 1. Khởi tạo form trống trước
     this.kycForm = this.fb.group({
-      // Khối 1: CCCD
-      legalName: ['', [Validators.required, Validators.minLength(3)]],
-      idCardNumber: ['', [Validators.required, Validators.pattern('^[0-9]{9,12}$')]],
-      idCardIssuedBy: ['', [Validators.required]],
-
-      // Khối 2: Ngân hàng
-      bankName: ['', [Validators.required]],
-      bankAccountNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      bankAccountOwner: ['', [Validators.required]]
+        legalName: ['', [Validators.required, Validators.minLength(3)]],
+        idCardNumber: ['', [Validators.required, Validators.pattern('^[0-9]{9,12}$')]],
+        idCardIssuedBy: ['', [Validators.required]],
+        bankName: ['', [Validators.required]],
+        bankAccountNumber: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
+        bankAccountOwner: ['', [Validators.required]]
     });
-  }
+
+    // 2. Gọi API lấy dữ liệu cũ
+    this.kycService.getMyProfile().subscribe({
+        next: (res) => {
+            if (res && res.data) {
+              console.log(res.data)
+                this.kycForm.patchValue(res.data);
+                
+                if (res.data.status === 'PENDING' || res.data.status === 'APPROVED') {
+                    this.kycForm.disable();
+                }
+                this.rejectionReason = res.data.rejectionReason
+                this.status = res.data.status
+            }
+        },
+        error: (err) => {
+            console.log("User chưa có hồ sơ, tiếp tục tạo mới.");
+        }
+    });
+}
 
   // Hàm tiện ích để auto-copy tên từ CCCD xuống Tên chủ tài khoản ngân hàng
   syncName(): void {
