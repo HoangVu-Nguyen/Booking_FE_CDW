@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 interface HostMetric {
   properties: number;
+  pendingProperties: number;
   totalBookings: number;
   rating: number;
   totalRevenue: number;
@@ -37,7 +38,8 @@ export class Hosts {
       joinDate: '2026-01-15T08:00:00',
       status: 'ACTIVE',
       verification: { identity: true, businessLicense: true, bankAccount: true },
-      metrics: { properties: 5, totalBookings: 342, rating: 4.9, totalRevenue: 850000000 }
+      // Host này đã KYC xong, nhưng đang có 1 căn Homestay mới up sổ đỏ chờ duyệt
+      metrics: { properties: 5, pendingProperties: 1, totalBookings: 342, rating: 4.9, totalRevenue: 850000000 }
     },
     {
       id: 'HST-2291B4',
@@ -45,24 +47,9 @@ export class Hosts {
       joinDate: '2026-05-20T14:30:00',
       status: 'PENDING',
       verification: { identity: true, businessLicense: false, bankAccount: false },
-      metrics: { properties: 1, totalBookings: 0, rating: 0, totalRevenue: 0 }
-    },
-    {
-      id: 'HST-5538C2',
-      user: { name: 'Đà Lạt Mộng Mơ Co.', avatar: 'https://ui-avatars.com/api/?name=Dalat+MM&bg=f5f5f4&color=292524', email: 'contact@dalatmongmo.vn', phone: '0263 388 999' },
-      joinDate: '2025-11-02T10:15:00',
-      status: 'ACTIVE',
-      verification: { identity: true, businessLicense: true, bankAccount: true },
-      metrics: { properties: 12, totalBookings: 1250, rating: 4.7, totalRevenue: 3200000000 }
-    },
-    {
-      id: 'HST-9910D7',
-      user: { name: 'Lê Hải Nam', avatar: 'https://ui-avatars.com/api/?name=Hai+Nam&bg=f5f5f4&color=292524', email: 'hainam.le@yahoo.com', phone: '0909 112 233' },
-      joinDate: '2026-03-18T09:20:00',
-      status: 'SUSPENDED',
-      verification: { identity: true, businessLicense: false, bankAccount: true },
-      metrics: { properties: 2, totalBookings: 45, rating: 3.2, totalRevenue: 125000000 }
+      metrics: { properties: 1, pendingProperties: 0, totalBookings: 0, rating: 0, totalRevenue: 0 }
     }
+    // ... (Giữ nguyên các data khác của ông)
   ];
 
   getStatusConfig(status: string) {
@@ -80,5 +67,14 @@ export class Hosts {
     if (ver.businessLicense) count++;
     if (ver.bankAccount) count++;
     return (count / 3) * 100;
+  }
+  reviewKyc(hostId: string) {
+    console.log('Chuyển sang trang duyệt KYC cá nhân cho Host:', hostId);
+    // this.router.navigate(['/admin/hosts/kyc', hostId]);
+  }
+
+  reviewProperties(hostId: string) {
+    console.log('Chuyển sang trang xem danh sách Sổ đỏ/Hợp đồng của Host:', hostId);
+    // this.router.navigate(['/admin/hosts/properties', hostId], { queryParams: { status: 'PENDING_VERIFICATION' }});
   }
 }

@@ -140,4 +140,41 @@ export class HomestayService {
                 .catch(err => observer.error(err));
         });
     }
+    /**
+     * Lấy danh sách các tài liệu (Sổ đỏ, Hợp đồng...) đã upload của Homestay
+     */
+    getHomestayDocuments(homestayId: string): Observable<ApiResponse<any[]>> {
+        return this.apiService.get<ApiResponse<any[]>>(`/api/v1/homestays/${homestayId}/documents`);
+    }
+
+    /**
+     * Xin link Presigned URL để upload tài liệu lên S3
+     * @param batchRequest Chứa mảng { documentType, fileName, contentType, fileSize }
+     */
+    prepareDocumentUploads(homestayId: string, batchRequest: any): Observable<ApiResponse<any[]>> {
+        return this.apiService.post<ApiResponse<any[]>>(
+            `/api/v1/homestays/${homestayId}/documents/prepare`,
+            batchRequest
+        );
+    }
+
+    /**
+     * Xác nhận file đã được upload lên S3 thành công
+     */
+    confirmDocumentUpload(homestayId: string, documentId: number): Observable<ApiResponse<any>> {
+        return this.apiService.patch<ApiResponse<any>>(
+            `/api/v1/homestays/${homestayId}/documents/${documentId}/confirm`,
+            {}
+        );
+    }
+
+    /**
+     * Nút chốt: Gửi Admin duyệt toàn bộ hồ sơ Homestay
+     */
+    submitForVerification(homestayId: string): Observable<ApiResponse<any>> {
+        return this.apiService.post<ApiResponse<any>>(
+            `/api/v1/homestays/${homestayId}/verify`,
+            {}
+        );
+    }
 }

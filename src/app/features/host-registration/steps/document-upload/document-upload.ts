@@ -120,6 +120,7 @@ loadImages(profileId: number) {
       const preUploadRes = await this.kycService.preUpload(batchRequest).toPromise();
       if (!preUploadRes?.success) throw new Error("Lỗi gọi API Pre-upload");
       const uploadData = preUploadRes.data;
+      console.log(uploadData)
 
       // Upload song song lên S3
       const uploadTasks = uploadData.map((item, i) =>
