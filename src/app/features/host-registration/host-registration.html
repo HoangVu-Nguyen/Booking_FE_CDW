@@ -1,0 +1,78 @@
+<div class="min-h-screen bg-gray-50 py-10">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-gray-800">
+        Đăng ký trở thành Host
+      </h1>
+      <p class="mt-2 text-gray-500">
+        Hoàn thành các bước dưới đây để bắt đầu cho thuê chỗ ở của bạn.
+      </p>
+    </div>
+
+    <!-- Progress -->
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-8">
+
+      <div class="flex items-center justify-center">
+
+        <!-- Step 1 -->
+        <a
+          routerLink="info"
+          routerLinkActive="text-emerald-600"
+          class="group flex items-center gap-3 transition">
+
+          <div
+            class="w-10 h-10 rounded-full border-2 border-emerald-500 flex items-center justify-center font-semibold bg-emerald-500 text-white shadow">
+            1
+          </div>
+
+          <div>
+            <p class="font-semibold">
+              Thông tin cá nhân
+            </p>
+            <p class="text-sm text-gray-500">
+              Điền thông tin cơ bản
+            </p>
+          </div>
+        </a>
+
+        <!-- Line -->
+        <div class="w-28 h-1 bg-gray-300 mx-6 rounded-full"></div>
+
+        <!-- Step 2 -->
+        <a
+          routerLink="upload"
+          routerLinkActive="text-emerald-600"
+          class="group flex items-center gap-3 transition">
+
+          <div
+            class="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center font-semibold group-hover:border-emerald-500 group-hover:text-emerald-600 transition">
+            2
+          </div>
+
+          <div>
+            <p class="font-semibold">
+              Giấy tờ xác thực
+            </p>
+            <p class="text-sm text-gray-500">
+              Tải CCCD / Hộ chiếu
+            </p>
+          </div>
+
+        </a>
+
+      </div>
+
+    </div>
+
+    <!-- Content -->
+    <div
+      class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+
+      <router-outlet></router-outlet>
+
+    </div>
+
+  </div>
+</div>
