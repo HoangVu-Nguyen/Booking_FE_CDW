@@ -85,6 +85,10 @@ getNotificationConfig(type: string, metadata: any) {
             return { icon: 'schedule', color: 'text-amber-600', bg: 'bg-amber-50', link: '/host-dashboard/bookings' };
         case 'BOOKING_AWAITING_PAYMENT':
             return { icon: 'check_circle', color: 'text-blue-600', bg: 'bg-blue-50', link: `/checkout/${metadata.bookingCode}` };
+            case 'KYC_APPROVED':
+            return { icon: 'verified', color: 'text-emerald-600', bg: 'bg-emerald-50', link: '/dashboard' };
+        case 'KYC_REJECTED':
+            return { icon: 'warning_amber', color: 'text-rose-600', bg: 'bg-rose-50', link: '/register-host/upload' };
         default:
             return { icon: 'notifications', color: 'text-blue-600', bg: 'bg-blue-50', link: null };
     }

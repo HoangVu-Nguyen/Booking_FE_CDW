@@ -1,5 +1,9 @@
-<div class="p-8 lg:p-10 max-w-[1600px] mx-auto animate-fade-in space-y-8 font-sans">
+<div class="p-8 lg:p-10 max-w-[1600px] mx-auto animate-fade-in space-y-8 font-sans relative">
     
+    <div *ngIf="isLoading" class="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-50 flex items-center justify-center rounded-3xl">
+        <div class="w-10 h-10 border-4 border-[#173124]/20 border-t-[#173124] rounded-full animate-spin"></div>
+    </div>
+
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
             <h3 class="text-[10px] font-extrabold text-stone-400 uppercase tracking-[0.3em] mb-2 flex items-center gap-2">
@@ -22,12 +26,13 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-        
         <div class="bg-white border border-stone-200/80 rounded-[1.5rem] p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-1">Tổng GMV</p>
-                    <h2 class="text-2xl font-black text-stone-900 tracking-tight tabular-nums">4.250 <span class="text-sm text-stone-400 font-bold">Tr</span></h2>
+                    <h2 class="text-2xl font-black text-stone-900 tracking-tight tabular-nums">
+                        {{ (kpiData?.totalGmv || 0) | currency:'VND':'':'1.0-0' }} <span class="text-sm text-stone-400 font-bold">đ</span>
+                    </h2>
                 </div>
                 <div class="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center border border-stone-100">
                     <span class="material-symbols-outlined text-[16px] text-stone-600">monitoring</span>
@@ -36,9 +41,6 @@
             <div class="w-full h-1 bg-stone-100 rounded-full overflow-hidden">
                 <div class="w-[85%] h-full bg-stone-900 rounded-full"></div>
             </div>
-            <p class="text-[10px] font-bold text-emerald-600 mt-3 flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px]">arrow_upward</span> 12.5% vs tháng trước
-            </p>
         </div>
 
         <div class="bg-[#173124] rounded-[1.5rem] p-5 shadow-lg relative overflow-hidden group transform hover:-translate-y-1 transition-transform duration-300">
@@ -46,7 +48,9 @@
             <div class="flex justify-between items-start mb-4 relative z-10">
                 <div>
                     <p class="text-[10px] font-black text-emerald-400/80 uppercase tracking-[0.2em] mb-1">Doanh thu thuần (Phí)</p>
-                    <h2 class="text-2xl font-black text-white tracking-tight tabular-nums">637.5 <span class="text-sm text-emerald-200 font-bold">Tr</span></h2>
+                    <h2 class="text-2xl font-black text-white tracking-tight tabular-nums">
+                        {{ (kpiData?.netRevenue || 0) | currency:'VND':'':'1.0-0' }} <span class="text-sm text-emerald-200 font-bold">đ</span>
+                    </h2>
                 </div>
                 <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/10">
                     <span class="material-symbols-outlined text-[16px] text-white">account_balance_wallet</span>
@@ -55,16 +59,15 @@
             <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden relative z-10">
                 <div class="w-[15%] h-full bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
             </div>
-            <p class="text-[10px] font-bold text-emerald-400 mt-3 flex items-center gap-1 relative z-10">
-                Hiệu suất thu phí trung bình 15.2%
-            </p>
         </div>
 
         <div class="bg-white border border-stone-200/80 rounded-[1.5rem] p-5 shadow-sm hover:shadow-md transition-shadow">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-1">Dư nợ Chủ nhà</p>
-                    <h2 class="text-2xl font-black text-stone-900 tracking-tight tabular-nums">284.0 <span class="text-sm text-stone-400 font-bold">Tr</span></h2>
+                    <h2 class="text-2xl font-black text-stone-900 tracking-tight tabular-nums">
+                        {{ (kpiData?.hostDebt || 0) | currency:'VND':'':'1.0-0' }} <span class="text-sm text-stone-400 font-bold">đ</span>
+                    </h2>
                 </div>
                 <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center border border-amber-100">
                     <span class="material-symbols-outlined text-[16px] text-amber-600">payments</span>
@@ -73,16 +76,15 @@
             <div class="w-full h-1 bg-stone-100 rounded-full overflow-hidden">
                 <div class="w-[40%] h-full bg-amber-400 rounded-full"></div>
             </div>
-            <p class="text-[10px] font-bold text-amber-600 mt-3 flex items-center gap-1">
-                <span class="material-symbols-outlined text-[12px]">schedule</span> 14 khoản chờ quyết toán
-            </p>
         </div>
 
         <div class="bg-white border border-stone-200/80 rounded-[1.5rem] p-5 shadow-sm hover:shadow-md transition-shadow">
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-1">Hoàn tiền & Tranh chấp</p>
-                    <h2 class="text-2xl font-black text-stone-900 tracking-tight tabular-nums">12.5 <span class="text-sm text-stone-400 font-bold">Tr</span></h2>
+                    <h2 class="text-2xl font-black text-stone-900 tracking-tight tabular-nums">
+                        {{ (kpiData?.totalRefunds || 0) | currency:'VND':'':'1.0-0' }} <span class="text-sm text-stone-400 font-bold">đ</span>
+                    </h2>
                 </div>
                 <div class="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center border border-rose-100">
                     <span class="material-symbols-outlined text-[16px] text-rose-600">gavel</span>
@@ -91,9 +93,6 @@
             <div class="w-full h-1 bg-stone-100 rounded-full overflow-hidden">
                 <div class="w-[2%] h-full bg-rose-500 rounded-full"></div>
             </div>
-            <p class="text-[10px] font-bold text-stone-500 mt-3 flex items-center gap-1">
-                <span class="text-rose-600 font-black">0.8%</span> Tỷ lệ hoàn tiền (An toàn)
-            </p>
         </div>
     </div>
 
@@ -102,18 +101,20 @@
         <div class="p-4 border-b border-stone-200 bg-stone-50/30 flex flex-wrap items-center justify-between gap-4">
             <div class="relative group w-full md:w-96">
                 <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] text-stone-400 group-focus-within:text-[#173124] transition-colors">search</span>
-                <input type="text" placeholder="Tìm kiếm TXN, tên khách, số thẻ..." class="w-full h-10 pl-10 pr-4 bg-white border border-stone-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] transition-all placeholder:text-stone-400 shadow-sm">
+                <input type="text" [(ngModel)]="searchQuery" (keyup.enter)="onSearch()" placeholder="Tìm kiếm mã TXN, tên khách..." class="w-full h-10 pl-10 pr-4 bg-white border border-stone-200 rounded-xl text-sm font-medium focus:outline-none focus:border-[#173124] focus:ring-1 focus:ring-[#173124] transition-all placeholder:text-stone-400 shadow-sm">
             </div>
 
             <div class="flex items-center gap-2">
-                <button class="h-10 px-4 bg-white border border-stone-200 rounded-xl text-xs font-bold text-stone-700 flex items-center gap-2 hover:bg-stone-50 shadow-sm">
-                    <span class="material-symbols-outlined text-[16px]">filter_list</span> Lọc nâng cao
-                    <span class="w-4 h-4 rounded bg-[#173124] text-white text-[9px] flex items-center justify-center">2</span>
-                </button>
+                <select [ngModel]="currentType" (ngModelChange)="onFilterType($event)" class="h-10 px-4 bg-white border border-stone-200 rounded-xl text-xs font-bold text-stone-700 shadow-sm focus:outline-none focus:border-[#173124]">
+                    <option value="ALL">Tất cả giao dịch</option>
+                    <option value="PAYMENT_IN">Tiền vào (Booking)</option>
+                    <option value="PAYOUT_OUT">Tiền ra (Rút tiền)</option>
+                    <option value="REFUND">Hoàn tiền</option>
+                </select>
             </div>
         </div>
 
-        <div class="overflow-x-auto custom-scrollbar">
+        <div class="overflow-x-auto custom-scrollbar min-h-[400px]">
             <table class="w-full text-left border-collapse min-w-[1200px]">
                 <thead>
                     <tr class="border-b border-stone-200 bg-stone-50/50">
@@ -125,8 +126,14 @@
                         <th class="py-4 px-4"></th>
                     </tr>
                 </thead>
+                
                 <tbody class="divide-y divide-stone-100/80">
-                    
+                    <tr *ngIf="transactions.length === 0 && !isLoading">
+                        <td colspan="6" class="py-12 text-center text-stone-500 text-sm font-medium">
+                            Không tìm thấy giao dịch nào phù hợp.
+                        </td>
+                    </tr>
+
                     <tr *ngFor="let item of transactions" class="group hover:bg-stone-50/50 transition-colors duration-200">
                         
                         <td class="py-4 px-6">
@@ -136,9 +143,9 @@
                                     <span class="material-symbols-outlined text-[16px]">{{ getTypeConfig(item.type).icon }}</span>
                                 </div>
                                 <div>
-                                    <p class="text-[13px] font-bold text-stone-900 font-mono tracking-tight cursor-pointer hover:text-[#173124] transition-colors">{{ item.id }}</p>
+                                    <p class="text-[13px] font-bold text-stone-900 font-mono tracking-tight">{{ item.id }}</p>
                                     <div class="flex items-center gap-1.5 mt-1">
-                                        <p class="text-[11px] font-medium text-stone-500">{{ item.date | date:'MMM dd, HH:mm' }}</p>
+                                        <p class="text-[11px] font-medium text-stone-500">{{ item.date | date:'MMM dd, yyyy HH:mm' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -147,8 +154,16 @@
                         <td class="py-4 px-6">
                             <div class="flex flex-col gap-2">
                                 <div class="flex items-center gap-2">
-                                    <img [src]="item.guest.avatar" class="w-5 h-5 rounded-full border border-stone-200 shrink-0">
-                                    <span class="text-xs font-bold text-stone-700 truncate w-32" title="{{ item.guest.name }}">{{ item.guest.name }}</span>
+                                    <ng-container *ngIf="item.guest; else noGuest">
+                                        <img [src]="item.guest.avatar || 'assets/default-avatar.png'" class="w-5 h-5 rounded-full border border-stone-200 shrink-0 object-cover">
+                                        <span class="text-xs font-bold text-stone-700 truncate w-32" [title]="item.guest.name">{{ item.guest.name }}</span>
+                                    </ng-container>
+                                    <ng-template #noGuest>
+                                        <div class="w-5 h-5 rounded-full bg-[#173124] flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-[12px] text-white">account_balance</span>
+                                        </div>
+                                        <span class="text-xs font-bold text-stone-500 truncate w-32">Giao dịch hệ thống</span>
+                                    </ng-template>
                                 </div>
                                 <div class="w-px h-3 bg-stone-200 ml-2.5"></div>
                                 <div class="flex items-center gap-2">
@@ -156,7 +171,7 @@
                                         <span class="material-symbols-outlined text-[12px] text-stone-500">home</span>
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="text-xs font-bold text-stone-900 truncate w-40" title="{{ item.host.name }}">{{ item.host.name }}</p>
+                                        <p class="text-xs font-bold text-stone-900 truncate w-40" [title]="item.host.name">{{ item.host.name }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -165,10 +180,10 @@
                         <td class="py-4 px-6">
                             <div class="flex items-center gap-2">
                                 <div class="w-8 h-5 rounded bg-stone-100 border border-stone-200 flex items-center justify-center">
-                                    <span class="text-[8px] font-black text-stone-700">{{ item.paymentDetails.method }}</span>
+                                    <span class="text-[8px] font-black text-stone-700">{{ item.paymentDetails?.method || 'N/A' }}</span>
                                 </div>
-                                <p class="text-xs font-bold text-stone-600 font-mono" *ngIf="item.paymentDetails.last4">•••• {{ item.paymentDetails.last4 }}</p>
-                                <p class="text-xs font-bold text-stone-600" *ngIf="item.paymentDetails.bank">{{ item.paymentDetails.bank }}</p>
+                                <p class="text-xs font-bold text-stone-600 font-mono" *ngIf="item.paymentDetails?.last4">•••• {{ item.paymentDetails?.last4 }}</p>
+                                <p class="text-xs font-bold text-stone-600" *ngIf="item.paymentDetails?.bank">{{ item.paymentDetails?.bank }}</p>
                             </div>
                         </td>
 
@@ -176,13 +191,13 @@
                             <div class="flex flex-col items-end justify-center min-w-[140px]">
                                 <p class="text-sm font-black tabular-nums tracking-tight"
                                    [ngClass]="item.type === 'REFUND' || item.type === 'PAYOUT_OUT' ? 'text-stone-900' : 'text-emerald-600'">
-                                    {{ item.type === 'PAYOUT_OUT' ? '-' : (item.type === 'REFUND' ? '-' : '+') }}{{ item.amounts.gross || item.amounts.netToHost | currency:'VND':'':'1.0-0' }}
+                                    {{ item.type === 'PAYOUT_OUT' || item.type === 'REFUND' ? '-' : '+' }}{{ (item.amounts?.gross || item.amounts?.netToHost || 0) | currency:'VND':'':'1.0-0' }}
                                 </p>
                                 
                                 <div *ngIf="item.type === 'PAYMENT_IN'" class="flex items-center gap-2 mt-1 opacity-60 group-hover:opacity-100 transition-opacity">
-                                    <span class="text-[10px] font-medium text-stone-500">Phí: <span class="font-bold text-stone-700">{{ item.amounts.platformFee | currency:'VND':'':'1.0-0' }}</span></span>
+                                    <span class="text-[10px] font-medium text-stone-500">Phí: <span class="font-bold text-stone-700">{{ item.amounts?.platformFee | currency:'VND':'':'1.0-0' }}</span></span>
                                     <span class="w-1 h-1 rounded-full bg-stone-300"></span>
-                                    <span class="text-[10px] font-medium text-stone-500">Host nhận: <span class="font-bold text-stone-900">{{ item.amounts.netToHost | currency:'VND':'':'1.0-0' }}</span></span>
+                                    <span class="text-[10px] font-medium text-stone-500">Host nhận: <span class="font-bold text-stone-900">{{ item.amounts?.netToHost | currency:'VND':'':'1.0-0' }}</span></span>
                                 </div>
                             </div>
                         </td>
@@ -208,10 +223,21 @@
         </div>
         
         <div class="p-4 border-t border-stone-200 bg-stone-50/30 flex items-center justify-between">
-            <p class="text-[11px] font-semibold text-stone-500">Hiển thị <span class="text-stone-900 font-black">1 - 5</span> / <span class="text-stone-900 font-black">2,481</span> kết quả</p>
+            <p class="text-[11px] font-semibold text-stone-500">
+                Hiển thị <span class="text-stone-900 font-black">{{ totalElements === 0 ? 0 : (currentPage * pageSize + 1) }} - {{ (currentPage * pageSize) + transactions.length }}</span> / <span class="text-stone-900 font-black">{{ totalElements }}</span> kết quả
+            </p>
             <div class="flex items-center gap-1">
-                <button class="h-8 px-3 rounded-lg border border-stone-200 text-stone-500 hover:bg-white text-[11px] font-bold disabled:opacity-40">Trang trước</button>
-                <button class="h-8 px-3 rounded-lg border border-stone-200 bg-white text-stone-900 hover:bg-stone-50 text-[11px] font-bold shadow-sm">Trang sau</button>
+                <button (click)="changePage(currentPage - 1)" 
+                        [disabled]="currentPage === 0" 
+                        class="h-8 px-3 rounded-lg border border-stone-200 text-stone-500 hover:bg-white text-[11px] font-bold disabled:opacity-40 disabled:hover:bg-transparent transition-all">
+                    Trang trước
+                </button>
+                
+                <button (click)="changePage(currentPage + 1)" 
+                        [disabled]="currentPage >= totalPages - 1 || totalPages === 0" 
+                        class="h-8 px-3 rounded-lg border border-stone-200 bg-white text-stone-900 hover:bg-stone-50 text-[11px] font-bold shadow-sm disabled:opacity-40 transition-all">
+                    Trang sau
+                </button>
             </div>
         </div>
     </div>

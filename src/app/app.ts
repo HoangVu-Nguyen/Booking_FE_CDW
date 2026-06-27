@@ -1,6 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { TokenService } from './core/services/token.service';
 import { authCodeFlowConfig } from './core/configs/auth.config';
@@ -27,6 +27,14 @@ export class App implements OnInit {
   ) { }
 
   async ngOnInit() {
+    this.router.events.subscribe(event => {
+    if (event instanceof NavigationStart) {
+      console.log(">>> Đang chuyển hướng tới:", event.url);
+      // Khi thấy log hiện "Đang chuyển hướng tới: /login"
+      // Ông hãy nhìn vào "Stack Trace" hoặc xem component nào gọi nó
+      console.trace(); // Lệnh này cực hay, nó in ra toàn bộ luồng gọi hàm dẫn đến lệnh navigate
+    }
+  });
     if (isPlatformBrowser(this.platformId)) {
       this.oauthService.setStorage(new HybridStorage());
       const baseUrl = window.location.origin;
@@ -52,6 +60,7 @@ export class App implements OnInit {
 
             // Sau đó mới xóa params trên URL và về trang chủ
             await this.router.navigate(['/'], { replaceUrl: true });
+            
             return; // Thoát hàm luôn vì đã xong
           }
         }
