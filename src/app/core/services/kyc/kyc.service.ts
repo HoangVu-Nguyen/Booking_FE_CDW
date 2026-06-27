@@ -57,4 +57,16 @@ export class KycService {
         const endpoint = `/api/v1/kyc/confirm-upload`;
         return this.apiService.post<ApiResponse<void>>(endpoint, documentIds);
     }
+    getMyProfile(): Observable<ApiResponse<any>> {
+        const endpoint = `/api/v1/kyc/my-profile`;
+        return this.apiService.get<ApiResponse<any>>(endpoint);
+    }
+    getKycImagesForProfile(profileId: number): Observable<ApiResponse<any>> {
+        const endpoint = `/api/v1/kyc/${profileId}/images`;
+        return this.apiService.get<ApiResponse<any>>(endpoint);
+    }
+    getMyProfileId(){
+          const endpoint = `/api/v1/kyc/my-profile-status`;
+        return this.apiService.get<ApiResponse<any>>(endpoint);
+    }
 }

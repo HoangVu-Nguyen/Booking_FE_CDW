@@ -1,0 +1,199 @@
+<div
+    class="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,.05)]">
+
+    <!-- Header -->
+    <div
+        class="flex items-center justify-between px-8 py-6 border-b border-stone-100 bg-gradient-to-r from-white to-stone-50">
+
+        <div>
+            <h2 class="text-xl font-bold text-stone-900">
+                Hồ sơ KYC chờ duyệt
+            </h2>
+
+            <p class="text-sm text-stone-500 mt-1">
+                AI đã xử lý trước và xếp mức độ tin cậy.
+            </p>
+        </div>
+
+        <div
+            class="px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold">
+            {{ pendingHosts.length }} hồ sơ
+        </div>
+
+    </div>
+
+    <table class="w-full">
+
+        <thead>
+
+            <tr
+                class="text-xs uppercase tracking-[0.2em] text-stone-400 border-b border-stone-100">
+
+                <th class="px-8 py-5 text-left">Chủ nhà</th>
+
+                <th class="px-8 py-5 text-left">AI Score</th>
+
+                <th class="px-8 py-5 text-left">Trạng thái</th>
+
+                <th class="px-8 py-5 text-left">Nộp lúc</th>
+
+                <th class="px-8 py-5 text-right"></th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr
+                *ngFor="let host of pendingHosts"
+                class="group border-b border-stone-100 hover:bg-stone-50 transition">
+
+                <!-- Host -->
+
+                <td class="px-8 py-6">
+
+                    <div class="flex items-center gap-4">
+
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 text-white font-bold flex items-center justify-center shadow-lg">
+
+                            {{ host.name.charAt(0) }}
+
+                        </div>
+
+                        <div>
+
+                            <h3
+                                class="font-semibold text-stone-900 group-hover:text-emerald-700 transition">
+
+                                {{ host.name }}
+
+                            </h3>
+
+                            <p class="text-xs text-stone-500 mt-1">
+
+                                {{ host.id }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+                <!-- AI -->
+
+                <td class="px-8">
+
+                    <div class="flex items-center gap-3">
+
+                        <div
+                            class="w-28 h-2 rounded-full bg-stone-100 overflow-hidden">
+
+                            <div
+                                class="h-full rounded-full"
+
+                                [style.width.%]="host.aiConfidence"
+
+                                [ngClass]="{
+
+                                    'bg-emerald-500':host.aiConfidence>=95,
+
+                                    'bg-lime-500':host.aiConfidence>=90 && host.aiConfidence<95,
+
+                                    'bg-amber-500':host.aiConfidence<90
+
+                                }">
+
+                            </div>
+
+                        </div>
+
+                        <span
+                            class="font-bold"
+
+                            [ngClass]="{
+
+                            'text-emerald-700':host.aiConfidence>=95,
+
+                            'text-lime-700':host.aiConfidence>=90 && host.aiConfidence<95,
+
+                            'text-amber-700':host.aiConfidence<90
+
+                        }">
+
+                            {{host.aiConfidence}}%
+
+                        </span>
+
+                    </div>
+
+                </td>
+
+                <!-- Status -->
+
+                <td class="px-8">
+
+                    <span
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold">
+
+                        <span
+                            class="w-2 h-2 rounded-full bg-amber-500 animate-pulse">
+
+                        </span>
+
+                        Chờ duyệt
+
+                    </span>
+
+                </td>
+
+                <!-- Time -->
+
+                <td class="px-8">
+
+                    <div class="text-sm text-stone-700">
+
+                        {{host.submittedAt | date:'HH:mm'}}
+
+                    </div>
+
+                    <div class="text-xs text-stone-500">
+
+                        {{host.submittedAt | date:'dd/MM/yyyy'}}
+
+                    </div>
+
+                </td>
+
+                <!-- Button -->
+
+                <td class="px-8 text-right">
+
+                    <button
+
+                        (click)="openKycModal(host)"
+
+                        class="inline-flex items-center gap-2 rounded-xl bg-stone-900 hover:bg-emerald-700 text-white px-5 py-3 font-semibold text-sm transition-all hover:shadow-xl hover:-translate-y-0.5">
+
+                        <span class="material-symbols-outlined text-lg">
+
+                            visibility
+
+                        </span>
+
+                        Kiểm tra
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>

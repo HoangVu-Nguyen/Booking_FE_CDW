@@ -1,0 +1,262 @@
+<!-- Background -->
+
+<div
+    *ngIf="open"
+    class="fixed inset-0 bg-black/40 z-40"
+    (click)="closeDrawer()">
+</div>
+
+<!-- Drawer -->
+
+<div
+    class="fixed top-0 right-0 h-screen w-[720px] bg-white shadow-2xl z-50 transition-all duration-300"
+
+    [class.translate-x-full]="!open"
+
+    [class.translate-x-0]="open">
+
+    <!-- Header -->
+
+    <div class="border-b p-6 flex justify-between items-center">
+
+        <div>
+
+            <h2 class="text-2xl font-bold">
+                Chi tiết KYC
+            </h2>
+
+            <p class="text-stone-500 text-sm">
+
+                {{host?.name}}
+
+            </p>
+
+        </div>
+
+        <button
+
+            (click)="closeDrawer()"
+
+            class="w-10 h-10 rounded-full hover:bg-stone-100">
+
+            ✕
+
+        </button>
+
+    </div>
+
+    <!-- Content -->
+
+    <div class="overflow-y-auto h-[calc(100vh-80px)] p-6 space-y-6">
+
+        <!-- Host Information -->
+
+        <div class="border rounded-xl p-5">
+
+            <h3 class="font-bold mb-4">
+
+                Thông tin chủ nhà
+
+            </h3>
+
+            <div class="grid grid-cols-2 gap-4">
+
+                <div>
+
+                    <label class="text-xs text-stone-500">
+
+                        Họ tên
+
+                    </label>
+
+                    <p>{{host?.name}}</p>
+
+                </div>
+
+                <div>
+
+                    <label class="text-xs text-stone-500">
+
+                        Host ID
+
+                    </label>
+
+                    <p>{{host?.id}}</p>
+
+                </div>
+
+                <div>
+
+                    <label class="text-xs text-stone-500">
+
+                        Email
+
+                    </label>
+
+                    <p>{{host?.email}}</p>
+
+                </div>
+
+                <div>
+
+                    <label class="text-xs text-stone-500">
+
+                        Điện thoại
+
+                    </label>
+
+                    <p>{{host?.phone}}</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CCCD -->
+
+        <div class="border rounded-xl p-5">
+
+            <h3 class="font-bold mb-4">
+
+                Thông tin CCCD
+
+            </h3>
+
+            <div class="grid grid-cols-2 gap-4">
+
+                <div>
+
+                    <label class="text-xs text-stone-500">
+
+                        Số CCCD
+
+                    </label>
+
+                    <p>{{host?.citizenId}}</p>
+
+                </div>
+
+                <div>
+
+                    <label class="text-xs text-stone-500">
+
+                        Ngày cấp
+
+                    </label>
+
+                    <p>{{host?.issueDate}}</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Images -->
+
+        <div class="border rounded-xl p-5">
+
+            <h3 class="font-bold mb-4">
+
+                Giấy tờ
+
+            </h3>
+
+            <div class="grid grid-cols-3 gap-4">
+
+                <img
+
+                    [src]="host?.frontImage"
+
+                    class="rounded-xl border">
+
+                <img
+
+                    [src]="host?.backImage"
+
+                    class="rounded-xl border">
+
+                <img
+
+                    [src]="host?.selfie"
+
+                    class="rounded-xl border">
+
+            </div>
+
+        </div>
+
+        <!-- AI -->
+
+        <div class="border rounded-xl p-5">
+
+            <h3 class="font-bold mb-4">
+
+                AI Verification
+
+            </h3>
+
+            <div class="space-y-3">
+
+                <div class="flex justify-between">
+
+                    <span>Face Match</span>
+
+                    <span>98%</span>
+
+                </div>
+
+                <div class="flex justify-between">
+
+                    <span>OCR</span>
+
+                    <span class="text-green-600">
+
+                        Passed
+
+                    </span>
+
+                </div>
+
+                <div class="flex justify-between">
+
+                    <span>Liveness</span>
+
+                    <span class="text-green-600">
+
+                        Passed
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+
+    <div class="absolute bottom-0 left-0 right-0 border-t bg-white p-5 flex justify-end gap-3">
+
+        <button
+
+            class="px-5 py-3 rounded-xl border">
+
+            Từ chối
+
+        </button>
+
+        <button
+
+            class="px-5 py-3 rounded-xl bg-emerald-600 text-white">
+
+            Duyệt
+
+        </button>
+
+    </div>
+
+</div>
