@@ -13,13 +13,30 @@
     </div>
 
     <div [ngSwitch]="activeTab">
-
-        <app-property-list *ngSwitchCase="'property'"></app-property-list>
-        <app-kyc-list *ngSwitchCase="'kyc'" (viewHost)="openDrawer($event)">
+        <app-property-list 
+            *ngSwitchCase="'property'" 
+            (viewProperty)="openPropertyDrawer($event)">
+        </app-property-list>
+        
+        <app-kyc-list 
+            *ngSwitchCase="'kyc'" 
+            (viewHost)="openDrawer($event)">
         </app-kyc-list>
-
-        <app-kyc-detail-drawer [open]="drawerOpen" [host]="selectedHost" (close)="closeDrawer()">
-
-        </app-kyc-detail-drawer>
     </div>
+
+    <app-kyc-detail-drawer 
+        *ngIf="selectedHost"
+        [open]="drawerOpen" 
+        [host]="selectedHost" 
+        (close)="closeDrawer()" 
+        (actionCompleted)="handleActionCompleted()">
+    </app-kyc-detail-drawer>
+
+    <app-property-detail-drawer
+    *ngIf="selectedProperty"
+    [open]="propertyDrawerOpen"
+    [property]="selectedProperty"
+    (close)="closePropertyDrawer()"
+    (actionCompleted)="handlePropertyActionCompleted()"> </app-property-detail-drawer>
+
 </div>

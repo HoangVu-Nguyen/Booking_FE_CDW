@@ -65,6 +65,9 @@ export class KycList implements OnInit {
     const index = Math.abs(hash) % colors.length;
     return colors[index];
   }
+  onActionCompleted() {
+    this.fetchPendingKyc(); 
+}
 
 
 

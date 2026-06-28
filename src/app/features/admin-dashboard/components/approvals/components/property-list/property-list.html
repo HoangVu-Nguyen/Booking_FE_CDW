@@ -1,20 +1,90 @@
-<div class="bg-white border border-stone-200 rounded-2xl overflow-hidden shadow-sm">
-      <table class="w-full text-left">
-        <thead class="bg-stone-50 border-b border-stone-200">
-          <tr>
-            <th class="p-4 text-[10px] font-bold text-stone-400 uppercase">Chủ nhà</th>
-            <th class="p-4 text-[10px] font-bold text-stone-400 uppercase">Loại tài liệu</th>
-            <th class="p-4 text-[10px] font-bold text-stone-400 uppercase">Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let doc of pendingDocs" class="border-b border-stone-100 hover:bg-stone-50">
-            <td class="p-4 text-sm font-bold">{{ doc.hostName }}</td>
-            <td class="p-4 text-xs">{{ doc.docType }}</td>
-            <td class="p-4">
-              <button (click)="openDocumentViewer(doc)" class="text-[10px] bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">XEM TÀI LIỆU</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+<div class="bg-white rounded-2xl border border-stone-200/80 shadow-[0_2px_12px_rgba(0,0,0,0.04)] overflow-hidden">
+
+  <div class="flex items-center justify-between px-6 py-5 border-b border-stone-100 bg-white">
+    <div>
+      <div class="flex items-center gap-3">
+        <h2 class="text-[16px] font-bold text-stone-900 tracking-tight">
+          Tài sản chờ kiểm duyệt
+        </h2>
+        <span
+          class="px-2.5 py-0.5 rounded-full bg-stone-100 border border-stone-200/60 text-stone-600 text-[11px] font-bold tabular-nums">
+          {{ pendingProperties.length }} yêu cầu
+        </span>
+      </div>
+      <p class="text-[13px] text-stone-500 mt-1">
+        Kiểm tra tính pháp lý (Sổ đỏ, Hợp đồng, Giấy phép) của chỗ nghỉ.
+      </p>
     </div>
+  </div>
+
+  <div class="overflow-x-auto custom-scrollbar">
+    <table class="w-full text-left whitespace-nowrap">
+      <thead>
+        <tr
+          class="bg-stone-50/50 border-b border-stone-100 text-[11px] font-bold text-stone-500 uppercase tracking-widest">
+          <th class="px-6 py-4">Tài sản & Chủ nhà</th>
+          <th class="px-6 py-4">Tài liệu đính kèm</th>
+          <th class="px-6 py-4">Nộp lúc</th>
+          <th class="px-6 py-4 text-right">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-stone-100">
+        <tr *ngFor="let prop of pendingProperties" class="group hover:bg-[#fafaf9] transition-colors duration-200">
+
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3.5">
+              <div [ngClass]="getAvatarColor(prop.hostName)"
+                class="w-10 h-10 rounded-xl text-white font-bold flex items-center justify-center shadow-sm text-sm">
+                {{ prop.homestayName.charAt(0) }}
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-stone-900 group-hover:text-emerald-700 transition-colors">
+                  {{ prop.homestayName }}
+                </h3>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-[11px] text-stone-500 font-medium">Bởi: {{ prop.hostName }}</span>
+                  <span class="w-1 h-1 rounded-full bg-stone-300"></span>
+                  <span class="text-[10px] text-stone-400 font-mono">{{ prop.id }}</span>
+                </div>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-6 py-4">
+            <div class="flex flex-wrap items-center gap-1.5 max-w-[280px]">
+              <ng-container *ngFor="let doc of prop.documents.slice(0, 2)">
+                <span
+                  class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-stone-100 text-stone-600 text-[11px] font-medium border border-stone-200/60">
+                  <span class="material-symbols-outlined text-[14px]">description</span>
+                  {{ doc.name }} </span>
+              </ng-container>
+
+              <span *ngIf="prop.documents.length > 2"
+                class="inline-flex items-center px-2 py-1 rounded-md bg-stone-800 text-white text-[11px] font-bold shadow-sm">
+                +{{ prop.documents.length - 2 }}
+              </span>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-2 text-stone-500">
+              <span class="material-symbols-outlined text-[16px] text-stone-400">schedule</span>
+              <div class="flex flex-col">
+                <span class="text-[13px] font-medium text-stone-700">{{ prop.submittedAt | date:'HH:mm' }}</span>
+                <span class="text-[11px] text-stone-400">{{ prop.submittedAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-6 py-4 text-right">
+            <button (click)="openDocumentViewer(prop)"
+              class="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-lg bg-white border border-stone-200 text-stone-700 text-[12px] font-bold hover:bg-stone-900 hover:text-white hover:border-stone-900 transition-all shadow-sm active:scale-95">
+              <span class="material-symbols-outlined text-[16px]">folder_open</span>
+              Kiểm tra
+            </button>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

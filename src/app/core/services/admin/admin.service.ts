@@ -29,4 +29,19 @@ export class AdminService {
       `/api/v1/admin/approvals/kyc/detail/${profileId}`
     );
   }
+  public countPendingKyc(): Observable<ApiResponse<number>> {
+    return this.apiService.get<ApiResponse<number>>(`/api/v1/admin/approvals/kyc/count-pending`);
+}
+public getPendingProperties(): Observable<ApiResponse<any>> {
+    return this.apiService.get<any>(
+      '/api/v1/admin/approvals/properties/pending'
+    );
+  }
+
+  public submitPropertyReview(homestayId: number, payload: any): Observable<ApiResponse<any>> {
+    return this.apiService.post<any>(
+      `/api/v1/admin/approvals/properties/${homestayId}/review`, 
+      payload
+    );
+  }
 }
