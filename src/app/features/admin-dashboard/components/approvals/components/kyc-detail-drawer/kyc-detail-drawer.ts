@@ -19,5 +19,7 @@ export class KycDetailDrawer {
   closeDrawer() {
     this.close.emit();
   }
+  
+  
 
 }
