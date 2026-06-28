@@ -1,0 +1,33 @@
+<div class="max-w-3xl mx-auto space-y-8 animate-fade-in">
+  <div class="text-center">
+    <h2 class="text-2xl font-black text-slate-900">Xác thực danh tính</h2>
+    <p class="text-slate-500 mt-2">Vui lòng tải ảnh CCCD/CMND rõ nét</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Khung Mặt Trước -->
+    <div (click)="fileInputFront.click()" class="border-2 border-dashed border-slate-300 rounded-3xl p-6 bg-slate-50 cursor-pointer hover:border-emerald-500 transition-all flex flex-col items-center justify-center h-64">
+      <input type="file" (change)="onFileSelected($event, 'FRONT')" class="hidden" #fileInputFront accept="image/*">
+      <img *ngIf="frontPreview" [src]="frontPreview" class="h-full object-contain rounded-lg">
+      <ng-container *ngIf="!frontPreview">
+        <span class="material-icons text-4xl text-slate-300">badge</span>
+        <p class="text-sm font-bold text-slate-500 mt-2">Mặt trước CCCD</p>
+      </ng-container>
+    </div>
+
+    <!-- Khung Mặt Sau -->
+    <div (click)="fileInputBack.click()" class="border-2 border-dashed border-slate-300 rounded-3xl p-6 bg-slate-50 cursor-pointer hover:border-emerald-500 transition-all flex flex-col items-center justify-center h-64">
+      <input type="file" (change)="onFileSelected($event, 'BACK')" class="hidden" #fileInputBack accept="image/*">
+      <img *ngIf="backPreview" [src]="backPreview" class="h-full object-contain rounded-lg">
+      <ng-container *ngIf="!backPreview">
+        <span class="material-icons text-4xl text-slate-300">credit_card</span>
+        <p class="text-sm font-bold text-slate-500 mt-2">Mặt sau CCCD</p>
+      </ng-container>
+    </div>
+  </div>
+
+  <button (click)="onUpload()" [disabled]="isUploading || !frontFile || !backFile"
+    class="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl shadow-lg disabled:opacity-50 transition-all">
+    {{ isUploading ? 'ĐANG GỬI HỒ SƠ...' : 'HOÀN TẤT XÁC THỰC' }}
+  </button>
+</div>

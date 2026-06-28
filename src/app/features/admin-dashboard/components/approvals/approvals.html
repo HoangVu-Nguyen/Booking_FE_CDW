@@ -1,0 +1,25 @@
+<div class="p-8 max-w-[1400px] mx-auto animate-fade-in">
+    <h1 class="text-2xl font-black text-stone-900 mb-6">Trung tâm kiểm duyệt</h1>
+
+    <div class="flex gap-2 mb-8 border-b border-stone-200">
+        <button (click)="activeTab = 'kyc'" [class.border-b-2]="activeTab === 'kyc'"
+            class="px-6 py-3 text-sm font-bold uppercase tracking-widest transition-all border-stone-900 text-stone-600">
+            Duyệt KYC (CCCD)
+        </button>
+        <button (click)="activeTab = 'property'" [class.border-b-2]="activeTab === 'property'"
+            class="px-6 py-3 text-sm font-bold uppercase tracking-widest transition-all border-stone-900 text-stone-600">
+            Duyệt Tài sản (Sổ đỏ)
+        </button>
+    </div>
+
+    <div [ngSwitch]="activeTab">
+
+        <app-property-list *ngSwitchCase="'property'"></app-property-list>
+        <app-kyc-list *ngSwitchCase="'kyc'" (viewHost)="openDrawer($event)">
+        </app-kyc-list>
+
+        <app-kyc-detail-drawer [open]="drawerOpen" [host]="selectedHost" (close)="closeDrawer()">
+
+        </app-kyc-detail-drawer>
+    </div>
+</div>

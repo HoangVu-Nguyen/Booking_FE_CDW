@@ -4,6 +4,7 @@ import { ApiService } from '../api/api.service';
 import { HostWalletInfo, WithdrawRequest, WalletTransaction } from '../../models/response/wallet.response';
 import { PageResponse } from '../../models/response/page.response';
 import { ApiResponse } from '../../models/response/api.response';
+import { LedgerKpiResponse, LedgerTransaction } from '../../models/response/ledger.response';
 
 @Injectable({
   providedIn: 'root'
@@ -54,5 +55,27 @@ getTransactionHistory(page: number = 0, size: number = 10): Observable<ApiRespon
       adminComment
     };
     return this.api.post<ApiResponse<any>>(`${this.ADMIN_URL}/withdrawals/resolve`, payload);
+  }
+/**
+   * Lấy 4 chỉ số KPI tổng quan (Tổng GMV, Phí sàn, Dư nợ, Hoàn tiền)
+   */
+  getLedgerKpi(): Observable<ApiResponse<LedgerKpiResponse>> {
+    // Đã bọc ApiResponse để hứng đúng cấu trúc từ Backend trả về
+    return this.api.get<ApiResponse<LedgerKpiResponse>>(`${this.ADMIN_URL}/kpi`);
+  }
+
+  /**
+   * Lấy danh sách giao dịch Sổ cái (Có phân trang và Filter)
+   */
+  getLedgerTransactions(page: number = 0, size: number = 10, search?: string, type?: string): Observable<ApiResponse<PageResponse<LedgerTransaction>>> {
+    let params: any = { page, size };
+    if (search && search.trim() !== '') {
+      params.search = search.trim();
+    }
+    if (type && type !== 'ALL') {
+      params.type = type;
+    }
+
+    return this.api.get<ApiResponse<PageResponse<LedgerTransaction>>>(`${this.ADMIN_URL}/transactions`, params);
   }
 }

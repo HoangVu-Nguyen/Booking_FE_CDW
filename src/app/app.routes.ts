@@ -44,6 +44,11 @@ import { RoomAmenities } from './features/host-dashboard/components/manage-prope
 import { RoomAmenityHighlights } from './features/host-dashboard/components/manage-property/components/room-amenities/components/room-amenity-highlights/room-amenity-highlights';
 import { RatePlanBenefits } from './features/host-dashboard/components/manage-property/components/room-amenities/components/rate-plan-benefits/rate-plan-benefits';
 import { RoomPolicies } from './features/host-dashboard/components/manage-property/components/room-policies/room-policies';
+import { HostRegistration } from './features/host-registration/host-registration';
+import { IdentityInfo } from './features/host-registration/steps/identity-info/identity-info';
+import { DocumentUpload } from './features/host-registration/steps/document-upload/document-upload';
+import { HomestayVerification } from './features/host-dashboard/components/manage-property/components/homestay-verification/homestay-verification';
+import { Approvals } from './features/admin-dashboard/components/approvals/approvals';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -52,6 +57,7 @@ export const routes: Routes = [
   { path: 'active', component: Active },
   { path: 'forgot', component: Forgot },
   { path: 'callback', component: CallbackComponent },
+
 
   // 2. NHÓM DÙNG MAIN LAYOUT
   {
@@ -113,7 +119,8 @@ export const routes: Routes = [
             path: 'hosts',
             component: Hosts,
             title: 'Quản lý Host - Admin Dashboard - Clyvasync'
-          }
+          },
+          { path: 'approvals', component: Approvals }
         ]
       },
       {
@@ -142,86 +149,102 @@ export const routes: Routes = [
             component: InvoiceHistory
           }
         ]
+      },
+      
+{
+        path: 'register-host',
+        component: HostRegistration,
+        children: [
+          { path: '', redirectTo: 'info', pathMatch: 'full' },
+          { path: 'info', component: IdentityInfo },
+          { path: 'upload', component: DocumentUpload }
+        ]
+      }
+  
+      , {
+    path: 'host-dashboard', component: HostDashboard, title: 'Host Dashboard - Clyvasync',
+    children: [
+      {
+        path: '', redirectTo: 'overview', pathMatch: 'full'
       }, {
-        path: 'host-dashboard', component: HostDashboard, title: 'Host Dashboard - Clyvasync',
+        path: 'portfolio', component: Portfolio, title: 'Danh mục homestay - Host Dashboard - Clyvasync'
+      },
+      {
+        path: 'overview', component: HomestayListManager, title: 'Danh sách homestay - Host Dashboard - Clyvasync'
+      }, {
+        path: 'bookings', component: BookingList, title: 'Danh sách đặt phòng - Host Dashboard - Clyvasync'
+      },
+      {
+        path: 'wallet', component: HostWallet, title: 'Ví / Doanh thu - Host Dashboard - Clyvasync'
+      },
+      {
+        path: 'calendar/:homestayId',
+        component: CalendarPricing
+
+      },
+      {
+        path: 'inbox',
+        component: Inbox,
+        title: 'Hộp thư - Host Dashboard - Clyvasync'
+      },
+      {
+        path: 'add-propety',
+        component: AddProperty
+      },
+      {
+        path: 'properties/:id/manage',
+        component: ManageProperty,
         children: [
           {
-            path: '', redirectTo: 'overview', pathMatch: 'full'
-          }, {
-            path: 'portfolio', component: Portfolio, title: 'Danh mục homestay - Host Dashboard - Clyvasync'
+            path: '', redirectTo: 'info', pathMatch: 'full'
           },
           {
-            path: 'overview', component: HomestayListManager, title: 'Danh sách homestay - Host Dashboard - Clyvasync'
-          }, {
-            path: 'bookings', component: BookingList, title: 'Danh sách đặt phòng - Host Dashboard - Clyvasync'
+            path: 'info',
+            component: PropertyInfo
           },
           {
-            path: 'wallet', component: HostWallet, title: 'Ví / Doanh thu - Host Dashboard - Clyvasync'
+            path: 'rooms',
+            component: RoomManager
           },
           {
-            path: 'calendar/:homestayId',
-            component: CalendarPricing
-
+            path: 'amenities',
+            component: PropertyAmenities
           },
           {
-            path: 'inbox',
-            component: Inbox,
-            title: 'Hộp thư - Host Dashboard - Clyvasync'
+            path: 'policies',
+            component: RoomPolicies
           },
           {
-            path: 'add-propety',
-            component: AddProperty
-          },
-          {
-            path: 'properties/:id/manage',
-            component: ManageProperty,
+            path: 'room/amenities',
+            component: RoomAmenities,
             children: [
               {
-                path: '', redirectTo: 'info', pathMatch: 'full'
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'highlights'
               },
               {
-                path: 'info',
-                component: PropertyInfo
+                path: 'highlights',
+                component: RoomAmenityHighlights
               },
               {
-                path: 'rooms',
-                component: RoomManager
-              },
-              {
-                path: 'amenities',
-                component: PropertyAmenities
-              },
-              {
-                path:'policies',
-                component:RoomPolicies
-              },
-              {
-                path: 'room/amenities',
-                component: RoomAmenities,
-                children: [
-                  {
-                    path: '',
-                    pathMatch: 'full',
-                    redirectTo: 'highlights'
-                  },
-                  {
-                    path: 'highlights',
-                    component:RoomAmenityHighlights
-                  },
-                  {
-                    path: 'rate-plan-benefits',
-                    component:RatePlanBenefits
-                  }
-                ]
+                path: 'rate-plan-benefits',
+                component: RatePlanBenefits
               }
             ]
+          },
+          {
+            path:'verification',
+            component:HomestayVerification
           }
         ]
       }
     ]
+  }
+]
   },
 
 
 
-  { path: '**', redirectTo: 'login' }
+{ path: '**', redirectTo: 'login' }
 ];

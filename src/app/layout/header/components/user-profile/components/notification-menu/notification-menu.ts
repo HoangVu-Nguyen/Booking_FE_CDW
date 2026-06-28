@@ -27,11 +27,17 @@ export class NotificationMenu implements OnInit {
   filteredNotifs = computed(() => {
     const filter = this.activeFilter();
     const list = this.notifications();
-
+    console.log(list)
+console.log(list.filter(n => n.type === 'SYSTEM'))
+ console.log(filter)
     switch (filter) {
       case 'UNREAD': return list.filter(n => !n.isRead);
       case 'BOOKING': return list.filter(n => n.metadata?.category === 'BOOKING');
-      case 'SYSTEM': return list.filter(n => n.metadata?.category === 'SYSTEM');
+      case 'SYSTEM': 
+         const filtered = list.filter(n => n.type === 'SYSTEM');
+         console.log("Kết quả sau khi filter SYSTEM:", filtered);
+         return filtered;
+      
       default: return list;
     }
   });
@@ -85,6 +91,10 @@ getNotificationConfig(type: string, metadata: any) {
             return { icon: 'schedule', color: 'text-amber-600', bg: 'bg-amber-50', link: '/host-dashboard/bookings' };
         case 'BOOKING_AWAITING_PAYMENT':
             return { icon: 'check_circle', color: 'text-blue-600', bg: 'bg-blue-50', link: `/checkout/${metadata.bookingCode}` };
+            case 'KYC_APPROVED':
+            return { icon: 'verified', color: 'text-emerald-600', bg: 'bg-emerald-50', link: '/dashboard' };
+        case 'KYC_REJECTED':
+            return { icon: 'warning_amber', color: 'text-rose-600', bg: 'bg-rose-50', link: '/register-host/upload' };
         default:
             return { icon: 'notifications', color: 'text-blue-600', bg: 'bg-blue-50', link: null };
     }

@@ -58,6 +58,7 @@ export class NotificationService {
             case 'BOOKING_CONFIRMED':
             case 'BOOKING_CANCELLED':
             case 'BOOKING_REQUEST':
+            case 'SYSTEM':
                 this.handleBooking(payload.data);
                 break;
             case 'NEW_MESSAGE':
