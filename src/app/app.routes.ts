@@ -49,6 +49,7 @@ import { IdentityInfo } from './features/host-registration/steps/identity-info/i
 import { DocumentUpload } from './features/host-registration/steps/document-upload/document-upload';
 import { HomestayVerification } from './features/host-dashboard/components/manage-property/components/homestay-verification/homestay-verification';
 import { Approvals } from './features/admin-dashboard/components/approvals/approvals';
+import { HostDetail } from './features/admin-dashboard/components/hosts/components/host-detail/host-detail';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -120,7 +121,8 @@ export const routes: Routes = [
             component: Hosts,
             title: 'Quản lý Host - Admin Dashboard - Clyvasync'
           },
-          { path: 'approvals', component: Approvals }
+          { path: 'approvals', component: Approvals },
+           { path: 'hosts/:id', component: HostDetail },
         ]
       },
       {
@@ -240,7 +242,8 @@ export const routes: Routes = [
         ]
       }
     ]
-  }
+  },
+ 
 ]
   },
 

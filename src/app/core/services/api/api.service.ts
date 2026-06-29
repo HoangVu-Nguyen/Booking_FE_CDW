@@ -41,7 +41,7 @@ export class ApiService {
     method: string,
     endpoint: string,
     body?: any,
-    params?: any
+    params?:HttpParams| any
   ): Observable<any> {
     const options = {
       body,

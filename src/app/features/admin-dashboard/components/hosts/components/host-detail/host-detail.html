@@ -1,0 +1,234 @@
+<div class="p-6 lg:p-10 max-w-[1600px] mx-auto animate-fade-in font-sans bg-stone-50/50 min-h-screen space-y-6">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <button (click)="goBack()" class="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-[11px] font-bold uppercase tracking-widest w-fit">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span> Danh sách Đối tác
+        </button>
+        
+        <div class="flex items-center gap-3">
+            <button class="h-10 px-4 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 font-bold text-[11px] uppercase tracking-widest flex items-center gap-2 shadow-sm transition-all">
+                <span class="material-symbols-outlined text-[16px]">mail</span> Gửi Email Cảnh cáo
+            </button>
+            <button *ngIf="host.status === 'ACTIVE'" (click)="suspendHost()" class="h-10 px-5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] uppercase tracking-widest flex items-center gap-2 shadow-md shadow-rose-200 transition-all">
+                <span class="material-symbols-outlined text-[16px]">gavel</span> Đình chỉ Host
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        
+        <div class="xl:col-span-1 bg-white rounded-[2rem] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-stone-200/80 flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-[#173124] to-[#0f2118]"></div>
+            
+            <div class="relative z-10 flex flex-col items-center mt-4">
+                <div class="relative">
+                    <img [src]="host.user.avatar" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg bg-white">
+                    <div class="absolute bottom-1 right-1 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center"
+                         [ngClass]="host.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500'" title="Status"></div>
+                </div>
+                <h1 class="text-xl font-black text-stone-900 mt-3">{{ host.user.name }}</h1>
+                <p class="text-[11px] font-mono font-bold text-stone-400 mt-1 uppercase">{{ host.id }}</p>
+                
+                <div class="flex items-center gap-2 mt-4">
+                    <span class="flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-md text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                        <span class="material-symbols-outlined text-[12px]">verified_user</span> KYC
+                    </span>
+                    <span class="flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold uppercase tracking-widest border border-blue-100">
+                        <span class="material-symbols-outlined text-[12px]">credit_score</span> Bank
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-8 space-y-4 pt-6 border-t border-stone-100">
+                <div class="flex items-center gap-3 text-[13px] text-stone-600 font-medium">
+                    <span class="material-symbols-outlined text-[18px] text-stone-400">mail</span> {{ host.user.email }}
+                </div>
+                <div class="flex items-center gap-3 text-[13px] text-stone-600 font-medium">
+                    <span class="material-symbols-outlined text-[18px] text-stone-400">call</span> {{ host.user.phone }}
+                </div>
+                <div class="flex items-center gap-3 text-[13px] text-stone-600 font-medium">
+                    <span class="material-symbols-outlined text-[18px] text-stone-400">location_on</span> {{ host.user.address }}
+                </div>
+            </div>
+        </div>
+
+        <div class="xl:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="col-span-2 bg-white rounded-[2rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-stone-200/80 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-[11px] font-black text-stone-400 uppercase tracking-widest flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">account_balance_wallet</span> Ví tạm giữ (Escrow)</h3>
+                    <button class="text-[10px] font-bold text-blue-600 hover:underline">Xem biến động</button>
+                </div>
+                <h2 class="text-4xl font-black text-emerald-600 tabular-nums tracking-tight">{{ host.walletBalance | currency:'VND':'':'1.0-0' }}đ</h2>
+                <div class="mt-4 pt-4 border-t border-stone-100 flex items-center justify-between">
+                    <span class="text-xs text-stone-500 font-medium">Tổng GMV luỹ kế</span>
+                    <span class="text-sm font-black text-stone-900 tabular-nums">{{ host.totalRevenue | currency:'VND':'':'1.0-0' }}đ</span>
+                </div>
+            </div>
+
+            <div class="col-span-1 bg-white rounded-[2rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-stone-200/80 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
+                <h3 class="text-[11px] font-black text-stone-400 uppercase tracking-widest relative z-10">Tỷ lệ hủy đơn</h3>
+                <div class="mt-4 flex items-end gap-2 relative z-10">
+                    <h2 class="text-4xl font-black tabular-nums tracking-tight" [ngClass]="host.metrics.cancellationRate > 5 ? 'text-rose-600' : 'text-stone-900'">{{ host.metrics.cancellationRate }}%</h2>
+                </div>
+                <p class="text-[10px] text-stone-500 mt-2 font-medium relative z-10" *ngIf="host.metrics.cancellationRate <= 5">Trạng thái an toàn</p>
+                <p class="text-[10px] text-rose-600 mt-2 font-bold relative z-10" *ngIf="host.metrics.cancellationRate > 5">Cảnh báo vi phạm!</p>
+            </div>
+
+            <div class="col-span-1 bg-white rounded-[2rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-stone-200/80">
+                <h3 class="text-[11px] font-black text-stone-400 uppercase tracking-widest">Đánh giá sao</h3>
+                <div class="mt-4 flex items-center gap-2">
+                    <h2 class="text-4xl font-black text-stone-900 tabular-nums tracking-tight">{{ host.metrics.avgRating }}</h2>
+                    <span class="material-symbols-outlined text-[32px] text-amber-400" style="font-variation-settings: 'FILL' 1;">star</span>
+                </div>
+                <p class="text-[11px] text-stone-500 mt-2 font-medium">{{ host.metrics.reviewsCount }} lượt đánh giá</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-6 border-b border-stone-200 mt-4 overflow-x-auto custom-scrollbar">
+        <button (click)="activeTab = 'PROPERTIES'" class="pb-3 text-[12px] font-black uppercase tracking-widest transition-all border-b-[3px] whitespace-nowrap"
+                [ngClass]="activeTab === 'PROPERTIES' ? 'border-[#173124] text-[#173124]' : 'border-transparent text-stone-400 hover:text-stone-600'">
+            Tài sản & Chỗ nghỉ ({{ properties.length }})
+        </button>
+        <button (click)="activeTab = 'KYC_DOCS'" class="pb-3 text-[12px] font-black uppercase tracking-widest transition-all border-b-[3px] whitespace-nowrap"
+                [ngClass]="activeTab === 'KYC_DOCS' ? 'border-[#173124] text-[#173124]' : 'border-transparent text-stone-400 hover:text-stone-600'">
+            Hồ sơ pháp lý (e-KYC)
+        </button>
+        <button (click)="activeTab = 'AUDIT_LOG'" class="pb-3 text-[12px] font-black uppercase tracking-widest transition-all border-b-[3px] whitespace-nowrap"
+                [ngClass]="activeTab === 'AUDIT_LOG' ? 'border-[#173124] text-[#173124]' : 'border-transparent text-stone-400 hover:text-stone-600'">
+            Lịch sử hoạt động (Audit)
+        </button>
+    </div>
+
+    <div *ngIf="activeTab === 'PROPERTIES'" class="bg-white border border-stone-200/80 rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
+        <table class="w-full text-left border-collapse min-w-[900px]">
+            <thead>
+                <tr class="bg-stone-50/50 border-b border-stone-200/80">
+                    <th class="py-4 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest">Tài sản (Listings)</th>
+                    <th class="py-4 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest">Hiệu suất</th>
+                    <th class="py-4 px-6 text-[10px] font-extrabold text-stone-400 uppercase tracking-widest">Trạng thái & Quản lý</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-100">
+                <tr *ngFor="let prop of properties" class="group hover:bg-stone-50/40 transition-colors">
+                    
+                    <td class="py-5 px-6">
+                        <div class="flex items-center gap-4">
+                            <img [src]="prop.image" class="w-20 h-16 rounded-xl object-cover border border-stone-200 shadow-sm">
+                            <div>
+                                <h4 class="text-[14px] font-bold text-stone-900 group-hover:text-[#173124] transition-colors cursor-pointer">{{ prop.name }}</h4>
+                                <p class="text-[12px] text-stone-500 mt-0.5">{{ prop.type }} • {{ prop.location }}</p>
+                                <p class="text-[10px] font-mono text-stone-400 mt-1 uppercase">{{ prop.id }}</p>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="py-5 px-6">
+                        <div class="flex items-center gap-6">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Bookings</span>
+                                <span class="text-[13px] font-black text-stone-900 tabular-nums">{{ prop.metrics.bookings }}</span>
+                            </div>
+                            <div class="w-px h-6 bg-stone-200"></div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Doanh thu</span>
+                                <span class="text-[13px] font-black text-emerald-600 tabular-nums">{{ prop.metrics.revenue | currency:'VND':'':'1.0-0' }}đ</span>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td class="py-5 px-6">
+                        <div class="flex items-center justify-between">
+                            <span class="inline-flex items-center px-2.5 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest border"
+                                  [ngClass]="getPropertyStatusConfig(prop.status).bg + ' ' + getPropertyStatusConfig(prop.status).text + ' ' + getPropertyStatusConfig(prop.status).border">
+                                {{ getPropertyStatusConfig(prop.status).label }}
+                            </span>
+                            
+                            <div class="flex items-center gap-2">
+                                <button *ngIf="prop.status === 'PENDING_DOCS'" class="h-9 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-sm flex items-center gap-1.5 transition-colors">
+                                    <span class="material-symbols-outlined text-[16px]">verified</span> Duyệt sổ đỏ
+                                </button>
+                                
+                                <button class="h-9 px-4 border border-stone-200 text-stone-700 hover:bg-stone-100 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors">
+                                    <span class="material-symbols-outlined text-[16px]">folder_open</span> Hồ sơ
+                                </button>
+                                
+                                <button *ngIf="prop.status !== 'PENDING_DOCS'" (click)="togglePropertyStatus(prop)" 
+                                        class="w-9 h-9 border rounded-lg flex items-center justify-center transition-colors"
+                                        [ngClass]="prop.status === 'ACTIVE' ? 'border-rose-200 text-rose-600 hover:bg-rose-50' : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'"
+                                        title="{{ prop.status === 'ACTIVE' ? 'Đình chỉ căn này' : 'Mở lại căn này' }}">
+                                    <span class="material-symbols-outlined text-[18px]">{{ prop.status === 'ACTIVE' ? 'block' : 'play_arrow' }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="activeTab === 'KYC_DOCS'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white border border-stone-200/80 rounded-[2rem] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-[13px] font-black text-stone-900 uppercase tracking-widest">Định danh Công dân</h3>
+                    <p class="text-xs text-stone-500 mt-1 font-mono">ID: {{ host.kyc.idNumber }}</p>
+                </div>
+                <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black uppercase rounded-lg">Bản sao hợp lệ</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-stone-50 border border-stone-200 border-dashed rounded-2xl h-32 flex flex-col items-center justify-center text-stone-500 hover:bg-stone-100 transition-colors cursor-pointer group">
+                    <span class="material-symbols-outlined text-[28px] mb-2 group-hover:scale-110 transition-transform">badge</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Mặt trước CCCD</span>
+                </div>
+                <div class="bg-stone-50 border border-stone-200 border-dashed rounded-2xl h-32 flex flex-col items-center justify-center text-stone-500 hover:bg-stone-100 transition-colors cursor-pointer group">
+                    <span class="material-symbols-outlined text-[28px] mb-2 group-hover:scale-110 transition-transform">credit_card</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Mặt sau CCCD</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-stone-200/80 rounded-[2rem] p-8 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+            <h3 class="text-[13px] font-black text-stone-900 uppercase tracking-widest mb-6">Tài khoản Thụ hưởng</h3>
+            
+            <div class="bg-stone-50 p-6 rounded-2xl border border-stone-100 space-y-5">
+                <div>
+                    <span class="block text-[10px] text-stone-500 font-bold uppercase tracking-widest mb-1">Ngân hàng</span>
+                    <span class="text-sm font-black text-stone-900">{{ host.kyc.bankInfo.bankName }}</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] text-stone-500 font-bold uppercase tracking-widest mb-1">Số tài khoản</span>
+                    <span class="text-lg font-black text-stone-900 font-mono tracking-widest">{{ host.kyc.bankInfo.accountNo }}</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] text-stone-500 font-bold uppercase tracking-widest mb-1">Tên chủ thẻ</span>
+                    <span class="text-sm font-black text-stone-900">{{ host.kyc.bankInfo.ownerName }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="activeTab === 'AUDIT_LOG'" class="bg-white border border-stone-200/80 rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] p-6">
+        <h3 class="text-[13px] font-black text-stone-900 uppercase tracking-widest mb-6 ml-2">Nhật ký hệ thống</h3>
+        <div class="space-y-4">
+            <div *ngFor="let log of auditLogs" class="flex items-start gap-4 p-4 rounded-xl hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border"
+                     [ngClass]="{'bg-emerald-50 border-emerald-100 text-emerald-600': log.status === 'SUCCESS',
+                                 'bg-blue-50 border-blue-100 text-blue-600': log.status === 'INFO',
+                                 'bg-amber-50 border-amber-100 text-amber-600': log.status === 'WARNING'}">
+                    <span class="material-symbols-outlined text-[18px]">
+                        {{ log.status === 'SUCCESS' ? 'paid' : (log.status === 'INFO' ? 'edit_document' : 'warning') }}
+                    </span>
+                </div>
+                <div>
+                    <h4 class="text-[13px] font-bold text-stone-900">{{ log.action }}</h4>
+                    <p class="text-[13px] text-stone-600 mt-0.5">{{ log.desc }}</p>
+                    <p class="text-[10px] font-medium text-stone-400 mt-1.5">{{ log.time }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

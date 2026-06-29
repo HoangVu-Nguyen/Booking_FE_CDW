@@ -4,6 +4,9 @@ import { ApiResponse } from '../../models/response/api.response';
 import { ApiService } from '../api/api.service';
 import { HostPendingResponse } from '../../models/host/host-pending.response';
 import { HostKycDetailResponse } from '../../models/host/host-kyc-detail.response';
+import { PageResponse } from '../../models/response/page.response';
+import { AdminHostResponse } from '../../models/response/admin.reponse';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -31,8 +34,8 @@ export class AdminService {
   }
   public countPendingKyc(): Observable<ApiResponse<number>> {
     return this.apiService.get<ApiResponse<number>>(`/api/v1/admin/approvals/kyc/count-pending`);
-}
-public getPendingProperties(): Observable<ApiResponse<any>> {
+  }
+  public getPendingProperties(): Observable<ApiResponse<any>> {
     return this.apiService.get<any>(
       '/api/v1/admin/approvals/properties/pending'
     );
@@ -40,8 +43,26 @@ public getPendingProperties(): Observable<ApiResponse<any>> {
 
   public submitPropertyReview(homestayId: number, payload: any): Observable<ApiResponse<any>> {
     return this.apiService.post<any>(
-      `/api/v1/admin/approvals/properties/${homestayId}/review`, 
+      `/api/v1/admin/approvals/properties/${homestayId}/review`,
       payload
+    );
+  }
+  public getHosts(
+    keyword: string = '',
+    page: number = 0,
+    size: number = 10,
+    sort: string = 'createdAt,desc'
+  ): Observable<ApiResponse<PageResponse<AdminHostResponse>>> {
+
+
+    return this.apiService.get<ApiResponse<PageResponse<AdminHostResponse>>>(
+      '/api/v1/admin/approvals/hosts',
+      {
+        keyword,
+        page,
+        size,
+        sort
+      }
     );
   }
 }

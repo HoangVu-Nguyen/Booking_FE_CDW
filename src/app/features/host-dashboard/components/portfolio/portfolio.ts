@@ -35,7 +35,7 @@ export class Portfolio implements OnInit {
   }
   getStatusConfig(status: string) {
     const configs: any = {
-      'ACTIVE': { bg: 'bg-emerald-500/90', text: 'text-white', icon: 'check_circle', label: 'Đang hoạt động' },
+      'APPROVED': { bg: 'bg-emerald-500/90', text: 'text-white', icon: 'check_circle', label: 'Đang hoạt động' },
       'MAINTENANCE': { bg: 'bg-amber-500/90', text: 'text-white', icon: 'build', label: 'Bảo trì' },
       'DRAFT': { bg: 'bg-stone-500/90', text: 'text-white', icon: 'edit_document', label: 'Bản nháp' },
       'CLOSED': { bg: 'bg-rose-500/90', text: 'text-white', icon: 'cancel', label: 'Đã đóng' } // Thêm trạng thái đóng

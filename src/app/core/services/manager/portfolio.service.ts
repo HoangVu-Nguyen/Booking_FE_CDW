@@ -54,6 +54,7 @@ export class PortfolioService {
       .pipe(
         tap({
           next: (response) => {
+            console.log(response)
             // Cập nhật dữ liệu vào Signal
             this.propertiesData.set(response.data || []);
             this.loadingProperties.set(false);

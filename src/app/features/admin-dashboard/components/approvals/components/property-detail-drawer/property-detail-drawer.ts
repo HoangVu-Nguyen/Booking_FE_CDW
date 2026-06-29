@@ -33,6 +33,7 @@ export class PropertyDetailDrawer implements OnChanges {
   }
 
   get currentDoc() {
+
     return this.property?.documents?.[this.activeDocIndex];
   }
 
@@ -43,12 +44,14 @@ export class PropertyDetailDrawer implements OnChanges {
 
   setActiveDoc(index: number) {
     this.activeDocIndex = index;
+    this.currentDoc()
     this.changeRef.detectChanges();
   }
 
   closeDrawer() {
     if (this.isProcessing) return;
     this.close.emit();
+    this.changeRef.detectChanges();
   }
 
   // --- XỬ LÝ TỪNG TÀI LIỆU ---
@@ -73,7 +76,6 @@ export class PropertyDetailDrawer implements OnChanges {
     }
   }
 
-  // --- GỌI API THỰC TẾ ---
   submitReview() {
     this.isProcessing = true;
     
@@ -85,7 +87,6 @@ export class PropertyDetailDrawer implements OnChanges {
       }))
     };
 
-    // Lấy ID homestay (bỏ chữ "PRP-" nếu có)
     const homestayId = this.property.id.toString().replace('PRP-', '');
 
     this.adminService.submitPropertyReview(Number(homestayId), payload).subscribe({
