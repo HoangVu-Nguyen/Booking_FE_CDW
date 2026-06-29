@@ -1,16 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule, Location } from '@angular/common'; // Thêm Location để quay lại
-import { Router, ActivatedRoute } from '@angular/router';
-
-interface Property {
-  id: string;
-  name: string;
-  type: string;
-  location: string;
-  image: string; // Thêm ảnh thumbnail
-  status: 'ACTIVE' | 'PENDING_DOCS' | 'SUSPENDED';
-  metrics: { bookings: number; revenue: number; rating: number };
-}
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router'; // Import đúng ActivatedRoute
+import { HostDetailResponse, PropertyDto } from '../../../../../../core/models/response/host-detail.response';
+import { AdminService } from '../../../../../../core/services/admin/admin.service';
 
 @Component({
   selector: 'app-admin-host-detail',
@@ -20,90 +12,68 @@ interface Property {
 })
 export class HostDetail implements OnInit {
   private location = inject(Location);
-  
-  activeTab: 'OVERVIEW' | 'PROPERTIES' | 'KYC_DOCS' | 'AUDIT_LOG' = 'OVERVIEW';
+  private adminService = inject(AdminService);
+  private route = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
 
-  host = {
-    id: 'HST-88291A',
-    user: { 
-      name: 'Nguyễn Bùi Hoàng Vũ', 
-      avatar: 'https://ui-avatars.com/api/?name=Hoang+Vu&bg=173124&color=fff', 
-      email: 'hoangvu.dev@clyvasync.com', 
-      phone: '0987 654 321',
-      address: 'Phường 8, Đà Lạt, Lâm Đồng'
-    },
-    joinDate: '2026-01-15',
-    status: 'ACTIVE', 
-    walletBalance: 42000000,
-    totalRevenue: 850000000,
-    metrics: { 
-      totalBookings: 342, 
-      cancellationRate: 1.2, // Tỷ lệ hủy đơn
-      responseRate: 98,      // Tỷ lệ phản hồi (%)
-      avgRating: 4.88,       // Điểm đánh giá trung bình
-      reviewsCount: 156
-    },
-    kyc: {
-      identity: 'VERIFIED',
-      idNumber: '079204001234',
-      bankInfo: { bankName: 'Vietcombank', accountNo: '1012345678', ownerName: 'NGUYEN BUI HOANG VU' }
-    }
-  };
-
-  properties: Property[] = [
-    {
-      id: 'HOM-1102',
-      name: 'Clyvasync Villa Da Lat',
-      type: 'Biệt thự',
-      location: 'Phường 8, Đà Lạt',
-      image: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?w=300&q=80',
-      status: 'ACTIVE',
-      metrics: { bookings: 124, revenue: 350000000, rating: 4.9 }
-    },
-    {
-      id: 'HOM-1103',
-      name: 'Clyvasync Studio Center',
-      type: 'Căn hộ',
-      location: 'Quận 1, TP.HCM',
-      image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&q=80',
-      status: 'PENDING_DOCS',
-      metrics: { bookings: 0, revenue: 0, rating: 0 }
-    }
-  ];
-
-  auditLogs = [
-    { time: '2026-06-29 08:30', action: 'Rút tiền', desc: 'Rút 15.000.000đ về Vietcombank', status: 'SUCCESS' },
-    { time: '2026-06-25 14:15', action: 'Cập nhật', desc: 'Đăng tải Sổ đỏ cho căn HOM-1103', status: 'INFO' },
-    { time: '2026-06-20 09:00', action: 'Hủy đơn', desc: 'Hủy đơn BK-9921 của khách hàng', status: 'WARNING' }
-  ];
-
+  activeTab: 'OVERVIEW' | 'PROPERTIES' | 'KYC_DOCS' | 'AUDIT_LOG' = 'PROPERTIES';
+  hostData: HostDetailResponse | null = null;
+  isLoading = true;
+  selectedImage: string | null = null;
   ngOnInit() {
-    // Logic lấy ID từ URL (đã hướng dẫn ở bước trước)
+    this.route.params.subscribe(params => {
+      const id = params['id']; // ID từ URL: /admin/hosts/:id
+      if (id) {
+        // Nếu ID có tiền tố 'HST-', tách nó ra
+        const cleanId = id.replace('HST-', '');
+        this.loadHostDetail(cleanId);
+      }
+    });
   }
 
-  goBack() {
-    this.location.back(); // Quay lại trang trước đó mượt mà
+  loadHostDetail(id: string) {
+    this.isLoading = true;
+    this.adminService.getHostDetail(id).subscribe({
+      next: (res) => {
+        this.hostData = res.data;
+        console.log(res)
+        this.isLoading = false;
+        this.cdr.detectChanges(); // Ép buộc update UI
+      },
+      error: (err) => {
+        console.error('Lỗi tải dữ liệu:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  suspendHost() {
-    if(confirm('CẢNH BÁO MỨC ĐỎ: Khóa chủ nhà này sẽ gỡ toàn bộ chỗ nghỉ khỏi hệ thống. Bạn chắc chắn?')) {
-      this.host.status = 'SUSPENDED';
-    }
+  // Sửa lại để dùng PropertyDto từ DTO thật
+  togglePropertyStatus(prop: PropertyDto) {
+    // Logic gọi API update status ở đây
+    console.log('Toggle status cho:', prop.id);
   }
 
-  togglePropertyStatus(prop: Property) {
-    const action = prop.status === 'ACTIVE' ? 'tạm dừng' : 'kích hoạt lại';
-    if(confirm(`Bạn muốn ${action} căn ${prop.name}?`)) {
-      prop.status = prop.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
-    }
-  }
-
+  // Cập nhật lại logic config dựa trên string status thật từ Backend
   getPropertyStatusConfig(status: string) {
     const map: any = {
       'ACTIVE': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', label: 'Hoạt động' },
       'PENDING_DOCS': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', label: 'Chờ duyệt Sổ' },
       'SUSPENDED': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', label: 'Đình chỉ' }
     };
-    return map[status];
+    return map[status] || { bg: 'bg-gray-50', text: 'text-gray-500', border: 'border-gray-200', label: 'Khác' };
+  }
+
+  goBack() { this.location.back(); }
+  suspendHost() {
+    if (!this.hostData) return;
+
+    if (confirm('CẢNH BÁO: Bạn có chắc chắn muốn đình chỉ host này?')) {
+      // Gọi API suspend tại đây nếu bạn đã có service
+      this.hostData.host.status = 'SUSPENDED';
+      console.log('Đã đình chỉ host:', this.hostData.host.id);
+    }
+  }
+  openImageModal(url: string) {
+    if (url) this.selectedImage = url;
   }
 }

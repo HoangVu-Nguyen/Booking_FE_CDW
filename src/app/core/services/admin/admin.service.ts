@@ -7,6 +7,7 @@ import { HostKycDetailResponse } from '../../models/host/host-kyc-detail.respons
 import { PageResponse } from '../../models/response/page.response';
 import { AdminHostResponse } from '../../models/response/admin.reponse';
 import { HttpParams } from '@angular/common/http';
+import { HostDetailResponse } from '../../models/response/host-detail.response';
 
 @Injectable({
   providedIn: 'root'
@@ -65,4 +66,8 @@ export class AdminService {
       }
     );
   }
+  // Trong admin.service.ts
+public getHostDetail(hostId: string): Observable<ApiResponse<HostDetailResponse>> {
+    return this.apiService.get<ApiResponse<HostDetailResponse>>(`/api/v1/admin/approvals/hosts/${hostId}`);
+}
 }
