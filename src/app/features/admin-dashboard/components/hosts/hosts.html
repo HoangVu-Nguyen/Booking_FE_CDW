@@ -11,11 +11,7 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button
-                class="h-10 px-5 rounded-xl bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 transition-all font-bold text-[11px] uppercase tracking-widest flex items-center gap-2 shadow-sm">
-                <span class="material-symbols-outlined text-[16px]">person_add</span>
-                Tạo tài khoản
-            </button>
+            
         </div>
     </div>
 
@@ -27,7 +23,9 @@
             </div>
             <div>
                 <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Tổng Chủ nhà</p>
-                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">1,248</h2>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">
+                    {{ (metrics?.totalHosts || 0) | number:'1.0-0' }}
+                </h2>
             </div>
         </div>
 
@@ -37,7 +35,9 @@
             </div>
             <div>
                 <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Chờ duyệt KYC</p>
-                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">24</h2>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">
+                    {{ (metrics?.pendingKycHosts || 0) | number:'1.0-0' }}
+                </h2>
             </div>
         </div>
 
@@ -49,7 +49,9 @@
             <div>
                 <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Tài sản (Listings)
                 </p>
-                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">3,492</h2>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">
+                    {{ (metrics?.totalProperties || 0) | number:'1.0-0' }}
+                </h2>
             </div>
         </div>
 
@@ -59,7 +61,9 @@
             </div>
             <div>
                 <p class="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-0.5">Bị đình chỉ</p>
-                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">12</h2>
+                <h2 class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">
+                    {{ (metrics?.suspendedHosts || 0) | number:'1.0-0' }}
+                </h2>
             </div>
         </div>
     </div>
@@ -83,10 +87,8 @@
             <div class="relative group w-full xl:w-80">
                 <span
                     class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] text-stone-400 group-focus-within:text-[#173124] transition-colors">search</span>
-               <input 
-    type="text" 
-    placeholder="Tìm tên, email, số điện thoại..."
-    (input)="onSearch($event)"  class="w-full h-10 pl-10 pr-4 ...">
+                <input type="text" placeholder="Tìm tên, email, số điện thoại..." (input)="onSearch($event)"
+                    class="w-full h-10 pl-10 pr-4 ...">
             </div>
         </div>
 
@@ -108,7 +110,7 @@
                         <th class="py-4 px-4"></th>
                     </tr>
                 </thead>
-                
+
                 <tbody class="divide-y divide-stone-100/80">
                     <tr *ngFor="let host of hosts" class="group hover:bg-stone-50/30 transition-colors duration-200">
 
@@ -258,7 +260,7 @@
 
         <div class="p-4 border-t border-stone-200 bg-stone-50/30 flex items-center justify-between">
             <p class="text-[11px] font-semibold text-stone-500">Hiển thị <span class="text-stone-900 font-black">10
-                    </span> / <span class="text-stone-900 font-black"></span> Chủ nhà</p>
+                </span> / <span class="text-stone-900 font-black"></span> Chủ nhà</p>
             <div class="flex items-center gap-1">
                 <button [disabled]="currentPage === 0 || isLoading" (click)="onPageChange(currentPage - 1)"
                     class="h-8 px-3 rounded-lg border border-stone-200 text-stone-500 hover:bg-white text-[11px] font-bold disabled:opacity-40 disabled:cursor-not-allowed">

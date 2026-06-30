@@ -9,7 +9,7 @@ export interface HostDetailResponse {
 export interface HostInfo {
   id: string;
   joinDate: string;
-  status: 'ACTIVE' | 'PENDING_KYC' | 'SUSPENDED' | 'REJECTED';
+  status: 'ACTIVE' | 'PENDING_KYC' | 'SUSPENDED' | 'REJECTED'| 'MISS';
   walletBalance: number;
   totalRevenue: number;
   user: UserHeaderResponse;
