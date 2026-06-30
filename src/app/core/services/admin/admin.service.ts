@@ -10,6 +10,7 @@ import { HttpParams } from '@angular/common/http';
 import { HostDetailResponse } from '../../models/response/host-detail.response';
 import { HostOverviewMetricsResponse } from '../../models/response/host-metrics.response';
 import { StatusUpdateRequest } from '../../models/request/status-update.request';
+import { DashboardResponse } from '../../models/dashboard-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -81,4 +82,14 @@ export class AdminService {
       payload
     );
   }
+public getDashboardSummary(): Observable<ApiResponse<DashboardResponse>> {
+    return this.apiService.get<ApiResponse<DashboardResponse>>('/api/v1/admin/approvals/dashboard/summary');
+}
+public getRevenueReport(type: string): Observable<ApiResponse<any>> {
+    // Chỉ cần truyền object đơn giản { type: type }
+    return this.apiService.get<ApiResponse<any>>(
+        '/api/v1/admin/approvals/revenue', 
+        { type: type } 
+    );
+}
 }
