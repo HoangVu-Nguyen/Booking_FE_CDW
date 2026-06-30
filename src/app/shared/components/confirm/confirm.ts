@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { ConfirmationService } from '../../../core/services/confirm/confirm.service';
 import { SafeHtmlPipe } from '../../../core/pipe/safe-html.pipe';
 @Component({
@@ -9,4 +9,10 @@ import { SafeHtmlPipe } from '../../../core/pipe/safe-html.pipe';
 })
 export class Confirm {
   service = inject(ConfirmationService);
+  @ViewChild('reasonInput') reasonInput!: ElementRef<HTMLTextAreaElement>;
+
+  handleConfirm(onConfirm: (reason: string) => void) {
+    const reason = this.reasonInput?.nativeElement.value || '';
+    onConfirm(reason);
+  }
 }

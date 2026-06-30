@@ -47,7 +47,7 @@ export interface PropertyDto {
   type: string;
   location: string;
   image: string;
-  status: 'ACTIVE' | 'PENDING_DOCS' | 'SUSPENDED';
+  status: 'APPROVED' | 'PENDING_DOCS' | 'SUSPENDED';
   metrics: PropertyMetricsDto;
 }
 

@@ -3,6 +3,7 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router'; // Import đúng ActivatedRoute
 import { HostDetailResponse, PropertyDto } from '../../../../../../core/models/response/host-detail.response';
 import { AdminService } from '../../../../../../core/services/admin/admin.service';
+import { ConfirmationService } from '../../../../../../core/services/confirm/confirm.service';
 
 @Component({
   selector: 'app-admin-host-detail',
@@ -15,6 +16,7 @@ export class HostDetail implements OnInit {
   private adminService = inject(AdminService);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
+  private confirmationService = inject(ConfirmationService);
 
   activeTab: 'OVERVIEW' | 'PROPERTIES' | 'KYC_DOCS' | 'AUDIT_LOG' = 'PROPERTIES';
   hostData: HostDetailResponse | null = null;
@@ -47,11 +49,7 @@ export class HostDetail implements OnInit {
     });
   }
 
-  // Sửa lại để dùng PropertyDto từ DTO thật
-  togglePropertyStatus(prop: PropertyDto) {
-    // Logic gọi API update status ở đây
-    console.log('Toggle status cho:', prop.id);
-  }
+
 
   // Cập nhật lại logic config dựa trên string status thật từ Backend
   getPropertyStatusConfig(status: string) {
@@ -75,5 +73,30 @@ export class HostDetail implements OnInit {
   }
   openImageModal(url: string) {
     if (url) this.selectedImage = url;
+  }
+  togglePropertyStatus(prop: PropertyDto) {
+    const isBlocking = prop.status === 'APPROVED';
+    const actionName = isBlocking ? 'Đình chỉ' : 'Kích hoạt lại';
+
+    this.confirmationService.confirm(
+      `${actionName} căn hộ`,
+      `Bạn có chắc chắn muốn ${actionName} "${prop.name}"? Vui lòng nhập lý do bên dưới:`,
+      (reason: string) => {
+        // Logic callback khi nhấn xác nhận
+        const newStatus = isBlocking ? 'SUSPENDED' : 'APPROVED';
+
+        this.adminService.updatePropertyStatus(prop.id, newStatus, reason).subscribe({
+          next: () => {
+            prop.status = newStatus;
+            this.confirmationService.close(); // Đóng modal sau khi xong
+          },
+          error: (err) => {
+            console.error(err);
+            alert('Có lỗi xảy ra khi cập nhật!');
+          }
+        });
+      },
+      true // Hiện ô nhập lý do
+    );
   }
 }

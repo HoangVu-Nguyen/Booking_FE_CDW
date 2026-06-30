@@ -9,6 +9,7 @@ import { AdminHostResponse } from '../../models/response/admin.reponse';
 import { HttpParams } from '@angular/common/http';
 import { HostDetailResponse } from '../../models/response/host-detail.response';
 import { HostOverviewMetricsResponse } from '../../models/response/host-metrics.response';
+import { StatusUpdateRequest } from '../../models/request/status-update.request';
 
 @Injectable({
   providedIn: 'root'
@@ -72,5 +73,12 @@ export class AdminService {
   }
   public getHostOverviewMetrics(): Observable<ApiResponse<HostOverviewMetricsResponse>> {
     return this.apiService.get<ApiResponse<HostOverviewMetricsResponse>>('/api/v1/admin/approvals/hosts/metrics');
+  }
+  public updatePropertyStatus(homestayId: string, status: string, reason: string): Observable<ApiResponse<void>> {
+    const payload: StatusUpdateRequest = { status, reason };
+    return this.apiService.post<ApiResponse<void>>(
+      `/api/v1/admin/approvals/properties/${homestayId}/status`, 
+      payload
+    );
   }
 }
