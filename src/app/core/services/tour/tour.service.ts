@@ -15,7 +15,7 @@ export class TourService {
     private currentTourSignal = signal<TourResponse | null>(null);
     readonly currentTour = this.currentTourSignal.asReadonly();
 
-    getAllTours(page: number = 0, size: number = 12): Observable<ApiResponse<PageResponse<TourResponse>>> {
+    getAllTours(page: number = 0, size: number = 10): Observable<ApiResponse<PageResponse<TourResponse>>> {
         return this.apiService.get<ApiResponse<PageResponse<TourResponse>>>(
             `/api/v1/tours?page=${page}&size=${size}`
         );

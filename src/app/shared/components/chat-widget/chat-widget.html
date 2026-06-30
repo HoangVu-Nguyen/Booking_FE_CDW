@@ -45,7 +45,9 @@
       <div class="flex items-center gap-3.5 min-w-0">
         <div
           class="relative w-11 h-11 rounded-[14px] bg-gradient-to-br from-[#173124]/5 to-[#173124]/10 border border-[#173124]/15 flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
-          @if (currentConversation()?.type === 'ADMIN') {
+          @if (chatState.activeContext() === 'AI') {
+          <span class="material-symbols-outlined text-[24px] text-amber-500">auto_awesome</span>
+          } @else if (currentConversation()?.type === 'ADMIN') {
           <span class="material-symbols-outlined text-[24px] text-[#173124]">support_agent</span>
           } @else {
           <img [src]="currentConversation()?.targetAvatar" class="w-full h-full object-cover">
@@ -55,7 +57,11 @@
 
         <div class="min-w-0">
           <h3 class="text-[16px] font-bold text-stone-900 leading-tight truncate">
-            {{ currentConversation()?.targetName || 'Chưa chọn cuộc hội thoại' }}
+            @if (chatState.activeContext() === 'AI') {
+              Clyva AI Assistant
+            } @else {
+              {{ currentConversation()?.targetName || 'Chưa chọn cuộc hội thoại' }}
+            }
           </h3>
           <p class="text-[12px] font-medium text-emerald-600/80 mt-0.5 flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Đang hoạt động
@@ -86,7 +92,13 @@
         class="flex-1 py-2 text-[13px] font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5"
         [ngClass]="chatState.activeContext() === 'GROUP' ? 'bg-white text-[#173124] shadow-sm ring-1 ring-black/5' : 'text-stone-500 hover:text-stone-700 hover:bg-stone-200/50'">
         <span class="material-symbols-outlined text-[18px]">groups</span>
-        Nhóm Tour
+        Nhóm
+      </button>
+      <button (click)="setTab('AI')"
+        class="flex-1 py-2 text-[13px] font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5"
+        [ngClass]="chatState.activeContext() === 'AI' ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-sm' : 'text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50/50'">
+        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+        AI
       </button>
     </div>
 
@@ -162,25 +174,25 @@
   </header>
   <main #chatScroll (scroll)="onScroll($event)" class="flex-1 overflow-y-auto px-4 py-5 bg-[#f5f7f6] chat-scroll">
 
-    @if (chatService.isLoadingMessages() && chatService.activeMessages().length === 0) {
+    @if (chatService.isLoadingMessages() && chatService.activeMessages().length === 0 && chatState.activeContext() !== 'AI') {
     <div class="h-full flex items-center justify-center">
       <div class="w-6 h-6 border-2 border-[#173124] border-t-transparent rounded-full animate-spin"></div>
     </div>
     }
-    @else if (!currentConversation()) {
+    @else if (!currentConversation() && chatState.activeContext() !== 'AI') {
     <div class="h-full flex flex-col items-center justify-center text-stone-400 gap-2">
       <span class="material-symbols-outlined text-[40px] opacity-50">speaker_notes_off</span>
       <p class="text-[13px] font-medium">Chưa có cuộc hội thoại nào</p>
     </div>
     }
-    @else if (chatService.activeMessages().length === 0) {
+    @else if (chatState.activeContext() !== 'AI' && chatService.activeMessages().length === 0) {
     <div class="h-full flex flex-col items-center justify-center text-stone-400 gap-2">
       <span class="material-symbols-outlined text-[40px] opacity-50">waving_hand</span>
       <p class="text-[13px] font-medium">Hãy gửi tin nhắn đầu tiên</p>
     </div>
     }
     @else {
-    @if (chatService.isLoadingMessages()) {
+    @if (chatService.isLoadingMessages() && chatState.activeContext() !== 'AI') {
     <div class="flex justify-center mb-4">
       <div class="w-4 h-4 border-2 border-[#173124] border-t-transparent rounded-full animate-spin"></div>
     </div>
@@ -193,7 +205,7 @@
     </div>
 
     <div class="flex flex-col gap-5 w-full">
-      @for (msg of chatService.activeMessages(); track msg.id) {
+      @for (msg of (chatState.activeContext() === 'AI' ? aiMessages() : chatService.activeMessages()); track msg.id) {
 
       <div class="flex flex-col w-full" [ngClass]="msg.mine ? 'items-end' : 'items-start'">
 
@@ -203,12 +215,15 @@
         </span>
         }
 
+
         <div class="flex items-end gap-2 max-w-[85%]" [ngClass]="msg.mine ? 'flex-row-reverse' : 'flex-row'">
 
           @if (!msg.mine) {
           <div
             class="w-9 h-9 rounded-full object-cover shrink-0 border-2 border-white shadow-sm bg-stone-200 flex items-center justify-center overflow-hidden">
-            @if (currentConversation()?.type === 'ADMIN') {
+            @if (chatState.activeContext() === 'AI') {
+            <span class="material-symbols-outlined text-[20px] text-amber-500">auto_awesome</span>
+            } @else if (currentConversation()?.type === 'ADMIN') {
             <span class="material-symbols-outlined text-[20px] text-stone-600">support_agent</span>
             } @else {
             <img [src]="msg.senderAvatar || 'https://ui-avatars.com/api/?name=User'" class="w-full h-full object-cover">
@@ -284,6 +299,65 @@
                 {{ msg.content }}
               </p>
               }
+
+              @if (msg.isAiSuggestion) {
+                @if (msg.suggestedRooms && msg.suggestedRooms.length > 0) {
+                  <!-- Hiển thị danh sách phòng do AI gợi ý -->
+                  <div class="flex flex-col gap-3 mt-2 mb-1 w-full min-w-[260px] sm:min-w-[280px]">
+                    @for (room of msg.suggestedRooms; track room.id) {
+                    <div class="bg-white rounded-[16px] border border-emerald-100 overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer group">
+                      <div class="h-32 bg-stone-100 relative overflow-hidden">
+                        @if (room.imageUrls && room.imageUrls.length > 0) {
+                        <img [src]="room.imageUrls[0]" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        } @else {
+                        <div class="w-full h-full flex items-center justify-center text-emerald-200 bg-emerald-50/50">
+                          <span class="material-symbols-outlined text-4xl opacity-50">image</span>
+                        </div>
+                        }
+                        
+                        <!-- Badge đánh giá -->
+                        <div class="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-sm px-2 py-1 rounded-lg text-[11px] font-bold text-[#173124] shadow-sm flex items-center gap-1 border border-white/50">
+                          <span class="material-symbols-outlined text-[13px] text-amber-400">star</span>
+                          {{ room.rating || 'Mới' }}
+                        </div>
+                        
+                        <!-- Badge loại hình -->
+                        <div class="absolute bottom-2.5 left-2.5 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-bold text-white uppercase tracking-wider shadow-sm">
+                          {{ room.type === 'TOUR' ? 'Tour' : 'Homestay' }}
+                        </div>
+                      </div>
+                      
+                      <!-- Thông tin chi tiết -->
+                      <div class="p-3.5">
+                        <h4 class="text-[13.5px] font-bold text-stone-800 line-clamp-1 mb-1.5 group-hover:text-emerald-700 transition-colors">
+                          {{ room.name }}
+                        </h4>
+                        
+                        <div class="flex items-center gap-1.5 text-[11px] text-stone-500 mb-3 font-medium">
+                          <span class="material-symbols-outlined text-[14px] text-emerald-500">location_on</span>
+                          <span class="truncate">{{ room.cityName }}</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mt-1 pt-2.5 border-t border-stone-100 border-dashed">
+                          <div class="flex items-center gap-1 text-[11.5px] text-stone-500 font-medium">
+                            <span class="material-symbols-outlined text-[15px]">group</span>
+                            {{ room.guests }} khách
+                          </div>
+                          <div class="text-[13.5px] font-bold text-[#173124]">
+                            {{ room.basePrice | number }}<span class="text-[10px] text-stone-400 font-medium ml-0.5">₫</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                } @else {
+                  <!-- Hiển thị lại widget nếu không có phòng gợi ý -->
+                  <div class="mt-2 w-full max-w-[280px]">
+                    <app-ai-room-finder></app-ai-room-finder>
+                  </div>
+                }
+              }
             </div>
           </div>
         </div>
@@ -301,9 +375,10 @@
     </div>
     }
   </main>
-
+  
   <section class="bg-[#f5f7f6] px-4 pb-3">
     <div class="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
+
       <button type="button"
         class="shrink-0 px-4 py-2 rounded-xl bg-white border border-[#173124]/15 shadow-sm text-[12px] font-semibold text-[#173124] hover:bg-stone-50 hover:border-[#173124]/30 transition-all">Check-in
         sớm</button>
@@ -315,6 +390,7 @@
         vụ thêm</button>
     </div>
   </section>
+
 
   <app-chat-input (sendMsg)="handleSendMessage($event)"></app-chat-input>
 </div>

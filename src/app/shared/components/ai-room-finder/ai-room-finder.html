@@ -1,0 +1,40 @@
+<div class="relative w-full max-w-[300px] overflow-hidden rounded-[20px] bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-emerald-50/60 group transition-all duration-300 hover:shadow-[0_8px_30px_rgb(23,49,36,0.08)]">
+  
+  <!-- Nền gradient trang trí góc -->
+  <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-gradient-to-br from-emerald-100/40 to-transparent blur-xl"></div>
+  <div class="absolute -left-6 -bottom-6 h-24 w-24 rounded-full bg-gradient-to-tr from-emerald-50/40 to-transparent blur-xl"></div>
+
+  <!-- Header -->
+  <div class="relative z-10 flex items-center gap-3 mb-3">
+    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 text-emerald-600 shadow-inner border border-white">
+      <span class="material-symbols-outlined text-[20px] animate-pulse">psychology</span>
+    </div>
+    <div>
+      <h4 class="text-[14px] font-extrabold text-slate-800 tracking-tight flex items-center gap-1">
+        Clyva AI Helper
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+      </h4>
+      <p class="text-[11px] font-medium text-emerald-600/80">Trợ lý thông minh</p>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10">
+    <p class="text-[13px] leading-relaxed text-slate-600 mb-4">
+      Tôi có thể phân tích yêu cầu của bạn và tìm ra những không gian phù hợp nhất. Bạn đã sẵn sàng khám phá chưa?
+    </p>
+
+    <!-- Call to action button -->
+    <button (click)="search()" class="group/btn relative w-full overflow-hidden rounded-xl bg-[#173124] px-4 py-3 text-[13px] font-semibold text-white shadow-md transition-all hover:bg-[#1e402f] hover:shadow-lg active:scale-[0.98]">
+      <div class="relative z-10 flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined text-[18px] transition-transform group-hover/btn:-rotate-12 group-hover/btn:scale-110">travel_explore</span>
+        <span>Bắt đầu tìm phòng</span>
+      </div>
+      <!-- Hover effect layer -->
+      <div class="absolute inset-0 z-0 h-full w-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
+    </button>
+  </div>
+</div>

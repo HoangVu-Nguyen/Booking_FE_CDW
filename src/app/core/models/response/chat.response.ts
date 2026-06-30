@@ -1,4 +1,5 @@
 import { ChatContext } from "../../services/chat/chat-state.service";
+import { GlobalSearchResponse } from "./search.response";
 
 export interface ConversationSummaryResponse {
   id: number;
@@ -38,6 +39,8 @@ export interface MessageResponse {
   time: string;
   mine: boolean; // Lưu ý: Trong HTML nhớ dùng msg.mine nhé
   attachments: AttachmentResponse[];
+  isAiSuggestion?: boolean;
+  suggestedRooms?: GlobalSearchResponse[];
 }
 
 export interface SendMessageRequest {

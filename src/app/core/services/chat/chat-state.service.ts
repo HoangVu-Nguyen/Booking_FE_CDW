@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { ChatService } from './chat.service'; // Inject ChatService vào đây
 
-export type ChatContext = 'ADMIN' | 'HOST' | 'GROUP';
+export type ChatContext = 'ADMIN' | 'HOST' | 'GROUP' | 'AI';
 
 @Injectable({ providedIn: 'root' })
 export class ChatStateService {

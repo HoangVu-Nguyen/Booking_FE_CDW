@@ -45,6 +45,7 @@
       class="flex-1 max-h-24 resize-none bg-transparent border-none outline-none px-1 py-2.5 text-[14.5px] text-stone-800 placeholder:text-stone-400 focus:ring-0"></textarea>
 
     <button type="submit" [disabled]="!newMessage().trim()"
+      title="Gửi tin nhắn"
       class="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
       [ngClass]="newMessage().trim() ? 'bg-[#173124] text-white shadow-md hover:bg-[#10261b] scale-100' : 'bg-stone-200 text-stone-400 cursor-not-allowed scale-95'">
       <span class="material-symbols-outlined text-[18px] ml-0.5">send</span>

@@ -17,7 +17,6 @@ export class TourList implements OnInit {
   tours = signal<TourResponse[]>([]);
   currentPage = signal(0);
   
-  // Thêm 2 cờ này để kiểm soát việc gọi API
   isLoading = signal(false);
   hasMore = signal(true); 
 
@@ -26,36 +25,32 @@ export class TourList implements OnInit {
   }
 
   loadTours(): void {
-    // Nếu đang tải dở hoặc đã hết dữ liệu thì không gọi BE nữa
     if (this.isLoading() || !this.hasMore()) return;
 
     this.isLoading.set(true); // Bật cờ đang tải
 
     this.tourService.getAllTours(this.currentPage(), 10).subscribe({
       next: (res) => {
+        console.log(res)
         if (res.success && res.data) {
           const newTours = res.data.content;
           
-          // QUAN TRỌNG: Nối mảng mới vào mảng cũ (Append) thay vì ghi đè (Replace)
           this.tours.update(currentTours => [...currentTours, ...newTours]);
 
-          // Kiểm tra xem đã hết dữ liệu chưa (trang hiện tại >= tổng số trang - 1)
           if (this.currentPage() >= res.data.totalPages - 1 || newTours.length === 0) {
             this.hasMore.set(false);
           } else {
-            // Nếu còn, tăng biến currentPage lên 1 để chuẩn bị cho lần cuộn tiếp theo
             this.currentPage.update(page => page + 1);
           }
         }
-        this.isLoading.set(false); // Tắt cờ đang tải
+        this.isLoading.set(false); 
       },
       error: () => {
-        this.isLoading.set(false); // Lỗi cũng phải tắt cờ
+        this.isLoading.set(false);
       }
     });
   }
 
-  // Bắt sự kiện cuộn chuột của trình duyệt
   @HostListener('window:scroll', [])
   onScroll(): void {
     // Lấy chiều cao của cửa sổ, tài liệu và vị trí cuộn hiện tại

@@ -19,10 +19,12 @@ import { ChatInput } from '../chat-input/chat-input';
 import { ChatSendPayload } from '../../../core/models/file/file.model';
 import { FileService } from '../../../core/services/file/file.service';
 import { ImageType } from '../../../core/enum/image-type.enum';
+import { AiRoomFinder } from '../ai-room-finder/ai-room-finder';
+import { AiChatService } from '../../../core/services/ai-chat/ai-chat.service';
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
-  imports: [CommonModule, FormsModule, ChatInput],
+  imports: [CommonModule, FormsModule, ChatInput, AiRoomFinder],
   templateUrl: './chat-widget.html',
   styleUrls: ['./chat-widget.css']
 })
@@ -44,6 +46,9 @@ export class ChatWidget implements AfterViewChecked {
   private isProgrammaticScroll = false;
   private scrollTimeout: any; // Dùng để chặn sự kiện onScroll khi đang cuộn mượt
   public fileService = inject(FileService);
+  public aiChatService = inject(AiChatService);
+  showAiWidget = false;
+  aiMessages = signal<any[]>([]);
 
   isBookingExpanded = signal<boolean>(false);
 
@@ -74,7 +79,60 @@ export class ChatWidget implements AfterViewChecked {
     }
     return null;
   });
+  triggerAiBooking() {
+    this.showAiWidget = !this.showAiWidget; // Bật hoặc tắt
+  }
 
+  // Hàm nhận thông tin khi nhấn "Bắt đầu tìm phòng" từ component con
+  handleAiSearch() {
+    this.showAiWidget = false;
+    this.setTab('AI');
+    this.sendToAi('Xin chào, hãy giúp tôi tìm phòng');
+  }
+
+  sendToAi(content: string) {
+    if (!content) return;
+
+    // 1. Thêm tin nhắn của người dùng vào mảng
+    const tempId = Date.now();
+    const userMsg = {
+      id: tempId,
+      senderId: 0,
+      content: content,
+      type: 'TEXT' as const,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      mine: true,
+      attachments: []
+    };
+    
+    // Thêm tin nhắn vào mảng AI cục bộ
+    this.aiMessages.update(msgs => [...msgs, userMsg]);
+    setTimeout(() => this.scrollToBottom(true), 50);
+
+    // 2. Gọi API backend
+    this.aiChatService.chatWithAi(content).subscribe({
+      next: (res) => {
+        const aiMsg = {
+          id: tempId + 1,
+          senderId: -1,
+          senderName: 'Clyva AI Helper',
+          senderAvatar: '', // Có thể để avatar AI mặc định
+          content: res.aiMessage,
+          type: 'TEXT' as const,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          mine: false,
+          attachments: [],
+          isAiSuggestion: true,
+          suggestedRooms: res.suggestedRooms
+        };
+        this.aiMessages.update(msgs => [...msgs, aiMsg]);
+        setTimeout(() => this.scrollToBottom(true), 50);
+      },
+      error: (err) => {
+        console.error('Lỗi khi gọi AI:', err);
+      }
+    });
+  }
   ngAfterViewChecked(): void {
     const element = this.getScrollElement();
     if (!element) return;
@@ -83,7 +141,7 @@ export class ChatWidget implements AfterViewChecked {
     const conversation = this.currentConversation();
     const conversationKey = `${context}-${conversation?.id ?? 'none'}`;
 
-    const messages = this.chatService.activeMessages();
+    const messages = context === 'AI' ? this.aiMessages() : this.chatService.activeMessages();
     const messageCount = messages.length;
 
     // 1. KHI ĐỔI PHÒNG CHAT: Cuộn xuống đáy ngay lập tức (Không mượt)
@@ -188,11 +246,21 @@ export class ChatWidget implements AfterViewChecked {
     this.shouldStickToBottom = true;
     this.lastConversationKey = null;
     this.lastMessageCount = 0;
-    this.chatService.activeConversationId.set(null);
+    
+    if (tab === 'AI') {
+      this.chatService.activeConversationId.set(-999);
+    } else {
+      this.chatService.activeConversationId.set(null);
+    }
   }
 
 
   async handleSendMessage(payload: ChatSendPayload) {
+    if (this.chatState.activeContext() === 'AI') {
+      this.sendToAi(payload.content || '');
+      return;
+    }
+
     const currentId = this.chatService.activeConversationId();
     if (!currentId) return;
 
@@ -200,7 +268,7 @@ export class ChatWidget implements AfterViewChecked {
     if (payload.files && payload.files.length > 0) {
       try {
         // 1. Kích hoạt cỗ máy xử lý ngầm S3 bên trên, đợi nó trả về kết quả mảng objectKey
-        const s3Results = await this.fileService.uploadBatchFiles(payload.files,ImageType.CHAT);
+        const s3Results = await this.fileService.uploadBatchFiles(payload.files, ImageType.CHAT);
 
         // 2. Map trúng mảng objectKey vào đúng cấu trúc DTO gửi tin nhắn của ông
         const attachmentPayload = s3Results.map((s3, index) => ({
