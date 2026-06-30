@@ -116,6 +116,7 @@ export class CalendarPricing implements OnInit {
 
     this.calendarService.getCalendarDetails(this.homestayId, roomId, start, end).subscribe({
       next: response => {
+        console.log(response)
         const data: CalendarInventoryResponse[] = response.data ?? [];
 
         if (data.length > 0) {

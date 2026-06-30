@@ -66,7 +66,7 @@ export class Hosts implements OnInit {
     const configs: any = {
       'ACTIVE': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200/60', label: 'Hoạt động', dot: 'bg-emerald-500' },
       'PENDING_KYC': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200/60', label: 'Chờ duyệt KYC', dot: 'bg-amber-500 animate-pulse' },
-      'SUSPENDED': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200/60', label: 'Bị khóa', dot: 'bg-rose-500' },
+      'SUSPENDED': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200/60', label: 'Bị định chỉ', dot: 'bg-rose-500' },
       'MISSING': { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200/60', label: 'Chưa nộp KYC', dot: 'bg-rose-500 animate-pulse' }
     };
     return configs[status] || { bg: 'bg-gray-50', text: 'text-gray-700', label: 'Khác', dot: 'bg-gray-500' };

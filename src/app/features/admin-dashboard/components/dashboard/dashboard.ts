@@ -31,6 +31,7 @@ export class Dashboard implements OnInit {
 
     this.adminService.getDashboardSummary().subscribe({
       next: (response) => {
+        console.log(response)
        
         this.dashboardData = response.data; 
         console.log(this.dashboardData)

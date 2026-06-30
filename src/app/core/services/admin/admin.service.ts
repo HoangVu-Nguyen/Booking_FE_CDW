@@ -92,4 +92,11 @@ public getRevenueReport(type: string): Observable<ApiResponse<any>> {
         { type: type } 
     );
 }
+public suspendHost(hostId: string | number, reason: string, days: number): Observable<ApiResponse<void>> {
+    const payload = { reason, days };
+    return this.apiService.patch<ApiResponse<void>>(
+        `/api/v1/admin/approvals/hosts/${hostId}/suspend`, 
+        payload
+    );
+}
 }

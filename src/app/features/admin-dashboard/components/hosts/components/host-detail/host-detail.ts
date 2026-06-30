@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router'; // Import đúng ActivatedRoute
+import { FormsModule } from '@angular/forms'; // BẮT BUỘC IMPORT ĐỂ DÙNG ngModel
+import { ActivatedRoute } from '@angular/router'; 
 import { HostDetailResponse, PropertyDto } from '../../../../../../core/models/response/host-detail.response';
 import { AdminService } from '../../../../../../core/services/admin/admin.service';
 import { ConfirmationService } from '../../../../../../core/services/confirm/confirm.service';
@@ -8,7 +9,7 @@ import { ConfirmationService } from '../../../../../../core/services/confirm/con
 @Component({
   selector: 'app-admin-host-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule], // Thêm FormsModule vào đây
   templateUrl: './host-detail.html'
 })
 export class HostDetail implements OnInit {
@@ -22,11 +23,19 @@ export class HostDetail implements OnInit {
   hostData: HostDetailResponse | null = null;
   isLoading = true;
   selectedImage: string | null = null;
+
+  // ==============================================
+  // STATE QUẢN LÝ MODAL ĐÌNH CHỈ
+  // ==============================================
+  showSuspendModal: boolean = false;
+  suspendReason: string = '';
+  suspendDays: number = 7;
+  isSuspending: boolean = false;
+
   ngOnInit() {
     this.route.params.subscribe(params => {
-      const id = params['id']; // ID từ URL: /admin/hosts/:id
+      const id = params['id']; 
       if (id) {
-        // Nếu ID có tiền tố 'HST-', tách nó ra
         const cleanId = id.replace('HST-', '');
         this.loadHostDetail(cleanId);
       }
@@ -38,9 +47,8 @@ export class HostDetail implements OnInit {
     this.adminService.getHostDetail(id).subscribe({
       next: (res) => {
         this.hostData = res.data;
-        console.log(res)
         this.isLoading = false;
-        this.cdr.detectChanges(); // Ép buộc update UI
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         console.error('Lỗi tải dữ liệu:', err);
@@ -49,9 +57,6 @@ export class HostDetail implements OnInit {
     });
   }
 
-
-
-  // Cập nhật lại logic config dựa trên string status thật từ Backend
   getPropertyStatusConfig(status: string) {
     const map: any = {
       'ACTIVE': { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', label: 'Hoạt động' },
@@ -62,18 +67,68 @@ export class HostDetail implements OnInit {
   }
 
   goBack() { this.location.back(); }
-  suspendHost() {
-    if (!this.hostData) return;
 
-    if (confirm('CẢNH BÁO: Bạn có chắc chắn muốn đình chỉ host này?')) {
-      // Gọi API suspend tại đây nếu bạn đã có service
-      this.hostData.host.status = 'SUSPENDED';
-      console.log('Đã đình chỉ host:', this.hostData.host.id);
-    }
-  }
   openImageModal(url: string) {
     if (url) this.selectedImage = url;
   }
+
+  // ==============================================
+  // LOGIC ĐÌNH CHỈ HOST
+  // ==============================================
+  openSuspendModal() {
+    if (!this.hostData) return;
+    this.suspendReason = '';
+    this.suspendDays = 7; // Reset mặc định 7 ngày
+    this.showSuspendModal = true;
+  }
+
+  closeSuspendModal() {
+    this.showSuspendModal = false;
+  }
+
+  suspendHost() {
+    if (!this.hostData || !this.hostData.host) return;
+    
+    const hostId = this.hostData.host.id;
+
+    // Gọi Confirmation Service của ông
+    this.confirmationService.confirm(
+        'Đình chỉ hoạt động',
+        'Bạn có chắc chắn muốn đình chỉ Host này? Vui lòng nhập lý do cụ thể:',
+        (reason: string) => {
+            
+            // Validate nếu user không nhập lý do
+            if (!reason || !reason.trim()) {
+                alert('Vui lòng nhập lý do đình chỉ!');
+                return; 
+            }
+
+            const suspendDays = 7; 
+
+            // Gọi API
+            this.adminService.suspendHost(hostId, reason, suspendDays).subscribe({
+                next: () => {
+                    alert(`Đã đình chỉ Host thành công trong ${suspendDays} ngày!`);
+                    
+                    // Cập nhật lại UI ngay lập tức
+                    this.hostData!.host.status = 'SUSPENDED'; 
+                    this.confirmationService.close(); // Đóng Modal của Service
+                    this.cdr.detectChanges();
+                },
+                error: (err) => {
+                    console.error('Lỗi khi khóa Host:', err);
+                    alert('Có lỗi xảy ra, không thể đình chỉ.');
+                    this.confirmationService.close();
+                }
+            });
+        },
+        true // Cho phép hiển thị Textarea nhập lý do
+    );
+}
+
+  // ==============================================
+  // LOGIC KHÓA/MỞ KHÓA TỪNG CĂN HỘ
+  // ==============================================
   togglePropertyStatus(prop: PropertyDto) {
     const isBlocking = prop.status === 'APPROVED';
     const actionName = isBlocking ? 'Đình chỉ' : 'Kích hoạt lại';
@@ -82,13 +137,13 @@ export class HostDetail implements OnInit {
       `${actionName} căn hộ`,
       `Bạn có chắc chắn muốn ${actionName} "${prop.name}"? Vui lòng nhập lý do bên dưới:`,
       (reason: string) => {
-        // Logic callback khi nhấn xác nhận
         const newStatus = isBlocking ? 'SUSPENDED' : 'APPROVED';
 
         this.adminService.updatePropertyStatus(prop.id, newStatus, reason).subscribe({
           next: () => {
             prop.status = newStatus;
-            this.confirmationService.close(); // Đóng modal sau khi xong
+            this.confirmationService.close(); 
+            this.cdr.detectChanges();
           },
           error: (err) => {
             console.error(err);
@@ -96,7 +151,7 @@ export class HostDetail implements OnInit {
           }
         });
       },
-      true // Hiện ô nhập lý do
+      true
     );
   }
 }

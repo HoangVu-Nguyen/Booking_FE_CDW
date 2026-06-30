@@ -13,7 +13,7 @@ Chart.register(...registerables);
   imports: [CommonModule, FormsModule], // Nhớ import FormsModule
   templateUrl: './transactions.html'
 })
-export class Transactions implements OnInit, AfterViewInit {
+export class Transactions implements OnInit {
 
   // 1. STATE LƯU TRỮ DỮ LIỆU TỪ API
   transactions: LedgerTransaction[] = [];
@@ -50,8 +50,9 @@ export class Transactions implements OnInit, AfterViewInit {
       next: (res) => {
         if (res && res.data) {
           this.kpiData = res.data;
+          this.onFilterChange("WEEK")
           this.cdr.detectChanges();
-          this.updateRevenueChart(['T1', 'T2', 'T3', 'T4', 'T5', 'T6'], [120, 190, 150, 220, 280, 250], [200, 250, 220, 300, 350, 320]);
+        
         }
       },
       error: (err) => console.error('Lỗi khi tải KPI:', err)
@@ -140,87 +141,9 @@ export class Transactions implements OnInit, AfterViewInit {
     // Fallback an toàn
     return configs[type] || configs['PAYMENT_IN'];
   }
-  ngAfterViewInit() {
-    this.initRevenueChart();
-  }
+ 
 
-  initRevenueChart() {
-    if (!this.revenueChartRef) return;
-    const ctx = this.revenueChartRef.nativeElement.getContext('2d');
-
-    // Tạo gradient cho Doanh thu thuần
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
-    gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
-
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'],
-        datasets: [
-          {
-            label: 'Doanh thu thuần',
-            data: [120, 190, 150, 220, 280, 250],
-            borderColor: '#f8e536',
-            backgroundColor: gradient, // Dùng gradient thay vì màu phẳng
-            fill: true,
-            tension: 0.4,
-            pointRadius: 6,
-            pointBackgroundColor: '#10b981',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointHoverRadius: 8
-          },
-          {
-            label: 'GMV',
-            data: [200, 250, 220, 300, 350, 320],
-            borderColor: '#d6d3d1',
-            backgroundColor: 'transparent',
-            borderDash: [6, 6], // Nét đứt thưa hơn
-            tension: 0.4,
-            pointRadius: 0 // Ẩn điểm để nhìn gọn
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { intersect: false, mode: 'index' }, // Hiển thị tooltip cho cả 2 data khi hover
-        scales: {
-          y: {
-            beginAtZero: true,
-            // Cấu hình đường lưới (grid)
-            grid: {
-              color: '#f7f7f7' // Màu đường kẻ ngang
-            },
-            // Cấu hình đường viền trục (border) - CHUẨN V4+
-            border: {
-              display: false // Ẩn đường viền trục Y
-            },
-            ticks: { font: { size: 10, weight: 'bold' }, color: '#a8a29e' }
-          },
-          x: {
-            grid: {
-              display: false // Ẩn lưới dọc
-            },
-            border: {
-              display: false // Ẩn đường viền trục X
-            },
-            ticks: { font: { size: 10, weight: 'bold' }, color: '#a8a29e' }
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#173124',
-            padding: 12,
-            cornerRadius: 8,
-            bodyFont: { weight: 'bold' }
-          }
-        }
-      }
-    });
-  }
+  
   onFilterChange(type: string) {
     this.filter = type;
     this.isLoading = true;
