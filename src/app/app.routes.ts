@@ -50,6 +50,8 @@ import { DocumentUpload } from './features/host-registration/steps/document-uplo
 import { HomestayVerification } from './features/host-dashboard/components/manage-property/components/homestay-verification/homestay-verification';
 import { Approvals } from './features/admin-dashboard/components/approvals/approvals';
 import { HostDetail } from './features/admin-dashboard/components/hosts/components/host-detail/host-detail';
+import { OffersComponent } from './features/offers/offers.component';
+import { VoucherManagement } from './features/admin-dashboard/components/voucher-management/voucher-management';
 
 export const routes: Routes = [
   // 1. NHÓM KHÔNG CÓ LAYOUT (Auth)
@@ -97,6 +99,11 @@ export const routes: Routes = [
         title: 'Yêu thích - Clyvasync'
       },
       {
+        path: 'offers',
+        component: OffersComponent,
+        title: 'Ưu đãi - Clyvasync'
+      },
+      {
         path: 'admin',
         component: AdminDashboard,
         title: 'Dashboard - Clyvasync',
@@ -122,7 +129,8 @@ export const routes: Routes = [
             title: 'Quản lý Host - Admin Dashboard - Clyvasync'
           },
           { path: 'approvals', component: Approvals },
-           { path: 'hosts/:id', component: HostDetail },
+          { path: 'hosts/:id', component: HostDetail },
+          { path: 'vouchers', component: VoucherManagement, title: 'Quản lý Khuyến mãi - Admin Dashboard' },
         ]
       },
       {

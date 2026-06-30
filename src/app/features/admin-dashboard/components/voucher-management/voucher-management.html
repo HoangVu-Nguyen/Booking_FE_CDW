@@ -1,0 +1,228 @@
+<div class="p-8 h-full bg-[#f4f4f0]">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-black text-stone-900 tracking-tight">Quản lý Khuyến mãi</h1>
+            <p class="text-stone-500 text-sm mt-1">Tạo và quản lý các mã giảm giá, voucher cho hệ thống.</p>
+        </div>
+        <button (click)="openForm()" class="px-5 py-2.5 bg-[#173124] text-white text-sm font-bold rounded-xl shadow-lg shadow-[#173124]/20 hover:bg-[#2c5e45] transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            Tạo Voucher Mới
+        </button>
+    </div>
+
+    <!-- Empty State (when no form is open and no vouchers) -->
+    <div *ngIf="!isFormOpen && vouchers.length === 0 && !isLoading" class="bg-white rounded-[2rem] border border-stone-200 p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <div class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-4xl text-stone-400">local_activity</span>
+        </div>
+        <h3 class="text-lg font-bold text-stone-900 mb-2">Chưa có Voucher nào</h3>
+        <p class="text-stone-500 mb-6 text-sm max-w-sm">Bấm vào nút "Tạo Voucher Mới" để bắt đầu thiết lập các chương trình khuyến mãi cho khách hàng.</p>
+        <button (click)="openForm()" class="px-6 py-3 bg-white border border-stone-300 text-stone-700 text-sm font-bold rounded-xl hover:bg-stone-50 transition-colors">
+            Tạo Voucher Mới
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="!isFormOpen && isLoading" class="bg-white rounded-[2rem] border border-stone-200 p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <span class="material-symbols-outlined animate-spin text-4xl text-[#173124]">refresh</span>
+        <p class="text-stone-500 mt-4 text-sm font-medium">Đang tải danh sách Voucher...</p>
+    </div>
+
+    <!-- Voucher List -->
+    <div *ngIf="!isFormOpen && vouchers.length > 0 && !isLoading" class="bg-white rounded-[2rem] border border-stone-200 shadow-sm overflow-hidden mb-10">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                    <tr class="bg-stone-50 border-b border-stone-200 text-stone-500 text-sm">
+                        <th class="py-4 px-6 font-bold whitespace-nowrap">Mã / Tên</th>
+                        <th class="py-4 px-6 font-bold whitespace-nowrap">Giảm giá</th>
+                        <th class="py-4 px-6 font-bold whitespace-nowrap">Điểm</th>
+                        <th class="py-4 px-6 font-bold whitespace-nowrap">Thời gian</th>
+                        <th class="py-4 px-6 font-bold whitespace-nowrap text-center">Lượt dùng</th>
+                        <th class="py-4 px-6 font-bold whitespace-nowrap text-center">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let voucher of vouchers" class="border-b border-stone-100 hover:bg-stone-50 transition-colors">
+                        <td class="py-4 px-6">
+                            <div class="font-bold text-stone-900 text-lg uppercase tracking-wide">{{ voucher.code }}</div>
+                            <div class="text-sm text-stone-500 line-clamp-1" [title]="voucher.name">{{ voucher.name }}</div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <div class="font-bold text-indigo-600 text-base">
+                                {{ voucher.discountValue | number }} {{ voucher.discountType === 'PERCENTAGE' ? '%' : 'VND' }}
+                            </div>
+                            <div class="text-xs text-stone-400 mt-0.5" *ngIf="voucher.minOrderValue">
+                                Đơn tối thiểu: {{ voucher.minOrderValue | number }}
+                            </div>
+                        </td>
+                        <td class="py-4 px-6">
+                            <span *ngIf="voucher.pointsRequired > 0" class="inline-flex items-center gap-1 text-sm font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">
+                                <span class="material-symbols-outlined text-[14px]">stars</span>
+                                {{ voucher.pointsRequired | number }}
+                            </span>
+                            <span *ngIf="!voucher.pointsRequired" class="inline-flex items-center gap-1 text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                                <span class="material-symbols-outlined text-[14px]">public</span>
+                                Free / Public
+                            </span>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-stone-600">
+                            <div class="flex flex-col gap-1">
+                                <span class="flex items-center gap-2"><span class="w-8 text-stone-400 text-xs">Từ:</span> {{ voucher.validFrom | date:'dd/MM/yyyy HH:mm' }}</span>
+                                <span class="flex items-center gap-2"><span class="w-8 text-stone-400 text-xs">Đến:</span> {{ voucher.validUntil | date:'dd/MM/yyyy HH:mm' }}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-stone-600 text-center font-medium">
+                            {{ voucher.currentUsageCount || 0 }} / <span class="text-stone-400">{{ voucher.totalUsageLimit || '∞' }}</span>
+                        </td>
+                        <td class="py-4 px-6 text-center">
+                            <span *ngIf="voucher.isActive" class="inline-block px-3 py-1 bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs font-bold rounded-full shadow-sm">
+                                Hoạt động
+                            </span>
+                            <span *ngIf="!voucher.isActive" class="inline-block px-3 py-1 bg-stone-100 border border-stone-200 text-stone-500 text-xs font-bold rounded-full shadow-sm">
+                                Đã tắt
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Voucher Form Modal / Container -->
+    <div *ngIf="isFormOpen" class="bg-white rounded-[2rem] border border-stone-200 shadow-sm p-8 max-w-4xl mx-auto mb-10">
+        <div class="flex items-center justify-between mb-8 pb-6 border-b border-stone-100">
+            <h2 class="text-xl font-black text-stone-900">Tạo Voucher Mới</h2>
+            <button (click)="closeForm()" class="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+
+        <form (ngSubmit)="saveVoucher()">
+            
+            <!-- Block 1: Thông tin cơ bản -->
+            <div class="mb-10">
+                <h3 class="text-sm font-extrabold text-stone-400 uppercase tracking-widest mb-6">1. Thông tin cơ bản</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Mã Code (code) <span class="text-red-500">*</span></label>
+                        <div class="flex gap-2">
+                            <input type="text" [(ngModel)]="newVoucher.code" name="code" required
+                                class="flex-1 px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] uppercase placeholder-stone-400" 
+                                placeholder="VD: SUMMER2026">
+                            <button type="button" (click)="generateRandomCode()" class="px-4 py-3 bg-stone-100 text-stone-600 font-bold rounded-xl hover:bg-stone-200 border border-stone-200 transition-colors" title="Tạo mã ngẫu nhiên">
+                                <span class="material-symbols-outlined text-[20px] pt-1">autorenew</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Tên hiển thị (name) <span class="text-red-500">*</span></label>
+                        <input type="text" [(ngModel)]="newVoucher.name" name="name" required
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] placeholder-stone-400" 
+                            placeholder="VD: Giảm 50k cho mùa hè rực rỡ">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Mô tả (description)</label>
+                        <textarea [(ngModel)]="newVoucher.description" name="description" rows="3"
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] placeholder-stone-400" 
+                            placeholder="VD: Áp dụng cho mọi homestay..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block 2: Thiết lập Giá trị -->
+            <div class="mb-10">
+                <h3 class="text-sm font-extrabold text-stone-400 uppercase tracking-widest mb-6">2. Thiết lập Giá trị</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Loại giảm giá (discount_type)</label>
+                        <select [(ngModel)]="newVoucher.discount_type" name="discount_type"
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]">
+                            <option value="FIXED_AMOUNT">Giảm Tiền Mặt (VND)</option>
+                            <option value="PERCENTAGE">Giảm Theo %</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Mức giảm (discount_value) <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="number" [(ngModel)]="newVoucher.discount_value" name="discount_value" required
+                                class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                                [placeholder]="newVoucher.discount_type === 'PERCENTAGE' ? 'VD: 10' : 'VD: 50000'">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold">{{ newVoucher.discount_type === 'PERCENTAGE' ? '%' : 'VND' }}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="newVoucher.discount_type === 'PERCENTAGE'">
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Giảm tối đa (max_discount)</label>
+                        <input type="number" [(ngModel)]="newVoucher.max_discount" name="max_discount"
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                            placeholder="VD: 100000">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Đơn tối thiểu (min_order_value)</label>
+                        <input type="number" [(ngModel)]="newVoucher.min_order_value" name="min_order_value"
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                            placeholder="VD: 500000">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block 3: Phân loại Voucher -->
+            <div class="mb-10 bg-[#f8f9fa] p-6 rounded-2xl border border-stone-100">
+                <h3 class="text-sm font-extrabold text-indigo-500 uppercase tracking-widest mb-4">3. Phân loại Voucher (Hệ thống Điểm)</h3>
+                <label class="block text-sm font-bold text-stone-700 mb-2">Số điểm cần đổi (points_required)</label>
+                <div class="flex gap-4 items-start">
+                    <input type="number" [(ngModel)]="newVoucher.points_required" name="points_required"
+                        class="w-48 px-4 py-3 bg-white border border-stone-200 rounded-xl text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500" 
+                        placeholder="VD: 500">
+                    <div class="text-sm text-stone-500 leading-relaxed bg-white p-3 rounded-xl border border-stone-200 flex-1 shadow-sm">
+                        <span class="font-bold text-stone-700 block mb-1">Mẹo cấu hình:</span>
+                        <ul class="list-disc pl-4 space-y-1">
+                            <li>Nhập <span class="font-bold text-indigo-600">> 0</span> (VD: 500): Voucher này sẽ tự động chạy vào trang <b>"Đổi Điểm Lấy Voucher"</b>.</li>
+                            <li>Nhập <span class="font-bold text-emerald-600">0</span>: Voucher này là mã Public, ai có code cũng nhập được (Phù hợp Flash Sale).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block 4: Giới hạn & Thời hạn -->
+            <div class="mb-10">
+                <h3 class="text-sm font-extrabold text-stone-400 uppercase tracking-widest mb-6">4. Giới hạn & Thời hạn</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Từ ngày (valid_from) <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" [(ngModel)]="newVoucher.valid_from" name="valid_from" required
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Đến ngày (valid_until) <span class="text-red-500">*</span></label>
+                        <input type="datetime-local" [(ngModel)]="newVoucher.valid_until" name="valid_until" required
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Số lượng phát hành (total_issue_limit)</label>
+                        <input type="number" [(ngModel)]="newVoucher.total_issue_limit" name="total_issue_limit"
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                            placeholder="VD: 1000 mã">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Giới hạn lượt dùng (total_usage_limit)</label>
+                        <input type="number" [(ngModel)]="newVoucher.total_usage_limit" name="total_usage_limit"
+                            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                            placeholder="VD: Chỉ 100 người dùng thành công">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-4 pt-6 border-t border-stone-100">
+                <button type="button" (click)="closeForm()" class="px-6 py-3 bg-white border border-stone-300 text-stone-700 text-sm font-bold rounded-xl hover:bg-stone-50 transition-colors">
+                    Hủy bỏ
+                </button>
+                <button type="submit" class="px-8 py-3 bg-[#173124] text-white text-sm font-bold rounded-xl shadow-lg shadow-[#173124]/20 hover:bg-[#2c5e45] transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">save</span>
+                    Lưu Voucher
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

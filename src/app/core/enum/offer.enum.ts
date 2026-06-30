@@ -1,0 +1,10 @@
+export enum DiscountType {
+    PERCENTAGE = 'PERCENTAGE',
+    FIXED_AMOUNT = 'FIXED_AMOUNT'
+}
+
+export enum SponsorType {
+    MEMBER_REWARD = 'MEMBER_REWARD',
+    REFERRAL_SPONSOR = 'REFERRAL_SPONSOR',
+    AGENT_SPONSOR = 'AGENT_SPONSOR'
+}
