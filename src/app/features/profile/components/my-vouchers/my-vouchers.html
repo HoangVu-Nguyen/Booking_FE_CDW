@@ -1,0 +1,77 @@
+<div class="bg-white rounded-3xl border border-stone-100 p-8 shadow-sm">
+    <div class="mb-8">
+        <h2 class="text-2xl font-black text-stone-900 tracking-tight">Kho Voucher Của Tôi</h2>
+        <p class="text-stone-500 mt-2">Quản lý các mã giảm giá và voucher ưu đãi bạn đã lưu hoặc đổi bằng điểm.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-stone-200 mb-8 space-x-8">
+        <button (click)="setTab('ACTIVE')" 
+            [ngClass]="activeTab === 'ACTIVE' ? 'border-[#173124] text-[#173124]' : 'border-transparent text-stone-500 hover:text-stone-700'"
+            class="py-4 px-2 border-b-2 font-bold text-sm transition-colors whitespace-nowrap">
+            Chưa sử dụng
+        </button>
+        <button (click)="setTab('USED')" 
+            [ngClass]="activeTab === 'USED' ? 'border-[#173124] text-[#173124]' : 'border-transparent text-stone-500 hover:text-stone-700'"
+            class="py-4 px-2 border-b-2 font-bold text-sm transition-colors whitespace-nowrap">
+            Đã sử dụng
+        </button>
+        <button (click)="setTab('EXPIRED')" 
+            [ngClass]="activeTab === 'EXPIRED' ? 'border-[#173124] text-[#173124]' : 'border-transparent text-stone-500 hover:text-stone-700'"
+            class="py-4 px-2 border-b-2 font-bold text-sm transition-colors whitespace-nowrap">
+            Hết hạn
+        </button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredVouchers.length === 0" class="py-16 text-center">
+        <div class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="material-symbols-outlined text-4xl text-stone-400">local_activity</span>
+        </div>
+        <h3 class="text-lg font-bold text-stone-900 mb-2">Không có voucher nào</h3>
+        <p class="text-stone-500 text-sm max-w-sm mx-auto mb-6">Bạn chưa có voucher nào trong danh mục này.</p>
+        <a routerLink="/offers" class="inline-flex px-6 py-3 bg-[#173124] text-white font-bold rounded-xl shadow-lg shadow-[#173124]/20 hover:bg-[#2c5e45] transition-colors">
+            Khám phá ưu đãi ngay
+        </a>
+    </div>
+
+    <!-- Voucher List -->
+    <div *ngIf="filteredVouchers.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div *ngFor="let voucher of filteredVouchers" 
+            class="relative flex items-stretch bg-white border border-stone-200 rounded-[1.5rem] overflow-hidden group hover:border-[#173124]/30 hover:shadow-lg hover:shadow-[#173124]/5 transition-all duration-300"
+            [ngClass]="{'opacity-60 grayscale': activeTab !== 'ACTIVE'}">
+            
+            <!-- Left part: Discount Highlight -->
+            <div class="bg-gradient-to-br from-indigo-50 to-emerald-50 w-32 flex flex-col items-center justify-center border-r border-stone-200 border-dashed relative">
+                <div class="w-4 h-4 rounded-full bg-white absolute -left-2 top-1/2 -translate-y-1/2 border-r border-stone-200 hidden"></div>
+                
+                <span class="text-sm font-extrabold text-stone-400 uppercase tracking-widest mb-1">Giảm</span>
+                <span class="text-2xl font-black text-[#173124]">{{ voucher.discountValue | number }}</span>
+                <span class="text-sm font-bold text-[#173124]">{{ voucher.discountType === 'PERCENTAGE' ? '%' : 'đ' }}</span>
+            </div>
+
+            <!-- Right part: Details -->
+            <div class="flex-1 p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="px-2.5 py-1 bg-stone-100 text-stone-600 text-[10px] font-black uppercase tracking-widest rounded-md">Mã: {{ voucher.code }}</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-stone-900 leading-tight mb-2">{{ voucher.title }}</h3>
+                </div>
+                
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-stone-100">
+                    <div class="text-xs text-stone-500 font-medium">
+                        HSD: <span class="text-stone-700 font-bold">{{ voucher.validUntil | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <button *ngIf="activeTab === 'ACTIVE'" class="text-[#173124] font-bold text-sm hover:underline">
+                        Dùng ngay
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cutout Circles for Ticket effect -->
+            <div class="w-6 h-6 rounded-full bg-white absolute -top-3 left-[7.2rem] border-b border-stone-200"></div>
+            <div class="w-6 h-6 rounded-full bg-white absolute -bottom-3 left-[7.2rem] border-t border-stone-200"></div>
+        </div>
+    </div>
+</div>
