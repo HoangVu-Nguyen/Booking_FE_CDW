@@ -4,6 +4,7 @@ import { ApiService } from '../api/api.service';
 import { ApiResponse } from '../../models/response/api.response';
 import { VoucherCreateRequest } from '../../models/request/voucher.request';
 import { VoucherResponse } from '../../models/response/voucher.response';
+import { UserVoucherResponse } from '../../models/response/user-voucher.response';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,9 @@ export class VoucherService {
 
   redeemVoucher(templateId: number): Observable<ApiResponse<void>> {
     return this.apiService.post<ApiResponse<void>>(`/api/v1/vouchers/${templateId}/redeem`, {});
+  }
+
+  getMyVouchers(): Observable<ApiResponse<UserVoucherResponse[]>> {
+    return this.apiService.get<ApiResponse<UserVoucherResponse[]>>('/api/v1/vouchers/my-vouchers');
   }
 }
