@@ -86,7 +86,8 @@ export class Checkout implements OnInit {
         // Gọi qua hàm confirmCheckout của PaymentService để hứng Object phân loại từ Backend
         switchMap(() => this.paymentService.confirmCheckout({
           bookingCode: data.bookingCode, // Bốc lấy ID vật lý (BIGINT) của Booking trong DB
-          paymentMethod: method
+          paymentMethod: method,
+          userVoucherId: this.bookingService.appliedVoucherId() // Thêm ID voucher
         }))
       ).subscribe({
         next: (response: any) => {

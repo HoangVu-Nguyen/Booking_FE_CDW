@@ -58,7 +58,7 @@ export class PaymentService {
     return firstValueFrom(this.apiService.post<ApiResponse<void>>('/api/v1/payments/confirm', body));
   }
   // Xác nhận thanh toán đơn hàng (Hỗ trợ cả VNPAY, MOMO, TRANSFER và CARD_xxx)
-  confirmCheckout(body: { bookingCode: string; paymentMethod: string }): Promise<ApiResponse<any>> {
+  confirmCheckout(body: { bookingCode: string; paymentMethod: string; userVoucherId?: number | null }): Promise<ApiResponse<any>> {
     return firstValueFrom(this.apiService.post<ApiResponse<any>>('/api/v1/payments/checkout/confirm', body));
   }
   getPaymentSuccessDetails(bookingCode: string): Observable<ApiResponse<any>> {

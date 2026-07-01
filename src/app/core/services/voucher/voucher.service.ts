@@ -32,6 +32,10 @@ export class VoucherService {
     return this.apiService.get<ApiResponse<UserVoucherResponse[]>>('/api/v1/vouchers/my-vouchers');
   }
 
+  getApplicableVouchers(bookingCode: string): Observable<ApiResponse<UserVoucherResponse[]>> {
+    return this.apiService.get<ApiResponse<UserVoucherResponse[]>>('/api/v1/vouchers/applicable', { bookingCode });
+  }
+
   // --- HOST VOUCHER MANAGEMENT ---
   getHostVouchers(): Observable<ApiResponse<VoucherResponse[]>> {
     return this.apiService.get<ApiResponse<VoucherResponse[]>>('/api/v1/host/vouchers');

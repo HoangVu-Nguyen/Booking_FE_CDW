@@ -94,9 +94,20 @@ export class OffersComponent implements OnInit {
     return icons[Math.floor(seed) % icons.length] || icons[0];
   }
 
-  copyCode(code: string) {
-    navigator.clipboard.writeText(code);
-    alert('Đã sao chép mã: ' + code);
+  saveVoucher(voucher: any) {
+    this.voucherService.redeemVoucher(voucher.id).subscribe({
+      next: (res) => {
+        if (res.success) {
+          alert(`Đã lưu thành công: ${voucher.title}! Bạn có thể xem trong Kho Voucher.`);
+        } else {
+          alert('Không thể lưu voucher: ' + res.message);
+        }
+      },
+      error: (err) => {
+        console.error('Save voucher error', err);
+        alert('Đã xảy ra lỗi khi lưu voucher.');
+      }
+    });
   }
 
   redeemVoucher(voucher: any) {

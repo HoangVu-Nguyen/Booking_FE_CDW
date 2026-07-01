@@ -26,6 +26,7 @@ export class BookingService {
     currentSelection = signal<RoomResponse | null>(null);
     currentSelectedPlan = signal<any | null>(null);
     selectedRoomCount = signal<number>(1);
+    appliedVoucherId = signal<number | null>(null);
     currentTourSelections = signal<TourResponse[]>([]);// Thêm đoạn này vào chung chỗ với các signals khác (checkInDate, checkoutData...)
 contactInfo = signal({
     guestName: '',
@@ -77,6 +78,7 @@ contactInfo = signal({
         this.currentSelectedPlan.set(null);
         this.selectedRoomCount.set(1);
         this.currentTourSelections.set([]);
+        this.appliedVoucherId.set(null);
     }
 
     // --- API CALLS (Bú data từ ApiService) ---

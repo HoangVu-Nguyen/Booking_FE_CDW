@@ -16,6 +16,8 @@ export class MyVouchers implements OnInit {
   isLoading = false;
   
   myVouchers: UserVoucherResponse[] = [];
+  selectedVoucher: any = null;
+  isModalOpen = false;
   private changeRef = inject(ChangeDetectorRef);
 
   constructor(private voucherService: VoucherService) {}
@@ -50,5 +52,15 @@ export class MyVouchers implements OnInit {
 
   setTab(tab: string) {
     this.activeTab = tab;
+  }
+
+  openVoucherDetails(voucher: any) {
+    this.selectedVoucher = voucher;
+    this.isModalOpen = true;
+  }
+
+  closeVoucherDetails() {
+    this.isModalOpen = false;
+    this.selectedVoucher = null;
   }
 }
