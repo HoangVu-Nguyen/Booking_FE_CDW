@@ -28,6 +28,7 @@
 <!-- ========================================== -->
 <!-- 3. FUNCTIONAL TIMELINE (Lịch trình & Dịch vụ) -->
 <!-- ========================================== -->
+
 <app-booking-timeline [tours]="detail.tours" [checkIn]="detail.checkIn" [checkOut]="detail.checkOut"
     [propertyName]="detail.property.name">
 </app-booking-timeline>
@@ -36,7 +37,7 @@
 <!-- 4. RATING & REVIEW (MỚI BỔ SUNG) -->
 <!-- ========================================== -->
 <!-- Đặt ngay dưới lịch trình để mời khách hàng đánh giá sau chuyến đi -->
-<app-booking-review-banner></app-booking-review-banner>
+<app-booking-review-banner *ngIf="detail.status === 'COMPLETED'" [bookingCode]="detail.bookingCode"></app-booking-review-banner>
 
 <!-- Floating Action Bar -->
 <div

@@ -11,9 +11,10 @@ import { BookingRulesModal } from './components/booking-rules-modal/booking-rule
 import { ConfirmationService } from '../../../../core/services/confirm/confirm.service';
 import { BookingService } from '../../../../core/services/booking/booking.service';
 import { ToastService } from '../../../../core/services/toast/toast.service';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-my-trip',
-  imports: [BookingTimeline, BookingReviewBanner, BookingMainInfo, BookingGallery, BookingConcierge, BookingMap, BookingRulesModal],
+  imports: [BookingTimeline, BookingReviewBanner, BookingMainInfo, BookingGallery, BookingConcierge, BookingMap, BookingRulesModal,CommonModule],
   templateUrl: './my-trip.html',
   styleUrl: './my-trip.css',
 })
@@ -30,6 +31,7 @@ export class MyTrip {
     if (bookingCode) {
       // 2. Gọi API kéo data về
       this.tripService.fetchTripDetail(bookingCode);
+
       console.log(this.tripService.currentTripDetail())
     }
   }
@@ -60,7 +62,7 @@ export class MyTrip {
 
           // 2. Tạo nội dung thông báo động dựa trên kết quả tính toán
           let confirmMessage = `Bạn đang yêu cầu hủy đặt phòng tại <strong>${detail.property.name}</strong>.<br><br>`;
-          
+
           if (previewData.totalPaid > 0) {
             confirmMessage += `<div style="text-align: left; background: #f9fafb; padding: 10px; border-radius: 8px;">`;
             confirmMessage += `<strong>Chính sách:</strong> ${previewData.refundPolicyMessage}<br><br>`;
@@ -70,10 +72,10 @@ export class MyTrip {
             confirmMessage += `</div><br>`;
             confirmMessage += `Tiền hoàn sẽ được chuyển về tài khoản của bạn trong 3-5 ngày làm việc. `;
           } else {
-             // Trường hợp chưa thanh toán
-             confirmMessage += `<div style="color: #059669; margin-bottom: 15px;">${previewData.refundPolicyMessage}</div>`;
+            // Trường hợp chưa thanh toán
+            confirmMessage += `<div style="color: #059669; margin-bottom: 15px;">${previewData.refundPolicyMessage}</div>`;
           }
-          
+
           confirmMessage += `Bạn có chắc chắn muốn hủy đơn này?`;
 
           // 3. Hiển thị Popup xác nhận
@@ -86,8 +88,8 @@ export class MyTrip {
                 next: (cancelRes) => {
                   if (cancelRes.success) {
                     console.log('Đã xác nhận hủy đặt phòng mã:', bookingCode);
-                      this.toastService.success('Hủy đặt phòng thành công', `Đơn đặt phòng ${bookingCode} đã được hủy.`);    
-                      this.tripService.fetchTripDetail(bookingCode);                
+                    this.toastService.success('Hủy đặt phòng thành công', `Đơn đặt phòng ${bookingCode} đã được hủy.`);
+                    this.tripService.fetchTripDetail(bookingCode);
                   }
                 },
                 error: (err) => {
@@ -104,5 +106,5 @@ export class MyTrip {
         // TODO: Xử lý lỗi lấy thông tin preview (Ví dụ: Toast "Không thể lấy thông tin hủy, vui lòng thử lại sau")
       }
     });
-}
+  }
 }

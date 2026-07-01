@@ -2,7 +2,7 @@
 <!-- 4. RATING & REVIEW (MỚI BỔ SUNG) -->
 <!-- ========================================== -->
 <!-- Đặt ngay dưới lịch trình để mời khách hàng đánh giá sau chuyến đi -->
-<section class="max-w-[1000px] mx-auto px-6 mb-32">
+<section *ngIf="!isChecking && isEligible" class="max-w-[1000px] mx-auto px-6 mb-32">
     <div
         class="bg-[#173124] rounded-[2rem] p-8 md:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
         <!-- Background Graphic -->
@@ -29,10 +29,92 @@
         </div>
 
         <div class="relative z-10 w-full md:w-auto shrink-0">
-            <button
+            <button (click)="openModal()"
                 class="w-full md:w-auto bg-white text-[#173124] px-8 py-4 rounded-full text-[12px] font-bold uppercase tracking-widest shadow-lg hover:bg-[#e8c39e] transition-colors flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-[18px]">edit</span> Viết đánh giá
             </button>
         </div>
     </div>
 </section>
+
+<!-- REVIEW MODAL -->
+<div *ngIf="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+    <div class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity" (click)="!isSubmitting && closeModal()"></div>
+
+    <div class="relative bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-lg transform transition-all animate-in fade-in zoom-in-95 duration-200 flex flex-col">
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+            <h3 class="text-lg font-black text-stone-900">Đánh giá chuyến đi</h3>
+            <button [disabled]="isSubmitting" (click)="closeModal()" class="w-8 h-8 rounded-full hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors disabled:opacity-50">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 overflow-y-auto space-y-6">
+            <div class="flex flex-col items-center justify-center space-y-2 mb-2">
+                <p class="text-sm font-bold text-stone-600 uppercase tracking-widest">Đánh giá tổng thể</p>
+                <div class="flex items-center gap-2">
+                    <span *ngFor="let i of [1, 2, 3, 4, 5]" 
+                          (click)="!isSubmitting && setRating(i)"
+                          (mouseenter)="!isSubmitting && setHoveredStar(i)"
+                          (mouseleave)="!isSubmitting && setHoveredStar(0)"
+                          class="material-symbols-outlined text-[40px] cursor-pointer transition-all duration-200"
+                          [ngClass]="i <= (hoveredStar || rating) ? 'text-[#e8c39e] scale-110' : 'text-stone-200 hover:text-[#e8c39e]'"
+                          style="font-variation-settings: 'FILL' 1;">
+                        star
+                    </span>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-stone-600 uppercase tracking-wider block ml-1">Chia sẻ trải nghiệm của bạn</label>
+                <textarea 
+                    [(ngModel)]="reviewContent" 
+                    [disabled]="isSubmitting"
+                    rows="4" 
+                    placeholder="Chuyến đi của bạn diễn ra như thế nào? Phòng ở có thoải mái không? Bạn có thích dịch vụ của chúng tôi không?"
+                    class="w-full bg-stone-50 border border-stone-200 rounded-2xl px-5 py-4 text-sm font-medium text-stone-800 placeholder:font-normal placeholder:text-stone-400 focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all resize-none disabled:opacity-70">
+                </textarea>
+            </div>
+
+            <!-- Nơi chọn và hiển thị ảnh -->
+            <div class="space-y-2 mt-4">
+                <label class="text-xs font-bold text-stone-600 uppercase tracking-wider block ml-1">Đính kèm hình ảnh (Tùy chọn)</label>
+                
+                <div class="flex flex-wrap gap-3 mt-2">
+                    <!-- Nút thêm ảnh -->
+                    <label class="w-20 h-20 border-2 border-dashed border-stone-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors text-stone-400 hover:text-primary">
+                        <span class="material-symbols-outlined text-[24px]">add_photo_alternate</span>
+                        <span class="text-[10px] font-bold mt-1">Thêm ảnh</span>
+                        <input type="file" multiple accept="image/*" class="hidden" (change)="onFileSelected($event)" [disabled]="isSubmitting">
+                    </label>
+
+                    <!-- Preview ảnh -->
+                    <div *ngFor="let img of selectedImages; let i = index" class="relative w-20 h-20 rounded-xl overflow-hidden group border border-stone-200">
+                        <img [src]="img.url" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button (click)="removeImage(i)" [disabled]="isSubmitting" class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 transition-colors shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Footer -->
+        <div class="p-6 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+            <button [disabled]="isSubmitting" (click)="closeModal()" class="px-6 py-3 rounded-xl text-stone-600 font-bold text-sm hover:bg-stone-200 transition-colors disabled:opacity-50">
+                Hủy bỏ
+            </button>
+            <button 
+                [disabled]="isSubmitting || rating === 0" 
+                (click)="submitReview()" 
+                class="px-8 py-3 bg-[#173124] text-white font-bold rounded-xl text-sm transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#0f2118]">
+                <span *ngIf="isSubmitting" class="material-symbols-outlined animate-spin text-[18px]">autorenew</span>
+                <span>{{ isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá' }}</span>
+            </button>
+        </div>
+    </div>
+</div>

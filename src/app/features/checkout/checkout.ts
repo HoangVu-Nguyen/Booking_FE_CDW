@@ -77,13 +77,8 @@ export class Checkout implements OnInit {
     const isRequestMode = this.isRequestMode;
 
     if (!isRequestMode) {
-      // =================================================================
-      // 🚀 LUỒNG THANH TOÁN MỚI (Xử lý đa phương thức chuẩn chỉnh)
-      // =================================================================
 
-      // Đã tháo xích tính năng TRANSFER vì Backend nhà mình đã viết hàm xử lý PENDING ngon lành!
       this.bookingService.updateContactInfo(data.bookingCode, updatePayload).pipe(
-        // Gọi qua hàm confirmCheckout của PaymentService để hứng Object phân loại từ Backend
         switchMap(() => this.paymentService.confirmCheckout({
           bookingCode: data.bookingCode, // Bốc lấy ID vật lý (BIGINT) của Booking trong DB
           paymentMethod: method,
@@ -92,19 +87,17 @@ export class Checkout implements OnInit {
       ).subscribe({
         next: (response: any) => {
           this.isProcessing.set(false);
-          const result = response.data; // Hứng cục PaymentConfirmResponse từ BE nhả về
+          const result = response.data;
 
           switch (result.status) {
 
             case 'SUCCEEDED':
               this.toast.success('Thành công', result.message || 'Thanh toán hoàn tất!');
 
-              // ĐÃ SỬA: Truyền phẳng mã code vào Route để tạo ra URL dạng /payment-result/MÃ_CỦA_ÔNG
               this.router.navigate(['/payment-result', data.bookingCode]);
               break;
 
             case 'REDIRECT':
-              // Chọn VNPAY / MOMO -> Bung lụa chuyển hướng trình duyệt sang cổng quét mã QR
               window.location.href = result.redirectUrl;
               break;
 
