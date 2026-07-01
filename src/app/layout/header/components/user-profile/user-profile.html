@@ -3,17 +3,47 @@
   <!-- Action buttons -->
   <div class="flex items-center gap-3.5 pr-3 border-r border-gray-200/80">
 
-    <app-notification-menu 
-       [isOpen]="isNotifOpen" 
-       (toggle)="toggleNotif()">
-    </app-notification-menu>
+      @if (userInfo(); as user) {
 
-    <app-mail-menu 
-       [isOpen]="isMessageOpen" 
-       (toggle)="toggleMessage()">
-    </app-mail-menu>
-    <app-message-menu></app-message-menu>
+    <!-- Action buttons -->
+    <div class="flex items-center gap-3.5 pr-3 border-r border-gray-200/80">
 
+      <app-notification-menu
+        [isOpen]="isNotifOpen"
+        (toggle)="toggleNotif()">
+      </app-notification-menu>
+
+      <app-mail-menu
+        [isOpen]="isMessageOpen"
+        (toggle)="toggleMessage()">
+      </app-mail-menu>
+
+      <app-message-menu></app-message-menu>
+
+    </div>
+
+    <!-- User Menu -->
+    <div class="relative">
+      <!-- Toàn bộ code dropdown hiện tại của bạn -->
+    </div>
+
+  } @else {
+
+    <!-- Login Button -->
+    <a
+      routerLink="/login"
+      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full
+             bg-black text-white font-medium shadow-md
+             hover:bg-gray-800 transition-all duration-300">
+
+      <span class="material-symbols-outlined text-[20px]">
+        login
+      </span>
+
+      Đăng nhập
+    </a>
+
+  }
     
   </div>
 
