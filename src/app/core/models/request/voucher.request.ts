@@ -14,4 +14,6 @@ export interface VoucherCreateRequest {
     valid_until?: string;
     total_issue_limit?: number;
     total_usage_limit?: number;
+    applicableHomestayIds?: number[];
+    isApplyAll?: boolean;
 }

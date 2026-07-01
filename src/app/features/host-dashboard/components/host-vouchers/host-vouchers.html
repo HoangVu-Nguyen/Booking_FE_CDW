@@ -1,0 +1,291 @@
+<div class="h-full relative">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="text-2xl font-black text-stone-900 tracking-tight">Voucher Khuyến mãi</h2>
+            <p class="text-stone-500 mt-1">Tạo và quản lý các chương trình ưu đãi dành riêng cho hệ thống phòng của bạn.</p>
+        </div>
+        <button *ngIf="!isFormOpen" (click)="openForm()" class="px-5 py-2.5 bg-[#173124] text-white text-sm font-bold rounded-xl shadow-lg shadow-[#173124]/20 hover:bg-[#2c5e45] transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">add</span>
+            Tạo Voucher Mới
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="!isFormOpen && isLoading" class="bg-white rounded-[2rem] border border-stone-200 p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <span class="material-symbols-outlined animate-spin text-4xl text-[#173124]">refresh</span>
+        <p class="text-stone-500 mt-4 text-sm font-medium">Đang tải dữ liệu Voucher...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isFormOpen && !isLoading && vouchers.length === 0" class="bg-white rounded-[2rem] border border-stone-200 p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
+        <div class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mb-6">
+            <span class="material-symbols-outlined text-4xl text-stone-400">loyalty</span>
+        </div>
+        <h3 class="text-lg font-bold text-stone-900 mb-2">Chưa có Voucher nào</h3>
+        <p class="text-stone-500 mb-6 text-sm max-w-sm">Tạo voucher giảm giá để thu hút thêm khách hàng đặt phòng tại các cơ sở của bạn.</p>
+        <button (click)="openForm()" class="px-6 py-3 bg-white border border-stone-300 text-stone-700 text-sm font-bold rounded-xl hover:bg-stone-50 transition-colors">
+            Tạo Voucher Ngay
+        </button>
+    </div>
+
+    <!-- Voucher List -->
+    <div *ngIf="!isFormOpen && !isLoading && vouchers.length > 0" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div *ngFor="let voucher of vouchers" class="bg-white rounded-3xl border border-stone-100 shadow-[0_8px_30px_rgba(0,0,0,0.03)] p-6 relative overflow-hidden flex flex-col h-full group">
+            
+            <!-- Trạng thái (isActive) -->
+            <div class="absolute top-6 right-6">
+                <span *ngIf="voucher.isActive" class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider rounded-full border border-emerald-200/50">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Hoạt động
+                </span>
+                <span *ngIf="!voucher.isActive" class="inline-flex items-center gap-1.5 px-3 py-1 bg-stone-100 text-stone-500 text-xs font-bold uppercase tracking-wider rounded-full">
+                    Ngừng hoạt động
+                </span>
+            </div>
+
+            <div class="flex items-start gap-5 mb-6">
+                <!-- Icon Ticket -->
+                <div class="w-14 h-14 rounded-2xl bg-[#173124]/5 border border-[#173124]/10 flex items-center justify-center text-[#173124] shrink-0">
+                    <span class="material-symbols-outlined text-[28px]">local_activity</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <span class="text-stone-400 text-sm font-medium">Mã:</span>
+                        <span class="px-2 py-0.5 bg-stone-100 text-stone-800 text-xs font-black tracking-widest uppercase rounded">{{ voucher.code }}</span>
+                    </div>
+                    <h3 class="text-lg font-black text-stone-900 leading-tight">{{ voucher.name }}</h3>
+                </div>
+            </div>
+
+            <!-- Giá trị giảm -->
+            <div class="bg-stone-50 rounded-2xl p-4 mb-6 border border-stone-100">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="block text-xs text-stone-500 font-medium mb-1">Mức giảm</span>
+                        <span class="text-xl font-black text-[#173124]">
+                            {{ voucher.discountValue | number }} 
+                            <span class="text-sm">{{ voucher.discountType === 'PERCENTAGE' ? '%' : 'VND' }}</span>
+                        </span>
+                    </div>
+                    <div>
+                        <span class="block text-xs text-stone-500 font-medium mb-1">Đơn tối thiểu</span>
+                        <span class="text-sm font-bold text-stone-900">
+                            {{ voucher.minOrderValue ? (voucher.minOrderValue | number) + ' VND' : 'Không yêu cầu' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto space-y-4">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-stone-500">Phạm vi áp dụng:</span>
+                    <span class="font-bold text-stone-900 truncate max-w-[200px]" [title]="voucher.isApplyAll ? 'Toàn bộ Homestay' : 'Các Homestay được chọn'">
+                        {{ voucher.isApplyAll ? 'Toàn bộ Homestay' : 'Homestay cụ thể' }}
+                    </span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-stone-500">Thời hạn sử dụng:</span>
+                    <span class="font-bold text-stone-900" *ngIf="voucher.validUntil">{{ voucher.validUntil | date:'dd/MM/yyyy' }}</span>
+                    <span class="font-bold text-stone-900" *ngIf="!voucher.validUntil">Không giới hạn</span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-stone-500">Lượt dùng:</span>
+                    <div class="w-32 bg-stone-100 rounded-full h-2 overflow-hidden flex-shrink-0 ml-2">
+                        <!-- Progress bar logic (mocked if no valid totalLimit) -->
+                        <div class="h-full bg-indigo-500 rounded-full" 
+                             [style.width.%]="voucher.totalUsageLimit ? ((voucher.currentUsageCount || 0) / voucher.totalUsageLimit * 100) : 100">
+                        </div>
+                    </div>
+                    <span class="font-bold text-stone-900 text-xs ml-2">
+                        {{ voucher.currentUsageCount || 0 }} / {{ voucher.totalUsageLimit || '∞' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="pt-5 mt-5 border-t border-stone-100 flex gap-3">
+                <button *ngIf="voucher.isActive" (click)="deactivateVoucher(voucher.id)" 
+                    class="flex-1 py-2.5 bg-stone-100 hover:bg-rose-50 text-stone-600 hover:text-rose-600 font-bold text-sm rounded-xl transition-colors border border-transparent hover:border-rose-100">
+                    Ngừng hoạt động
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VOUCHER CREATION FORM MODAL -->
+    <div *ngIf="isFormOpen" class="bg-white rounded-[2.5rem] border border-stone-200 shadow-sm p-8 max-w-5xl mx-auto">
+        <div class="flex items-center justify-between mb-8 pb-6 border-b border-stone-100">
+            <h2 class="text-2xl font-black text-stone-900">Tạo Khuyến Mãi Mới</h2>
+            <button (click)="closeForm()" class="w-10 h-10 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+
+        <form (ngSubmit)="saveVoucher()">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Cột trái: Thông tin Voucher -->
+                <div class="space-y-8">
+                    <!-- Basic Info -->
+                    <div>
+                        <h3 class="text-sm font-extrabold text-stone-400 uppercase tracking-widest mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">info</span> Thông tin cơ bản
+                        </h3>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Mã Code <span class="text-red-500">*</span></label>
+                                <div class="flex gap-2">
+                                    <input type="text" [(ngModel)]="newVoucher.code" name="code" required
+                                        class="flex-1 px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] uppercase placeholder-stone-400" 
+                                        placeholder="Nhập mã hoặc tạo ngẫu nhiên">
+                                    <button type="button" (click)="generateRandomCode()" class="px-4 py-3 bg-stone-100 text-stone-600 font-bold rounded-xl hover:bg-stone-200 border border-stone-200 transition-colors" title="Tạo ngẫu nhiên">
+                                        <span class="material-symbols-outlined text-[20px] pt-1">autorenew</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Tên chương trình <span class="text-red-500">*</span></label>
+                                <input type="text" [(ngModel)]="newVoucher.name" name="name" required
+                                    class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] placeholder-stone-400" 
+                                    placeholder="VD: Tri ân khách hàng tháng 8">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Mô tả chi tiết</label>
+                                <textarea [(ngModel)]="newVoucher.description" name="description" rows="3"
+                                    class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] placeholder-stone-400"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Discount Values -->
+                    <div class="pt-8 border-t border-stone-100">
+                        <h3 class="text-sm font-extrabold text-stone-400 uppercase tracking-widest mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">payments</span> Giá trị khuyến mãi
+                        </h3>
+                        
+                        <div class="grid grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Loại giảm giá</label>
+                                <select [(ngModel)]="newVoucher.discount_type" name="discount_type"
+                                    class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]">
+                                    <option value="PERCENTAGE">Theo Phần trăm (%)</option>
+                                    <option value="FIXED_AMOUNT">Tiền mặt (VND)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Mức giảm <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <input type="number" [(ngModel)]="newVoucher.discount_value" name="discount_value" required
+                                        class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                                        placeholder="Nhập số">
+                                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-bold">{{ newVoucher.discount_type === 'PERCENTAGE' ? '%' : 'đ' }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-span-2 sm:col-span-1" *ngIf="newVoucher.discount_type === 'PERCENTAGE'">
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Giảm tối đa (VND)</label>
+                                <input type="number" [(ngModel)]="newVoucher.max_discount" name="max_discount"
+                                    class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                                    placeholder="Không bắt buộc">
+                            </div>
+
+                            <div class="col-span-2 sm:col-span-1">
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Đơn tối thiểu (VND)</label>
+                                <input type="number" [(ngModel)]="newVoucher.min_order_value" name="min_order_value"
+                                    class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                                    placeholder="Bỏ trống nếu không yêu cầu">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Scope & Limits -->
+                <div class="space-y-8 bg-stone-50 p-6 rounded-3xl border border-stone-100">
+                    
+                    <!-- Scope (Homestays) -->
+                    <div>
+                        <h3 class="text-sm font-extrabold text-[#173124] uppercase tracking-widest mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">location_city</span> Phạm vi áp dụng
+                        </h3>
+                        
+                        <div class="space-y-3 mb-4">
+                            <label class="flex items-center gap-3 p-4 bg-white border rounded-xl cursor-pointer transition-colors"
+                                   [ngClass]="newVoucher.isApplyAll ? 'border-[#173124] ring-1 ring-[#173124]' : 'border-stone-200'">
+                                <input type="radio" [value]="true" [(ngModel)]="newVoucher.isApplyAll" name="isApplyAll" class="w-5 h-5 text-[#173124] focus:ring-[#173124]">
+                                <span class="font-bold text-stone-900">Áp dụng cho tất cả Homestay của tôi</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 p-4 bg-white border rounded-xl cursor-pointer transition-colors"
+                                   [ngClass]="!newVoucher.isApplyAll ? 'border-[#173124] ring-1 ring-[#173124]' : 'border-stone-200'">
+                                <input type="radio" [value]="false" [(ngModel)]="newVoucher.isApplyAll" name="isApplyAll" class="w-5 h-5 text-[#173124] focus:ring-[#173124]">
+                                <span class="font-bold text-stone-900">Chỉ chọn một số Homestay cụ thể</span>
+                            </label>
+                        </div>
+
+                        <!-- Danh sách Homestay (Nếu chọn Cụ thể) -->
+                        <div *ngIf="!newVoucher.isApplyAll" class="bg-white border border-stone-200 rounded-xl p-4 max-h-48 overflow-y-auto custom-scrollbar">
+                            <p class="text-xs text-stone-500 mb-3 uppercase font-bold tracking-widest">Danh sách Homestay</p>
+                            
+                            <div *ngIf="properties.length === 0" class="text-sm text-stone-500 italic">
+                                Bạn chưa có homestay nào.
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label *ngFor="let h of properties" class="flex items-start gap-3 p-3 rounded-lg hover:bg-stone-50 cursor-pointer border border-transparent hover:border-stone-100 transition-all">
+                                    <input type="checkbox" 
+                                           [checked]="newVoucher.applicableHomestayIds.includes(h.id)"
+                                           (change)="toggleHomestaySelection(h.id)"
+                                           class="w-4 h-4 mt-0.5 text-[#173124] rounded focus:ring-[#173124]">
+                                    <div class="flex-1">
+                                        <div class="font-bold text-stone-900 text-sm">{{ h.name }}</div>
+                                        <div class="text-xs text-stone-500 truncate max-w-[200px]">{{ h.location }}</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thời hạn & Lượt dùng -->
+                    <div class="pt-6 border-t border-stone-200">
+                        <h3 class="text-sm font-extrabold text-[#173124] uppercase tracking-widest mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">event</span> Giới hạn & Thời hạn
+                        </h3>
+                        
+                        <div class="grid grid-cols-2 gap-5 mb-5">
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Bắt đầu từ</label>
+                                <input type="datetime-local" [(ngModel)]="newVoucher.valid_from" name="valid_from"
+                                    class="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-stone-700 mb-2">Hết hạn vào <span class="text-red-500">*</span></label>
+                                <input type="datetime-local" [(ngModel)]="newVoucher.valid_until" name="valid_until" required
+                                    class="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-stone-700 mb-2">Giới hạn số lượt sử dụng thành công</label>
+                            <input type="number" [(ngModel)]="newVoucher.total_usage_limit" name="total_usage_limit"
+                                class="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124]" 
+                                placeholder="VD: Chỉ 100 người nhanh nhất">
+                            <p class="text-xs text-stone-500 mt-2">Bỏ trống nếu voucher không giới hạn số lượt dùng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-4 pt-8 mt-8 border-t border-stone-200">
+                <button type="button" (click)="closeForm()" class="px-6 py-3.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl transition-colors">
+                    Hủy bỏ
+                </button>
+                <button type="submit" [disabled]="isSaving" class="px-8 py-3.5 bg-[#173124] text-white font-bold rounded-xl shadow-lg shadow-[#173124]/20 hover:bg-[#2c5e45] hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2 disabled:opacity-70 disabled:hover:translate-y-0">
+                    <span class="material-symbols-outlined text-[20px]" [class.animate-spin]="isSaving">{{ isSaving ? 'progress_activity' : 'add_circle' }}</span>
+                    {{ isSaving ? 'Đang tạo...' : 'Xác nhận tạo Voucher' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

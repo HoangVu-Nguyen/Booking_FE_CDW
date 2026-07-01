@@ -31,4 +31,17 @@ export class VoucherService {
   getMyVouchers(): Observable<ApiResponse<UserVoucherResponse[]>> {
     return this.apiService.get<ApiResponse<UserVoucherResponse[]>>('/api/v1/vouchers/my-vouchers');
   }
+
+  // --- HOST VOUCHER MANAGEMENT ---
+  getHostVouchers(): Observable<ApiResponse<VoucherResponse[]>> {
+    return this.apiService.get<ApiResponse<VoucherResponse[]>>('/api/v1/host/vouchers');
+  }
+
+  createHostVoucher(request: VoucherCreateRequest): Observable<ApiResponse<VoucherResponse>> {
+    return this.apiService.post<ApiResponse<VoucherResponse>>('/api/v1/host/vouchers', request);
+  }
+
+  deactivateHostVoucher(id: number): Observable<ApiResponse<void>> {
+    return this.apiService.delete<ApiResponse<void>>(`/api/v1/host/${id}/deactivate`);
+  }
 }

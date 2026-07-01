@@ -26,6 +26,7 @@ import { HostDashboard } from './features/host-dashboard/host-dashboard';
 import { HomestayWishlist } from './features/homestay-wishlist/homestay-wishlist';
 import { HomestayListManager } from './features/host-dashboard/components/homestay-list-manager/homestay-list-manager';
 import { BookingList } from './features/host-dashboard/components/booking-list/booking-list';
+import { HostVouchers } from './features/host-dashboard/components/host-vouchers/host-vouchers';
 import { HostWallet } from './features/host-dashboard/components/host-wallet/host-wallet';
 import { AdminDashboard } from './features/admin-dashboard/admin-dashboard';
 import { AdminWalletApproval } from './features/admin-dashboard/components/admin-wallet-approval/admin-wallet-approval';
@@ -188,6 +189,9 @@ export const routes: Routes = [
       },
       {
         path: 'wallet', component: HostWallet, title: 'Ví / Doanh thu - Host Dashboard - Clyvasync'
+      },
+      {
+        path: 'vouchers', component: HostVouchers, title: 'Khuyến mãi - Host Dashboard - Clyvasync'
       },
       {
         path: 'calendar/:homestayId',

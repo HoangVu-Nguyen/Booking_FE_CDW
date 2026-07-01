@@ -20,4 +20,6 @@ export interface VoucherResponse {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    applicableHomestayIds?: number[];
+    isApplyAll?: boolean;
 }
