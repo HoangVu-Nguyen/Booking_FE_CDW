@@ -132,7 +132,7 @@ loadImages(profileId: number) {
       await this.kycService.confirmUpload(uploadData.map(d => d.documentId)).toPromise();
 
       alert('Hồ sơ đã được gửi đi thẩm định!');
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/']);
     } catch (error) {
       alert("Có lỗi xảy ra, vui lòng thử lại.");
     } finally {
