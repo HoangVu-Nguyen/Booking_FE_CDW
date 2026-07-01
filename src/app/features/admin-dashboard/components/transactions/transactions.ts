@@ -29,7 +29,7 @@ export class Transactions implements OnInit {
   currentType: string = 'ALL';
   isLoading: boolean = false;
   filter: string = 'MONTH';
-  private revenueChart: Chart | null = null;
+  private revenueChart: Chart<'line'> | null = null;
   private adminService = inject(AdminService)
   @ViewChild('revenueChart') revenueChartRef!: ElementRef;
 

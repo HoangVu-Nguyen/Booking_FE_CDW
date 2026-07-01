@@ -43,4 +43,8 @@ export class UserService {
             return null;
         });
     }
+
+    public changePassword(payload: { currentPassword: string, newPassword: string }) {
+        return this.apiService.put<ApiResponse<void>>(`/api/v1/users/password`, payload);
+    }
 }
