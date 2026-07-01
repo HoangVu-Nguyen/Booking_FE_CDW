@@ -52,6 +52,7 @@ import { DocumentUpload } from './features/host-registration/steps/document-uplo
 import { HomestayVerification } from './features/host-dashboard/components/manage-property/components/homestay-verification/homestay-verification';
 import { Approvals } from './features/admin-dashboard/components/approvals/approvals';
 import { HostDetail } from './features/admin-dashboard/components/hosts/components/host-detail/host-detail';
+import { AdminUsers } from './features/admin-dashboard/components/users/users';
 import { OffersComponent } from './features/offers/offers.component';
 import { Destinations } from './features/destinations/destinations';
 import { Handbook } from './features/handbook/handbook';
@@ -141,7 +142,12 @@ export const routes: Routes = [
           {
             path: 'hosts',
             component: Hosts,
-            title: 'Quản lý Host - Admin Dashboard - Clyvasync'
+            title: 'Quản lý Chủ nhà - Admin Dashboard - Clyvasync'
+          },
+          {
+            path: 'users',
+            component: AdminUsers,
+            title: 'Quản lý Người dùng - Admin Dashboard - Clyvasync'
           },
           { path: 'approvals', component: Approvals },
           { path: 'hosts/:id', component: HostDetail },

@@ -26,3 +26,27 @@ export interface HostMetrics {
   cancellationRate: number;
   averageResponseTime: string;
 }
+
+export interface AdminUserStatsResponse {
+  totalUsers: number;
+  activeHosts: number;
+  lockedUsers: number;
+}
+
+export interface AdminUserResponse {
+  id: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: string;
+  status: string;
+  joinedDate: string;
+  avatar: string;
+}
+
+export interface AdminUserListResponse {
+  content: AdminUserResponse[];
+  stats: AdminUserStatsResponse;
+  totalPages: number;
+  totalElements: number;
+}

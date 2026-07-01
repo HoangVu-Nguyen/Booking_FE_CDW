@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LedgerTransaction, LedgerKpiResponse } from '../../../../core/models/response/ledger.response';
 import { WalletService } from '../../../../core/services/wallet/wallet.service';
-import { Chart, registerables } from 'chart.js';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { AdminService } from '../../../../core/services/admin/admin.service';
 Chart.register(...registerables);
 
@@ -185,7 +185,7 @@ export class Transactions implements OnInit {
     gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
     gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
 
-    this.revenueChart = new Chart(ctx, {
+    const config: ChartConfiguration<'line'> = {
       type: 'line',
       data: {
         labels: labels,
@@ -227,7 +227,9 @@ export class Transactions implements OnInit {
           tooltip: { backgroundColor: '#173124', padding: 12, cornerRadius: 8, bodyFont: { weight: 'bold' } }
         }
       }
-    });
+    };
+
+    this.revenueChart = new Chart(ctx, config);
     this.cdr.detectChanges();
   }
 }

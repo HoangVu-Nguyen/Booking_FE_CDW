@@ -5,7 +5,7 @@ import { ApiService } from '../api/api.service';
 import { HostPendingResponse } from '../../models/host/host-pending.response';
 import { HostKycDetailResponse } from '../../models/host/host-kyc-detail.response';
 import { PageResponse } from '../../models/response/page.response';
-import { AdminHostResponse } from '../../models/response/admin.reponse';
+import { AdminHostResponse, AdminUserListResponse } from '../../models/response/admin.reponse';
 import { HttpParams } from '@angular/common/http';
 import { HostDetailResponse } from '../../models/response/host-detail.response';
 import { HostOverviewMetricsResponse } from '../../models/response/host-metrics.response';
@@ -99,4 +99,12 @@ public suspendHost(hostId: string | number, reason: string, days: number): Obser
         payload
     );
 }
+
+  public getAdminUsers(keyword: string = '', role: string = 'ALL', status: string = 'ALL', page: number = 0, size: number = 10): Observable<ApiResponse<AdminUserListResponse>> {
+    return this.apiService.get<ApiResponse<AdminUserListResponse>>('/api/v1/admin/users', { keyword, role, status, page, size });
+  }
+
+  public toggleUserStatus(userId: number): Observable<ApiResponse<void>> {
+    return this.apiService.put<ApiResponse<void>>(`/api/v1/admin/users/${userId}/toggle-status`, {});
+  }
 }

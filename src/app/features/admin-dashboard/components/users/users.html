@@ -1,0 +1,161 @@
+<div class="space-y-6 animate-fade-in pb-16 font-sans">
+
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
+    <div>
+      <h2 class="text-3xl font-black text-stone-900 tracking-tight">Quản lý Người dùng</h2>
+      <p class="text-sm font-medium text-stone-500 mt-1">Giám sát và điều phối toàn bộ tài khoản trên hệ thống</p>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="bg-white border border-stone-200 p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-black text-stone-400 uppercase tracking-[0.15em] mb-1">Tổng tài khoản</p>
+        <h3 class="text-3xl font-black text-stone-900">{{totalUsers}}</h3>
+      </div>
+      <div class="w-14 h-14 bg-stone-100 rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-stone-500 text-[28px]">group</span>
+      </div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-100 p-6 rounded-3xl shadow-[0_8px_30px_rgba(16,185,129,0.1)] flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-black text-emerald-600/80 uppercase tracking-[0.15em] mb-1">Chủ nhà hoạt động</p>
+        <h3 class="text-3xl font-black text-emerald-700">{{activeHosts}}</h3>
+      </div>
+      <div class="w-14 h-14 bg-emerald-200/50 rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-emerald-700 text-[28px]">real_estate_agent</span>
+      </div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-100 p-6 rounded-3xl shadow-[0_8px_30px_rgba(239,68,68,0.1)] flex items-center justify-between">
+      <div>
+        <p class="text-[11px] font-black text-red-500 uppercase tracking-[0.15em] mb-1">Tài khoản bị khóa</p>
+        <h3 class="text-3xl font-black text-red-600">{{lockedUsers}}</h3>
+      </div>
+      <div class="w-14 h-14 bg-red-200/60 rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-red-600 text-[28px]">lock</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+    <div class="relative w-full md:w-96">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">search</span>
+      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Tìm theo tên hoặc email..." 
+             class="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900 transition-all">
+    </div>
+
+    <div class="flex gap-3 w-full md:w-auto">
+      <select [(ngModel)]="roleFilter" (ngModelChange)="applyFilters()" class="flex-1 md:flex-none px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-bold text-stone-700 focus:outline-none cursor-pointer hover:bg-stone-100 transition-colors">
+        <option value="ALL">Tất cả Vai trò</option>
+        <option value="USER">Khách hàng</option>
+        <option value="HOST">Chủ nhà</option>
+      </select>
+
+      <select [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()" class="flex-1 md:flex-none px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-bold text-stone-700 focus:outline-none cursor-pointer hover:bg-stone-100 transition-colors">
+        <option value="ALL">Tất cả Trạng thái</option>
+        <option value="ACTIVE">Đang hoạt động</option>
+        <option value="LOCKED">Bị khóa</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white border border-stone-200 shadow-sm rounded-2xl overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left whitespace-nowrap">
+        <thead>
+          <tr class="bg-stone-50/50 border-b border-stone-200">
+            <th class="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">Người dùng</th>
+            <th class="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">Vai trò</th>
+            <th class="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider">Ngày tham gia</th>
+            <th class="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider text-center">Trạng thái</th>
+            <th class="px-6 py-4 text-xs font-bold text-stone-500 uppercase tracking-wider text-right">Hành động</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-stone-200 text-sm relative">
+          <tr *ngIf="isLoading" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex items-center justify-center">
+            <td colspan="5">
+              <span class="material-symbols-outlined animate-spin text-3xl text-stone-900">progress_activity</span>
+            </td>
+          </tr>
+          <tr *ngIf="!isLoading && users.length === 0">
+            <td colspan="5" class="px-6 py-16 text-center text-stone-500">
+              <span class="material-symbols-outlined text-4xl mb-2 text-stone-300">group_off</span>
+              <p class="font-medium">Không tìm thấy người dùng nào phù hợp với bộ lọc</p>
+            </td>
+          </tr>
+          <tr *ngFor="let user of users" class="hover:bg-stone-50 transition-colors group">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-4">
+                <img [src]="user.avatar" class="w-10 h-10 rounded-full border border-stone-200 object-cover shadow-sm">
+                <div>
+                  <p class="font-bold text-stone-900">{{user.fullName}}</p>
+                  <p class="text-xs text-stone-500 font-medium">{{user.email}} • {{user.phone}}</p>
+                </div>
+              </div>
+            </td>
+            
+            <td class="px-6 py-4">
+              <span [ngClass]="user.role === 'HOST' ? 'bg-[#173124]/10 text-[#173124] border-[#173124]/20' : 'bg-stone-100 text-stone-700 border-stone-200'"
+                    class="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-md border inline-flex items-center gap-1 shadow-sm">
+                <span class="material-symbols-outlined text-[14px]">{{ user.role === 'HOST' ? 'real_estate_agent' : 'person' }}</span>
+                {{ user.role === 'HOST' ? 'Chủ nhà' : 'Khách' }}
+              </span>
+            </td>
+
+            <td class="px-6 py-4">
+              <p class="text-stone-900 font-bold tabular-nums">{{ user.joinedDate | date:'dd/MM/yyyy' }}</p>
+            </td>
+
+            <td class="px-6 py-4 text-center">
+              <span [ngClass]="user.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'"
+                    class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md border shadow-sm">
+                <span [ngClass]="user.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-red-500'" class="w-1.5 h-1.5 rounded-full"></span>
+                {{ user.status === 'ACTIVE' ? 'Hoạt động' : 'Bị khóa' }}
+              </span>
+            </td>
+
+            <td class="px-6 py-5 text-right">
+              <button (click)="toggleUserStatus(user)" [disabled]="processingMap[user.id]"
+                      [ngClass]="user.status === 'ACTIVE' ? 'text-red-600 hover:bg-red-50 border-transparent hover:border-red-200' : 'text-emerald-600 hover:bg-emerald-50 border-transparent hover:border-emerald-200'"
+                      class="px-3 py-1.5 rounded-lg text-sm font-bold transition-all border inline-flex items-center gap-2">
+                
+                <ng-container *ngIf="processingMap[user.id]; else iconTpl">
+                  <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                </ng-container>
+                
+                <ng-template #iconTpl>
+                  <span class="material-symbols-outlined text-[18px]">
+                    {{ user.status === 'ACTIVE' ? 'lock' : 'lock_open' }}
+                  </span>
+                </ng-template>
+
+                {{ user.status === 'ACTIVE' ? 'Khóa' : 'Mở khóa' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="px-6 py-4 border-t border-stone-200 bg-stone-50 flex items-center justify-between">
+      <p class="text-sm text-stone-500 font-medium">Trang {{currentPage + 1}} / {{totalPages}}</p>
+      <div class="flex gap-2">
+        <button (click)="prevPage()" [disabled]="currentPage === 0" 
+                class="w-8 h-8 rounded-lg flex items-center justify-center border border-stone-200 bg-white text-stone-600 hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+        </button>
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages - 1"
+                class="w-8 h-8 rounded-lg flex items-center justify-center border border-stone-200 bg-white text-stone-600 hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
