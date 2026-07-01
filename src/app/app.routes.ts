@@ -53,6 +53,9 @@ import { HomestayVerification } from './features/host-dashboard/components/manag
 import { Approvals } from './features/admin-dashboard/components/approvals/approvals';
 import { HostDetail } from './features/admin-dashboard/components/hosts/components/host-detail/host-detail';
 import { OffersComponent } from './features/offers/offers.component';
+import { Destinations } from './features/destinations/destinations';
+import { Handbook } from './features/handbook/handbook';
+import { PropertyTours } from './features/host-dashboard/components/manage-property/components/property-tours/property-tours';
 import { VoucherManagement } from './features/admin-dashboard/components/voucher-management/voucher-management';
 
 export const routes: Routes = [
@@ -104,6 +107,16 @@ export const routes: Routes = [
         path: 'offers',
         component: OffersComponent,
         title: 'Ưu đãi - Clyvasync'
+      },
+      {
+        path: 'destinations',
+        component: Destinations,
+        title: 'Điểm đến - Clyvasync'
+      },
+      {
+        path: 'handbook',
+        component: Handbook,
+        title: 'Cẩm nang - Clyvasync'
       },
       {
         path: 'admin',
@@ -229,6 +242,10 @@ export const routes: Routes = [
           {
             path: 'policies',
             component: RoomPolicies
+          },
+          {
+            path: 'tours',
+            component: PropertyTours
           },
           {
             path: 'room/amenities',

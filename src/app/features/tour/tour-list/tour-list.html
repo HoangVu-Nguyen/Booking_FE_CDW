@@ -1,39 +1,58 @@
-<main class="pt-32 pb-24 max-w-screen-2xl mx-auto px-6 md:px-12 bg-[#fcfcf9]">
-  <header class="mb-20">
-    <h1 class="text-[3.5rem] leading-[1.1] font-bold tracking-tight text-primary mb-6 max-w-3xl">
-      Hành trình Trải nghiệm Việt Nam
-    </h1>
-    <p class="text-xl text-on-surface-variant max-w-2xl font-body leading-relaxed">
-      Khám phá chiều sâu văn hóa qua những góc nhìn bản địa được tuyển chọn.
-    </p>
-  </header>
+<main class="min-h-screen bg-[#f8f9fa] pt-32 pb-24">
+  <div class="max-w-[1440px] mx-auto px-6 md:px-12">
+    <!-- Header Section -->
+    <header class="mb-16 flex flex-col md:flex-row md:items-end justify-between border-b border-stone-200 pb-10">
+      <div class="max-w-2xl">
+        <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-black tracking-tight text-stone-900 leading-[1.1] mb-6">
+          Khám phá <span class="text-[#173124] italic font-serif">Việt Nam</span>
+        </h1>
+        <p class="text-lg text-stone-500 leading-relaxed font-medium">
+          Tuyển tập những trải nghiệm văn hóa bản địa độc đáo nhất, được thiết kế dành riêng cho bạn.
+        </p>
+      </div>
 
-  <section class="flex flex-wrap gap-4 mb-16">
-    <button class="px-8 py-3 rounded-full bg-primary text-on-primary font-semibold text-sm transition-all shadow-sm">Tất cả</button>
-    <button class="px-8 py-3 rounded-full bg-surface-container text-on-surface-variant font-semibold text-sm hover:bg-surface-container-highest transition-all">Leo núi</button>
-    <button class="px-8 py-3 rounded-full bg-surface-container text-on-surface-variant font-semibold text-sm hover:bg-surface-container-highest transition-all">Ẩm thực</button>
-    <button class="px-8 py-3 rounded-full bg-surface-container text-on-surface-variant font-semibold text-sm hover:bg-surface-container-highest transition-all">Kiến trúc</button>
-    <button class="px-8 py-3 rounded-full bg-surface-container text-on-surface-variant font-semibold text-sm hover:bg-surface-container-highest transition-all">Chữa lành</button>
-  </section>
+      <!-- Filter Buttons -->
+      <div class="mt-8 md:mt-0 flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        <button class="px-6 py-2.5 rounded-full bg-[#173124] text-white font-bold text-sm shadow-md transition-all whitespace-nowrap">
+          Tất cả
+        </button>
+        <button class="px-6 py-2.5 rounded-full bg-white border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 transition-all whitespace-nowrap">
+          Leo núi
+        </button>
+        <button class="px-6 py-2.5 rounded-full bg-white border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 transition-all whitespace-nowrap">
+          Ẩm thực
+        </button>
+        <button class="px-6 py-2.5 rounded-full bg-white border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 transition-all whitespace-nowrap">
+          Kiến trúc
+        </button>
+        <button class="px-6 py-2.5 rounded-full bg-white border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 transition-all whitespace-nowrap">
+          Chữa lành
+        </button>
+      </div>
+    </header>
 
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-y-24 md:gap-x-12">
-    @for (item of tours(); track item.id; let i = $index) {
-      <app-tour-item [tour]="item" [index]="i"></app-tour-item>
-    }
+    <!-- Tour Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-y-16 md:gap-y-24 md:gap-x-10">
+      @for (item of tours(); track item.id; let i = $index) {
+        <app-tour-item [tour]="item" [index]="i"></app-tour-item>
+      }
+    </div>
+
+    <!-- Loading & End States -->
+    <div class="flex flex-col items-center justify-center mt-24 mb-10 min-h-[100px]">
+      @if (isLoading()) {
+          <div class="animate-spin rounded-full h-12 w-12 border-[4px] border-stone-200 border-t-[#173124]"></div>
+          <p class="text-sm text-stone-500 mt-5 font-bold uppercase tracking-widest">Đang tìm thêm trải nghiệm...</p>
+      }
+      
+      @if (!hasMore() && tours().length > 0) {
+          <div class="text-center bg-white border border-stone-100 py-6 px-10 rounded-[2rem] shadow-sm">
+              <span class="material-symbols-outlined text-4xl text-[#173124] mb-2">check_circle</span>
+              <p class="text-stone-900 font-bold text-lg">Đó là tất cả cho bây giờ!</p>
+              <p class="text-stone-500 text-sm mt-1">Bạn đã khám phá toàn bộ các tour hiện có.</p>
+          </div>
+      }
+    </div>
   </div>
-
-  <div class="flex flex-col items-center justify-center mt-20 mb-10 h-24">
-    @if (isLoading()) {
-        <div class="animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent"></div>
-        <p class="text-sm text-on-surface-variant mt-4 font-medium">Đang tìm thêm trải nghiệm...</p>
-    }
-    
-    @if (!hasMore() && tours().length > 0) {
-        <div class="text-center">
-            <span class="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-2">check_circle</span>
-            <p class="text-on-surface-variant font-medium">Bạn đã khám phá hết tất cả trải nghiệm!</p>
-        </div>
-    }
-</div>
 </main>
 

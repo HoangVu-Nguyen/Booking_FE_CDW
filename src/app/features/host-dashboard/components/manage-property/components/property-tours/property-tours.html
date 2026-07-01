@@ -1,0 +1,182 @@
+<div class="bg-white rounded-[2rem] p-8 shadow-sm border border-stone-100 min-h-[500px]">
+  
+  <!-- ======================== -->
+  <!-- LIST MODE (DANH SÁCH)    -->
+  <!-- ======================== -->
+  <ng-container *ngIf="viewMode() === 'LIST'">
+    <div class="flex items-center justify-between mb-8 pb-6 border-b border-stone-100">
+      <div>
+        <h2 class="text-2xl font-black text-stone-900 tracking-tight">Quản lý Tour & Trải nghiệm</h2>
+        <p class="text-stone-500 mt-2 text-sm font-medium">Thiết lập các tour du lịch đi kèm dành riêng cho khách lưu trú tại homestay này.</p>
+      </div>
+      <button (click)="toggleViewMode('FORM')"
+        class="bg-[#173124] text-white px-6 py-2.5 rounded-full font-bold shadow-md shadow-[#173124]/20 hover:bg-[#2c5e45] transition-colors flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px]">add</span>
+        Tạo Tour mới
+      </button>
+    </div>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="flex justify-center py-20">
+      <div class="animate-spin rounded-full h-10 w-10 border-4 border-stone-200 border-t-[#173124]"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading() && tours().length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+      <div class="w-24 h-24 bg-stone-50 rounded-full flex items-center justify-center mb-6">
+        <span class="material-symbols-outlined text-5xl text-stone-300">explore</span>
+      </div>
+      <h3 class="text-xl font-bold text-stone-900 mb-2">Chưa có Tour nào</h3>
+      <p class="text-stone-500 max-w-sm mb-8 font-medium">Bạn chưa cấu hình tour du lịch hoặc trải nghiệm nào cho homestay này. Hãy bắt đầu tạo một tour để thu hút thêm khách hàng!</p>
+    </div>
+
+    <!-- Tours List -->
+    <div *ngIf="!isLoading() && tours().length > 0" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+      <div *ngFor="let tour of tours()" class="flex border border-stone-200 rounded-2xl overflow-hidden group hover:shadow-lg transition-shadow">
+        <div class="w-32 bg-stone-100 flex items-center justify-center relative overflow-hidden shrink-0">
+          <img *ngIf="tour.primaryImageUrl" [src]="tour.primaryImageUrl" [alt]="tour.name" class="w-full h-full object-cover absolute inset-0">
+          <span *ngIf="!tour.primaryImageUrl" class="material-symbols-outlined text-4xl text-stone-300 relative z-10">image</span>
+        </div>
+        <div class="p-5 flex-1 flex flex-col justify-center">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-lg font-bold text-stone-900 group-hover:text-[#173124] transition-colors">{{tour.name}}</h3>
+            <span class="px-2 py-1 bg-green-50 text-green-700 text-[10px] font-black uppercase rounded-md">{{tour.status || 'ACTIVE'}}</span>
+          </div>
+          <p class="text-sm text-stone-500 line-clamp-2 mb-3">{{tour.description}}</p>
+          <div class="flex items-center justify-between mt-auto pt-2 border-t border-stone-100">
+            <div class="flex flex-col gap-1 text-xs font-bold text-stone-400">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> {{tour.durationValue}} {{tour.durationType}}</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">group</span> Tối đa {{tour.maxParticipants}} khách</span>
+            </div>
+            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button (click)="toggleViewMode('FORM', tour)" class="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 text-stone-600 hover:bg-[#173124] hover:text-white transition-colors" title="Sửa tour">
+                <span class="material-symbols-outlined text-[16px]">edit</span>
+              </button>
+              <button (click)="deleteTour(tour.id)" class="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 text-red-500 hover:bg-red-500 hover:text-white transition-colors" title="Xóa tour">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ======================== -->
+  <!-- FORM MODE (TẠO/SỬA)      -->
+  <!-- ======================== -->
+  <ng-container *ngIf="viewMode() === 'FORM'">
+    <div class="flex items-center gap-4 mb-8 pb-6 border-b border-stone-100">
+      <button (click)="toggleViewMode('LIST')" class="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center text-stone-500 hover:bg-stone-50 hover:text-stone-900 transition-colors">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </button>
+      <div>
+        <h2 class="text-2xl font-black text-stone-900 tracking-tight">{{ editingTourId() ? 'Cập nhật Tour' : 'Tạo Tour mới' }}</h2>
+        <p class="text-stone-500 mt-1 text-sm font-medium">Nhập thông tin chi tiết cho trải nghiệm của bạn.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="tourForm" (ngSubmit)="onSubmit()" class="max-w-2xl">
+      <div class="space-y-6">
+        <!-- Tên Tour -->
+        <div>
+          <label class="block text-sm font-bold text-stone-900 mb-2">Tên Tour / Trải nghiệm <span class="text-red-500">*</span></label>
+          <input type="text" formControlName="name" placeholder="VD: Khám phá ruộng bậc thang Tả Van" 
+            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] transition-all">
+        </div>
+
+        <!-- Mô tả -->
+        <div>
+          <label class="block text-sm font-bold text-stone-900 mb-2">Mô tả chi tiết <span class="text-red-500">*</span></label>
+          <textarea formControlName="description" rows="4" placeholder="Mô tả về hành trình, những hoạt động nổi bật..."
+            class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] transition-all"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Đơn vị Thời gian -->
+          <div>
+            <label class="block text-sm font-bold text-stone-900 mb-2">Đơn vị Thời gian</label>
+            <select formControlName="durationType" 
+              class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] transition-all">
+              <option *ngFor="let type of durationTypes" [value]="type.value">{{type.label}}</option>
+            </select>
+          </div>
+
+          <!-- Số lượng Thời gian -->
+          <div>
+            <label class="block text-sm font-bold text-stone-900 mb-2">Thời lượng <span class="text-red-500">*</span></label>
+            <input type="number" formControlName="durationValue" 
+              class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] transition-all">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Giá mỗi người -->
+          <div>
+            <label class="block text-sm font-bold text-stone-900 mb-2">Giá vé (VNĐ / Người) <span class="text-red-500">*</span></label>
+            <input type="number" formControlName="pricePerPerson" 
+              class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] transition-all">
+          </div>
+
+          <!-- Số lượng tối đa -->
+          <div>
+            <label class="block text-sm font-bold text-stone-900 mb-2">Số khách tối đa <span class="text-red-500">*</span></label>
+            <input type="number" formControlName="maxParticipants" 
+              class="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173124]/20 focus:border-[#173124] transition-all">
+          </div>
+        </div>
+
+        <!-- Tải ảnh -->
+        <div class="grid grid-cols-2 gap-6 mt-4">
+          <!-- Ảnh đại diện -->
+          <div>
+            <label class="block text-sm font-bold text-stone-900 mb-2">Ảnh Đại Diện (Primary) <span class="text-red-500">*</span></label>
+            <div class="relative w-full h-40 bg-stone-50 border-2 border-dashed border-stone-200 rounded-xl flex flex-col items-center justify-center overflow-hidden hover:bg-stone-100 transition-colors cursor-pointer"
+                 (click)="primaryInput.click()">
+              <input #primaryInput type="file" accept="image/*" class="hidden" (change)="onFileSelected($event, 'PRIMARY')">
+              <ng-container *ngIf="!primaryImagePreview()">
+                <span class="material-symbols-outlined text-3xl text-stone-300 mb-2">add_photo_alternate</span>
+                <span class="text-xs font-bold text-stone-500">Bấm để tải ảnh lên</span>
+              </ng-container>
+              <img *ngIf="primaryImagePreview()" [src]="primaryImagePreview()" class="absolute inset-0 w-full h-full object-cover">
+              <div *ngIf="primaryImagePreview()" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                <span class="text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full">Đổi ảnh khác</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ảnh Hover -->
+          <div>
+            <label class="block text-sm font-bold text-stone-900 mb-2">Ảnh khi Hover (Tùy chọn)</label>
+            <div class="relative w-full h-40 bg-stone-50 border-2 border-dashed border-stone-200 rounded-xl flex flex-col items-center justify-center overflow-hidden hover:bg-stone-100 transition-colors cursor-pointer"
+                 (click)="hoverInput.click()">
+              <input #hoverInput type="file" accept="image/*" class="hidden" (change)="onFileSelected($event, 'HOVER')">
+              <ng-container *ngIf="!hoverImagePreview()">
+                <span class="material-symbols-outlined text-3xl text-stone-300 mb-2">add_photo_alternate</span>
+                <span class="text-xs font-bold text-stone-500">Bấm để tải ảnh lên</span>
+              </ng-container>
+              <img *ngIf="hoverImagePreview()" [src]="hoverImagePreview()" class="absolute inset-0 w-full h-full object-cover">
+              <div *ngIf="hoverImagePreview()" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                <span class="text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full">Đổi ảnh khác</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-10 pt-6 border-t border-stone-100 flex justify-end gap-4">
+        <button type="button" (click)="toggleViewMode('LIST')" 
+          class="px-6 py-3 font-bold text-stone-600 hover:text-stone-900 hover:bg-stone-50 rounded-xl transition-colors">
+          Hủy bỏ
+        </button>
+        <button type="submit" [disabled]="tourForm.invalid || isSubmitting()"
+          class="px-8 py-3 bg-[#173124] text-white font-bold rounded-xl shadow-md shadow-[#173124]/20 hover:bg-[#2c5e45] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2">
+          <span *ngIf="isSubmitting()" class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+          {{ editingTourId() ? 'Lưu cập nhật' : 'Lưu Tour' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+
+</div>
