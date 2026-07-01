@@ -70,7 +70,7 @@ export class UserProfile implements OnInit {
     const postLogoutUri = authCodeFlowConfig.postLogoutRedirectUri ?? window.location.origin; // default to current origin if undefined
     const encodedPostLogout = encodeURIComponent(postLogoutUri);
     const encodedIdToken = encodeURIComponent(idToken ?? '');
-    const logoutUrl = `https://localhost:8443/connect/logout?id_token_hint=${encodedIdToken}&post_logout_redirect_uri=${encodedPostLogout}`;
+    const logoutUrl = `https://vunguyen.tokyo/connect/logout?id_token_hint=${encodedIdToken}&post_logout_redirect_uri=${encodedPostLogout}`;
 
     // 3. Xóa sạch dấu vết ở Client (Access Token trong RAM, Cookie Flag ở LocalStorage)
     this.oauthService.logOut(true);
