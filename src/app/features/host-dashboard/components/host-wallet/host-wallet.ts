@@ -9,12 +9,12 @@ import { Subscription } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast/toast.service';
 import { PaymentService } from '../../../../core/services/payment/payment.service';
 import { HostBankAccount, UserPaymentMethod } from '../../../../core/models/payment/user-payment-method.model';
-
+import { RevenueChartComponent } from '../revenue-chart/revenue-chart';
 
 @Component({
   selector: 'app-host-wallet',
   standalone: true, // Nhìn cách khai báo imports thì có vẻ bác đang dùng Standalone Component
-  imports: [DecimalPipe, CommonModule, FormsModule],
+  imports: [DecimalPipe, CommonModule, FormsModule, RevenueChartComponent],
   templateUrl: './host-wallet.html',
   styleUrl: './host-wallet.css',
 })

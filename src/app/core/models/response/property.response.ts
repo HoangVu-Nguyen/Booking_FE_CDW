@@ -28,3 +28,8 @@ export interface HostPortfolioSummaryResponse {
   ratingGrowth: number;
   totalProperties: number;
 }
+
+export interface YearlyRevenueResponse {
+  thisYear: number[];
+  lastYear: number[];
+}

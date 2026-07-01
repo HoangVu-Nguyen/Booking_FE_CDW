@@ -3,7 +3,7 @@ import { Observable, tap } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import { PortfolioTimelineResponse } from '../../models/response/portfolio.response';
 import { ApiResponse } from '../../models/response/api.response';
-import { HostPortfolioSummaryResponse, PropertySummaryResponse } from '../../models/response/property.response';
+import { HostPortfolioSummaryResponse, PropertySummaryResponse, YearlyRevenueResponse } from '../../models/response/property.response';
 
 @Injectable({
   providedIn: 'root'
@@ -83,5 +83,16 @@ export class PortfolioService {
           }
         })
       );
+  }
+
+  /**
+   * Gọi API Lấy doanh thu theo từng tháng trong năm
+   */
+  getYearlyRevenue(year?: number): Observable<ApiResponse<YearlyRevenueResponse>> {
+    let params = {};
+    if (year) {
+      params = { year: year.toString() };
+    }
+    return this.apiService.get<ApiResponse<YearlyRevenueResponse>>('/api/v1/host/properties/statistics/revenue/yearly', params);
   }
 }

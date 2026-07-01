@@ -32,6 +32,7 @@ export class VoucherManagement implements OnInit {
       next: (res) => {
         if (res.success && res.data) {
           this.vouchers = res.data;
+          console.log(this.vouchers)
         }
         this.isLoading = false;
 
