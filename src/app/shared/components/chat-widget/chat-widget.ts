@@ -10,6 +10,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
+import { ToastService } from '../../../core/services/toast/toast.service';
+import { ModeratorService } from '../../../core/services/moderator/moderator.service';
 
 import { ChatContext, ChatStateService } from '../../../core/services/chat/chat-state.service';
 import { ChatService } from '../../../core/services/chat/chat.service';
@@ -47,6 +50,8 @@ export class ChatWidget implements AfterViewChecked {
   private scrollTimeout: any; // Dùng để chặn sự kiện onScroll khi đang cuộn mượt
   public fileService = inject(FileService);
   public aiChatService = inject(AiChatService);
+  private toast = inject(ToastService);
+  private moderatorService = inject(ModeratorService);
   showAiWidget = false;
   aiMessages = signal<any[]>([]);
 
@@ -263,6 +268,21 @@ export class ChatWidget implements AfterViewChecked {
 
     const currentId = this.chatService.activeConversationId();
     if (!currentId) return;
+
+    // --- BẮT ĐẦU: KIỂM DUYỆT AI TRƯỚC KHI GỬI ---
+    try {
+      const moderationResult = await firstValueFrom(
+        this.moderatorService.checkContent(payload.content || '', payload.files)
+      );
+
+      if (moderationResult.is_violation) {
+        this.toast.error('Nội dung vi phạm', 'Tin nhắn hoặc hình ảnh của bạn chứa nội dung không phù hợp và đã bị chặn.');
+        return; // Dừng việc gửi
+      }
+    } catch (error) {
+      console.error('Lỗi khi kiểm duyệt nội dung:', error);
+    }
+    // --- KẾT THÚC: KIỂM DUYỆT AI ---
 
     // KỊCH BẢN 1: CÓ ĐÍNH KÈM FILE/HÌNH ẢNH
     if (payload.files && payload.files.length > 0) {

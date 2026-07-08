@@ -9,7 +9,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
   providedIn: 'root' // Service này có thể dùng ở bất cứ đâu
 })
 export class AuthService {
-  private readonly API_URL = 'https://localhost:8443/api/v1/auth'; 
+  private readonly API_URL = 'https://api.vunguyen.tokyo/api/v1/auth'; 
 
   constructor(private http: HttpClient, private oauthService: OAuthService) {}
 

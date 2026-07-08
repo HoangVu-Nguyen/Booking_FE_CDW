@@ -5,6 +5,7 @@ import { ToastService } from '../../../../../../core/services/toast/toast.servic
 import { ReviewService } from '../../../../../../core/services/review/review.service';
 import { BatchUploadRequest } from '../../../../../../core/models/request/upload.request';
 import { firstValueFrom } from 'rxjs';
+import { ModeratorService } from '../../../../../../core/services/moderator/moderator.service';
 
 @Component({
   selector: 'app-booking-review-banner',
@@ -19,6 +20,7 @@ export class BookingReviewBanner implements OnInit {
   private toast = inject(ToastService);
   private reviewService = inject(ReviewService);
   private changeRef = inject(ChangeDetectorRef);
+  private moderatorService = inject(ModeratorService);
 
   isModalOpen = false;
   hoveredStar = 0;
@@ -111,6 +113,23 @@ export class BookingReviewBanner implements OnInit {
     }
 
     this.isSubmitting = true;
+
+    // --- KIỂM DUYỆT NỘI DUNG VỚI AI ---
+    try {
+      const filesToCheck = this.selectedImages.map(img => img.file);
+      const moderationResult = await firstValueFrom(
+        this.moderatorService.checkContent(this.reviewContent, filesToCheck)
+      );
+
+      if (moderationResult.is_violation) {
+        this.toast.error('Nội dung vi phạm', 'Đánh giá hoặc hình ảnh của bạn chứa nội dung không phù hợp và đã bị chặn.');
+        this.isSubmitting = false;
+        return; // Dừng việc gửi
+      }
+    } catch (error) {
+      console.error('Lỗi khi kiểm duyệt nội dung:', error);
+    }
+    // --- KẾT THÚC KIỂM DUYỆT ---
 
     try {
       let imageKeys: string[] = [];
