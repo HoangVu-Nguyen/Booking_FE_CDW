@@ -17,6 +17,9 @@ import { ChatInput } from '../../../../shared/components/chat-input/chat-input';
 import { ChatSendPayload } from '../../../../core/models/file/file.model';
 import { FileService } from '../../../../core/services/file/file.service';
 import { ImageType } from '../../../../core/enum/image-type.enum';
+import { firstValueFrom } from 'rxjs';
+import { ToastService } from '../../../../core/services/toast/toast.service';
+import { ModeratorService } from '../../../../core/services/moderator/moderator.service';
 @Component({
   selector: 'app-inbox',
   standalone: true,
@@ -32,6 +35,8 @@ export class Inbox implements OnInit, AfterViewChecked {
   private websocketService = inject(WebsocketService);
   public chatService = inject(ChatService);
   public fileService = inject(FileService);
+  private toast = inject(ToastService);
+  private moderatorService = inject(ModeratorService);
 
   // --- BỘ MÁY SCROLL ---
   @ViewChild('chatScroll') private chatScrollContainer?: ElementRef<HTMLElement>;
@@ -182,6 +187,21 @@ export class Inbox implements OnInit, AfterViewChecked {
   async handleSendMessage(payload: ChatSendPayload) {
     const currentId = this.chatService.activeConversationId();
     if (!currentId) return;
+
+    // --- BẮT ĐẦU: KIỂM DUYỆT AI TRƯỚC KHI GỬI ---
+    try {
+      const moderationResult = await firstValueFrom(
+        this.moderatorService.checkContent(payload.content || '', payload.files)
+      );
+
+      if (moderationResult.is_violation) {
+        this.toast.error('Nội dung vi phạm', 'Tin nhắn hoặc hình ảnh của bạn chứa nội dung không phù hợp và đã bị chặn.');
+        return; // Dừng việc gửi
+      }
+    } catch (error) {
+      console.error('Lỗi khi kiểm duyệt nội dung:', error);
+    }
+    // --- KẾT THÚC: KIỂM DUYỆT AI ---
 
     // KỊCH BẢN 1: CÓ ĐÍNH KÈM FILE/HÌNH ẢNH
     if (payload.files && payload.files.length > 0) {
