@@ -9,9 +9,9 @@ import { OAuthService } from 'angular-oauth2-oidc';
   providedIn: 'root' // Service này có thể dùng ở bất cứ đâu
 })
 export class AuthService {
-  private readonly API_URL = 'https://api.vunguyen.tokyo/api/v1/auth'; 
+  private readonly API_URL = 'https://vunguyen.tokyo/api/v1/auth';
 
-  constructor(private http: HttpClient, private oauthService: OAuthService) {}
+  constructor(private http: HttpClient, private oauthService: OAuthService) { }
 
   // Hàm gọi đăng ký
   register(data: RegisterRequest): Observable<AuthResponse> {
@@ -30,12 +30,12 @@ export class AuthService {
     );
   }
   getRolesFromToken(): string[] {
-  // Lấy payload của token đã lưu trong RAM
-  const claims = this.oauthService.getIdentityClaims(); 
-  
-  if (!claims) return [];
+    // Lấy payload của token đã lưu trong RAM
+    const claims = this.oauthService.getIdentityClaims();
 
-  // Tùy cấu hình server mà key có thể là 'roles', 'realm_access.roles', hoặc 'authorities'
-  return claims['roles'] || []; 
-}
+    if (!claims) return [];
+
+    // Tùy cấu hình server mà key có thể là 'roles', 'realm_access.roles', hoặc 'authorities'
+    return claims['roles'] || [];
+  }
 }

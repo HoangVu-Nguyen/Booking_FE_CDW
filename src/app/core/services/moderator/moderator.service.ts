@@ -14,12 +14,12 @@ export interface ModeratorResponse {
 })
 export class ModeratorService {
   private http = inject(HttpClient);
-  private aiUrl = 'http://localhost:8007/moderate'; // URL của AI Moderator
+  private aiUrl = 'https://ai-model.vunguyen.tokyo/moderate';
 
   checkContent(text: string, files?: File[]): Observable<ModeratorResponse> {
     const formData = new FormData();
     formData.append('text_content', text || '');
-    
+
     if (files && files.length > 0) {
       files.forEach(file => {
         formData.append('images', file, file.name);
